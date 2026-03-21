@@ -244,34 +244,7 @@ export function matchSectionsToRequirements(
 }
 ```
 
-## Step 7: Verify Tests Still Pass
-
-```bash
-npm test lib/resume/section-matcher.test.ts
-
-PASS lib/resume/section-matcher.test.ts
-  ✓ should score highly when section skills match required requirements (3 ms)
-  ✓ should score low when section has no matching skills (2 ms)
-  ✓ should handle empty sections array (1 ms)
-
-3 tests passed
-```
-
-✅ Refactoring complete, tests still passing!
-
-## Step 8: Check Coverage
-
-```bash
-npm test -- --coverage lib/resume/section-matcher.test.ts
-
-File                 | % Stmts | % Branch | % Funcs | % Lines
----------------------|---------|----------|---------|--------
-section-matcher.ts   |   100   |   100    |   100   |   100
-
-Coverage: 100% ✅ (Target: 80%)
-```
-
-✅ TDD session complete!
+✅ TDD session complete! Run `/test-coverage` to verify coverage meets 80%+ target.
 ```
 
 ## TDD Best Practices
@@ -338,12 +311,3 @@ Never skip the RED phase. Never write code before tests.
 - Use `/code-review` to review implementation
 - Use `/test-coverage` to verify coverage
 
-## Related Agents
-
-This command invokes the `tdd-guide` agent provided by ECC.
-
-The related `tdd-workflow` skill is also bundled with ECC.
-
-For manual installs, the source files live at:
-- `agents/tdd-guide.md`
-- `skills/tdd-workflow/SKILL.md`

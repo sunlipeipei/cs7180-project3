@@ -139,29 +139,6 @@ Artifacts generated:
 - playwright-report/index.html
 ```
 
-## Test Report
-
-```
-╔══════════════════════════════════════════════════════════════╗
-║                    E2E Test Results                          ║
-╠══════════════════════════════════════════════════════════════╣
-║ Status:     ✅ ALL TESTS PASSED                              ║
-║ Total:      2 tests                                          ║
-║ Passed:     2 (100%)                                         ║
-║ Failed:     0                                                ║
-║ Flaky:      0                                                ║
-║ Duration:   9.7s                                             ║
-╚══════════════════════════════════════════════════════════════╝
-
-Artifacts:
-📸 Screenshots: 2 files
-📹 Videos: 0 files (only on failure)
-🔍 Traces: 0 files (only on failure)
-📊 HTML Report: playwright-report/index.html
-
-View report: npx playwright show-report
-```
-
 ✅ E2E test suite ready for CI/CD integration!
 ```
 
@@ -297,13 +274,6 @@ Prioritize these E2E tests for BypassHire:
 - Use `/tdd` for unit tests (faster, more granular)
 - Use `/e2e` for integration and user journey tests
 - Use `/code-review` to verify test quality
-
-## Related Agents
-
-This command invokes the `e2e-runner` agent provided by ECC.
-
-For manual installs, the source file lives at:
-`agents/e2e-runner.md`
 
 ## Quick Commands
 

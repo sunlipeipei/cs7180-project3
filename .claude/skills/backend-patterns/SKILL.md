@@ -1,7 +1,7 @@
 ---
 name: backend-patterns
 description: Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.
-origin: ECC
+origin: ECC (customized for BypassHire)
 ---
 
 # Backend Development Patterns
@@ -24,26 +24,26 @@ Backend architecture patterns and best practices for scalable server-side applic
 
 ```typescript
 // ✅ Resource-based URLs
-GET    /api/markets                 # List resources
-GET    /api/markets/:id             # Get single resource
-POST   /api/markets                 # Create resource
-PUT    /api/markets/:id             # Replace resource
-PATCH  /api/markets/:id             # Update resource
-DELETE /api/markets/:id             # Delete resource
+GET    /api/resumes                 # List resources
+GET    /api/resumes/:id             # Get single resource
+POST   /api/resumes                 # Create resource
+PUT    /api/resumes/:id             # Replace resource
+PATCH  /api/resumes/:id             # Update resource
+DELETE /api/resumes/:id             # Delete resource
 
 // ✅ Query parameters for filtering, sorting, pagination
-GET /api/markets?status=active&sort=volume&limit=20&offset=0
+GET /api/resumes?status=active&sort=volume&limit=20&offset=0
 ```
 
 ### Repository Pattern
 
 ```typescript
 // Abstract data access logic
-interface MarketRepository {
-  findAll(filters?: MarketFilters): Promise<Market[]>
-  findById(id: string): Promise<Market | null>
-  create(data: CreateMarketDto): Promise<Market>
-  update(id: string, data: UpdateMarketDto): Promise<Market>
+interface ResumeRepository {
+  findAll(filters?: ResumeFilters): Promise<Resume[]>
+  findById(id: string): Promise<Resume | null>
+  create(data: CreateResumeDto): Promise<Resume>
+  update(id: string, data: UpdateResumeDto): Promise<Resume>
   delete(id: string): Promise<void>
 }
 
@@ -76,16 +76,16 @@ class PostgresItemRepository implements ItemRepository {
 
 ```typescript
 // Business logic separated from data access
-class MarketService {
-  constructor(private marketRepo: MarketRepository) {}
+class ResumeService {
+  constructor(private resumeRepo: ResumeRepository) {}
 
-  async searchMarkets(query: string, limit: number = 10): Promise<Market[]> {
+  async searchResumes(query: string, limit: number = 10): Promise<Resume[]> {
     // Business logic
     const embedding = await generateEmbedding(query)
     const results = await this.vectorSearch(embedding, limit)
 
     // Fetch full data
-    const markets = await this.marketRepo.findByIds(results.map(r => r.id))
+    const resumes = await this.resumeRepo.findByIds(results.map(r => r.id))
 
     // Sort by similarity
     return markets.sort((a, b) => {
@@ -148,13 +148,13 @@ const { rows } = await pool.query('SELECT * FROM items')
 
 ```typescript
 // ❌ BAD: N+1 query problem
-const markets = await getMarkets()
+const resumes = await getResumes()
 for (const market of markets) {
   market.creator = await getUser(market.creator_id)  // N queries
 }
 
 // ✅ GOOD: Batch fetch
-const markets = await getMarkets()
+const resumes = await getResumes()
 const creatorIds = markets.map(m => m.creator_id)
 const creators = await getUsers(creatorIds)  // 1 query
 const creatorMap = new Map(creators.map(c => [c.id, c]))
@@ -205,15 +205,15 @@ async function createSectionWithItems(
 ### Redis Caching Layer
 
 ```typescript
-class CachedMarketRepository implements MarketRepository {
+class CachedResumeRepository implements ResumeRepository {
   constructor(
-    private baseRepo: MarketRepository,
+    private baseRepo: ResumeRepository,
     private redis: RedisClient
   ) {}
 
-  async findById(id: string): Promise<Market | null> {
+  async findById(id: string): Promise<Resume | null> {
     // Check cache first
-    const cached = await this.redis.get(`market:${id}`)
+    const cached = await this.redis.get(`resume:${id}`)
 
     if (cached) {
       return JSON.parse(cached)
@@ -224,14 +224,14 @@ class CachedMarketRepository implements MarketRepository {
 
     if (market) {
       // Cache for 5 minutes
-      await this.redis.setex(`market:${id}`, 300, JSON.stringify(market))
+      await this.redis.setex(`resume:${id}`, 300, JSON.stringify(market))
     }
 
     return market
   }
 
   async invalidateCache(id: string): Promise<void> {
-    await this.redis.del(`market:${id}`)
+    await this.redis.del(`resume:${id}`)
   }
 }
 ```
@@ -239,17 +239,17 @@ class CachedMarketRepository implements MarketRepository {
 ### Cache-Aside Pattern
 
 ```typescript
-async function getMarketWithCache(id: string): Promise<Market> {
-  const cacheKey = `market:${id}`
+async function getResumeWithCache(id: string): Promise<Resume> {
+  const cacheKey = `resume:${id}`
 
   // Try cache
   const cached = await redis.get(cacheKey)
   if (cached) return JSON.parse(cached)
 
   // Cache miss - fetch from DB
-  const market = await db.markets.findUnique({ where: { id } })
+  const market = await db.resumes.findUnique({ where: { id } })
 
-  if (!market) throw new Error('Market not found')
+  if (!market) throw new Error('Resume not found')
 
   // Update cache
   await redis.setex(cacheKey, 300, JSON.stringify(market))
@@ -511,18 +511,18 @@ class JobQueue<T> {
   }
 }
 
-// Usage for indexing markets
+// Usage for indexing resumes
 interface IndexJob {
-  marketId: string
+  resumeId: string
 }
 
 const indexQueue = new JobQueue<IndexJob>()
 
 export async function POST(request: Request) {
-  const { marketId } = await request.json()
+  const { resumeId } = await request.json()
 
   // Add to queue instead of blocking
-  await indexQueue.add({ marketId })
+  await indexQueue.add({ resumeId })
 
   return NextResponse.json({ success: true, message: 'Job queued' })
 }
@@ -576,17 +576,17 @@ const logger = new Logger()
 export async function GET(request: Request) {
   const requestId = crypto.randomUUID()
 
-  logger.info('Fetching markets', {
+  logger.info('Fetching resumes', {
     requestId,
     method: 'GET',
-    path: '/api/markets'
+    path: '/api/resumes'
   })
 
   try {
-    const markets = await fetchMarkets()
-    return NextResponse.json({ success: true, data: markets })
+    const resumes = await fetchResumes()
+    return NextResponse.json({ success: true, data: resumes })
   } catch (error) {
-    logger.error('Failed to fetch markets', error as Error, { requestId })
+    logger.error('Failed to fetch resumes', error as Error, { requestId })
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }

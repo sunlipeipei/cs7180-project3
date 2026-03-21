@@ -150,9 +150,9 @@ describe('Button Component', () => {
 import { NextRequest } from 'next/server'
 import { GET } from './route'
 
-describe('GET /api/markets', () => {
-  it('returns markets successfully', async () => {
-    const request = new NextRequest('http://localhost/api/markets')
+describe('GET /api/resumes', () => {
+  it('returns resumes successfully', async () => {
+    const request = new NextRequest('http://localhost/api/resumes')
     const response = await GET(request)
     const data = await response.json()
 
@@ -162,7 +162,7 @@ describe('GET /api/markets', () => {
   })
 
   it('validates query parameters', async () => {
-    const request = new NextRequest('http://localhost/api/markets?limit=invalid')
+    const request = new NextRequest('http://localhost/api/resumes?limit=invalid')
     const response = await GET(request)
 
     expect(response.status).toBe(400)
@@ -170,7 +170,7 @@ describe('GET /api/markets', () => {
 
   it('handles database errors gracefully', async () => {
     // Mock database failure
-    const request = new NextRequest('http://localhost/api/markets')
+    const request = new NextRequest('http://localhost/api/resumes')
     // Test error handling
   })
 })

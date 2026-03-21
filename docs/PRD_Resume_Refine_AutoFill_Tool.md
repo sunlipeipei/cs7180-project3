@@ -2,7 +2,7 @@
 
 **Version:** V1.0 (MVP)
 **Date:** 2026-03-21
-**Authors:** [Team Members]
+**Authors:** sunlipeipei, iDako7
 **Status:** Draft
 
 ---

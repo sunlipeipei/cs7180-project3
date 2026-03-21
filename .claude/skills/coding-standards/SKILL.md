@@ -240,15 +240,15 @@ setCount(count + 1)  // Can be stale in async scenarios
 ### REST API Conventions
 
 ```
-GET    /api/markets              # List all markets
-GET    /api/markets/:id          # Get specific market
-POST   /api/markets              # Create new market
-PUT    /api/markets/:id          # Update market (full)
-PATCH  /api/markets/:id          # Update market (partial)
-DELETE /api/markets/:id          # Delete market
+GET    /api/resumes              # List all resumes
+GET    /api/resumes/:id          # Get specific resume
+POST   /api/resumes              # Create new resume
+PUT    /api/resumes/:id          # Update resume (full)
+PATCH  /api/resumes/:id          # Update resume (partial)
+DELETE /api/resumes/:id          # Delete resume
 
 # Query parameters for filtering
-GET /api/markets?status=active&limit=10&offset=0
+GET /api/resumes?status=active&limit=10&offset=0
 ```
 
 ### Response Format
