@@ -1,4 +1,4 @@
-# TDD Workflow Guide for SmartGroceryAssistant
+# TDD Workflow Guide for BypassHire
 
 Extracted from [everything-claude-code](https://github.com/affaan-m/everything-claude-code). Covers how to use it, how it works internally, and how to maintain it.
 

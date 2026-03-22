@@ -1,7 +1,6 @@
 ---
 name: backend-patterns
 description: Backend architecture patterns, API design, database optimization, and server-side best practices for Node.js, Express, and Next.js API routes.
-origin: ECC (customized for BypassHire)
 ---
 
 # Backend Development Patterns
@@ -88,7 +87,7 @@ class ResumeService {
     const resumes = await this.resumeRepo.findByIds(results.map(r => r.id))
 
     // Sort by similarity
-    return markets.sort((a, b) => {
+    return resumes.sort((a, b) => {
       const scoreA = results.find(r => r.id === a.id)?.score || 0
       const scoreB = results.find(r => r.id === b.id)?.score || 0
       return scoreA - scoreB
@@ -149,18 +148,18 @@ const { rows } = await pool.query('SELECT * FROM items')
 ```typescript
 // ❌ BAD: N+1 query problem
 const resumes = await getResumes()
-for (const market of markets) {
-  market.creator = await getUser(market.creator_id)  // N queries
+for (const resume of resumes) {
+  resume.creator = await getUser(resume.creator_id)  // N queries
 }
 
 // ✅ GOOD: Batch fetch
 const resumes = await getResumes()
-const creatorIds = markets.map(m => m.creator_id)
+const creatorIds = resumes.map(r => r.creator_id)
 const creators = await getUsers(creatorIds)  // 1 query
 const creatorMap = new Map(creators.map(c => [c.id, c]))
 
-markets.forEach(market => {
-  market.creator = creatorMap.get(market.creator_id)
+resumes.forEach(resume => {
+  resume.creator = creatorMap.get(resume.creator_id)
 })
 ```
 
