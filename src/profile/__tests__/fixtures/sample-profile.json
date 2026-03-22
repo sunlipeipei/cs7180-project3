@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "name": "Jane Doe",
+  "email": "jane.doe@example.com",
+  "phone": "+1-555-123-4567",
+  "address": {
+    "street": "123 Main St",
+    "city": "San Francisco",
+    "state": "CA",
+    "zip": "94102",
+    "country": "US"
+  },
+  "links": {
+    "github": "https://github.com/janedoe",
+    "linkedin": "https://linkedin.com/in/janedoe",
+    "portfolio": "https://janedoe.dev"
+  },
+  "summary": "Full-stack engineer with 5 years of experience building scalable web applications.",
+  "skills": [
+    { "name": "TypeScript", "category": "language", "level": "expert" },
+    { "name": "React", "category": "framework", "level": "expert" },
+    { "name": "Node.js", "category": "framework", "level": "proficient" },
+    { "name": "PostgreSQL", "category": "tool", "level": "proficient" }
+  ],
+  "workExperience": [
+    {
+      "company": "Acme Corp",
+      "title": "Senior Software Engineer",
+      "startDate": "2021-06-01",
+      "endDate": null,
+      "location": "San Francisco, CA",
+      "descriptions": [
+        "Led migration from monolith to microservices architecture",
+        "Reduced API latency by 40% through query optimization"
+      ]
+    },
+    {
+      "company": "StartupXYZ",
+      "title": "Software Engineer",
+      "startDate": "2019-01-15",
+      "endDate": "2021-05-30",
+      "location": "Remote",
+      "descriptions": [
+        "Built real-time notification system serving 100K users",
+        "Implemented CI/CD pipeline reducing deployment time by 60%"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "MIT",
+      "degree": "B.S.",
+      "fieldOfStudy": "Computer Science",
+      "startDate": "2015-09-01",
+      "endDate": "2019-05-15",
+      "gpa": "3.8"
+    }
+  ],
+  "projects": [
+    {
+      "name": "OpenSource CLI Tool",
+      "description": "A CLI tool for automating developer workflows",
+      "technologies": ["TypeScript", "Node.js", "Commander.js"],
+      "url": "https://github.com/janedoe/cli-tool",
+      "startDate": "2022-01-01",
+      "role": "Creator & Maintainer"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Solutions Architect",
+      "issuer": "Amazon Web Services",
+      "date": "2023-03-15",
+      "expirationDate": "2026-03-15",
+      "credentialId": "AWS-SA-12345"
+    }
+  ],
+  "resumeTemplatePath": "./templates/resume.docx",
+  "contextSources": {
+    "githubRepos": ["janedoe/cli-tool", "janedoe/web-app"],
+    "documentPaths": ["./docs/projects/cli-tool.md"]
+  },
+  "preferences": {
+    "salaryRange": { "min": 150000, "max": 200000, "currency": "USD" },
+    "workAuthorization": "US Citizen",
+    "willingToRelocate": true,
+    "yearsOfExperience": 5,
+    "careerSummary": "Passionate about building developer tools and scalable systems.",
+    "targetRoles": ["Senior Software Engineer", "Staff Engineer"],
+    "preferredIndustries": ["Developer Tools", "FinTech"]
+  }
+}
