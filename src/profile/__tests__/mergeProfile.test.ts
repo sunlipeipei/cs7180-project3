@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mergeProfile } from '../mergeProfile.js';
+import { ProfileValidationError } from '../errors.js';
 import type { MasterProfile } from '../types.js';
 
 function makeBaseProfile(overrides: Partial<MasterProfile> = {}): MasterProfile {
@@ -244,6 +245,66 @@ describe('mergeProfile', () => {
       const merged = mergeProfile(base, {});
 
       expect(merged).toEqual(base);
+    });
+  });
+
+  describe('nested object merge', () => {
+    it('should deep-merge address (not replace entire object)', () => {
+      const base = makeBaseProfile({
+        address: { city: 'San Francisco', state: 'CA', country: 'US' },
+      });
+      const partial = { address: { city: 'NYC' } };
+
+      const merged = mergeProfile(base, partial);
+
+      expect(merged.address?.city).toBe('NYC');
+      expect(merged.address?.state).toBe('CA');  // preserved, not wiped
+      expect(merged.address?.country).toBe('US'); // preserved, not wiped
+    });
+
+    it('should deep-merge links (not replace entire object)', () => {
+      const base = makeBaseProfile({
+        links: { github: 'https://github.com/jane', linkedin: 'https://linkedin.com/in/jane' },
+      });
+      const partial = { links: { github: 'https://github.com/jane-new' } };
+
+      const merged = mergeProfile(base, partial);
+
+      expect(merged.links?.github).toBe('https://github.com/jane-new');
+      expect(merged.links?.linkedin).toBe('https://linkedin.com/in/jane'); // preserved
+    });
+
+    it('should deep-merge preferences (not replace entire object)', () => {
+      const base = makeBaseProfile({
+        preferences: {
+          workAuthorization: 'US Citizen',
+          willingToRelocate: true,
+          yearsOfExperience: 5,
+        },
+      });
+      const partial = { preferences: { yearsOfExperience: 6 } };
+
+      const merged = mergeProfile(base, partial);
+
+      expect(merged.preferences?.yearsOfExperience).toBe(6);
+      expect(merged.preferences?.workAuthorization).toBe('US Citizen'); // preserved
+      expect(merged.preferences?.willingToRelocate).toBe(true); // preserved
+    });
+  });
+
+  describe('post-merge validation', () => {
+    it('should throw ProfileValidationError when merge produces invalid profile (null required field)', () => {
+      const base = makeBaseProfile();
+      const partial = { name: null as any }; // name is required
+
+      expect(() => mergeProfile(base, partial)).toThrow(ProfileValidationError);
+    });
+
+    it('should throw ProfileValidationError when merge produces invalid email', () => {
+      const base = makeBaseProfile();
+      const partial = { email: 'not-an-email' };
+
+      expect(() => mergeProfile(base, partial)).toThrow(ProfileValidationError);
     });
   });
 });

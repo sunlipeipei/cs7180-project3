@@ -204,5 +204,70 @@ describe('MasterProfileSchema', () => {
       const result = MasterProfileSchema.safeParse(profile);
       expect(result.success).toBe(true);
     });
+
+    it('should reject non-ISO date strings like "banana"', () => {
+      const profile = {
+        schemaVersion: 1,
+        name: 'John',
+        email: 'john@test.com',
+        phone: '555',
+        skills: [],
+        workExperience: [
+          {
+            company: 'Acme',
+            title: 'Engineer',
+            startDate: 'banana',
+            descriptions: [],
+          },
+        ],
+        education: [],
+      };
+      const result = MasterProfileSchema.safeParse(profile);
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid date strings in education', () => {
+      const profile = {
+        schemaVersion: 1,
+        name: 'John',
+        email: 'john@test.com',
+        phone: '555',
+        skills: [],
+        workExperience: [],
+        education: [{ school: 'MIT', degree: 'B.S.', startDate: 'not-a-date' }],
+      };
+      const result = MasterProfileSchema.safeParse(profile);
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid date strings in projects', () => {
+      const profile = {
+        schemaVersion: 1,
+        name: 'John',
+        email: 'john@test.com',
+        phone: '555',
+        skills: [],
+        workExperience: [],
+        education: [],
+        projects: [{ name: 'Proj', startDate: 'yesterday' }],
+      };
+      const result = MasterProfileSchema.safeParse(profile);
+      expect(result.success).toBe(false);
+    });
+
+    it('should reject invalid date strings in certifications', () => {
+      const profile = {
+        schemaVersion: 1,
+        name: 'John',
+        email: 'john@test.com',
+        phone: '555',
+        skills: [],
+        workExperience: [],
+        education: [],
+        certifications: [{ name: 'Cert', date: 'xyz' }],
+      };
+      const result = MasterProfileSchema.safeParse(profile);
+      expect(result.success).toBe(false);
+    });
   });
 });

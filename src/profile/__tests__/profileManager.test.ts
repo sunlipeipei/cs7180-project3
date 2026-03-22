@@ -86,6 +86,19 @@ describe('saveProfile', () => {
     expect(existsSync(filePath)).toBe(false);
   });
 
+  it('should throw ProfileIOError when writing to a read-only directory', async () => {
+    const readOnlyDir = join(TEST_DIR, 'readonly');
+    mkdirSync(readOnlyDir);
+    chmodSync(readOnlyDir, 0o444);
+    const filePath = join(readOnlyDir, 'nope', 'profile.json');
+
+    try {
+      await expect(saveProfile(sampleProfile as any, filePath)).rejects.toThrow(ProfileIOError);
+    } finally {
+      chmodSync(readOnlyDir, 0o755);
+    }
+  });
+
   it('should produce JSON that round-trips without data loss', async () => {
     const filePath = join(TEST_DIR, 'roundtrip.json');
 

@@ -1,5 +1,11 @@
 import { z } from 'zod';
 
+// ISO 8601 date string (YYYY-MM-DD)
+const isoDateString = z.string().regex(
+  /^\d{4}-\d{2}-\d{2}$/,
+  'Must be an ISO 8601 date (YYYY-MM-DD)',
+);
+
 // --- Sub-schemas ---
 
 export const AddressSchema = z.object({
@@ -26,8 +32,8 @@ export const SkillSchema = z.object({
 export const WorkExperienceSchema = z.object({
   company: z.string(),
   title: z.string(),
-  startDate: z.string(),
-  endDate: z.string().nullable().optional(),
+  startDate: isoDateString,
+  endDate: isoDateString.nullable().optional(),
   location: z.string().optional(),
   descriptions: z.array(z.string()).default([]),
 });
@@ -36,8 +42,8 @@ export const EducationSchema = z.object({
   school: z.string(),
   degree: z.string(),
   fieldOfStudy: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  startDate: isoDateString.optional(),
+  endDate: isoDateString.optional(),
   gpa: z.string().optional(),
 });
 
@@ -46,16 +52,16 @@ export const ProjectSchema = z.object({
   description: z.string().optional(),
   technologies: z.array(z.string()).default([]),
   url: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
+  startDate: isoDateString.optional(),
+  endDate: isoDateString.optional(),
   role: z.string().optional(),
 });
 
 export const CertificationSchema = z.object({
   name: z.string(),
   issuer: z.string().optional(),
-  date: z.string().optional(),
-  expirationDate: z.string().optional(),
+  date: isoDateString.optional(),
+  expirationDate: isoDateString.optional(),
   credentialId: z.string().optional(),
 });
 

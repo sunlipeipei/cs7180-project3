@@ -1,3 +1,6 @@
+import { ZodError } from 'zod';
+import { MasterProfileSchema } from './schema.js';
+import { ProfileValidationError } from './errors.js';
 import type { MasterProfile } from './types.js';
 
 type DeepPartial<T> = {
@@ -52,6 +55,26 @@ function mergeArrays(
   return result;
 }
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function mergeObjects(
+  base: Record<string, unknown>,
+  partial: Record<string, unknown>,
+): Record<string, unknown> {
+  const result = { ...base };
+  for (const [key, value] of Object.entries(partial)) {
+    if (value === undefined) continue;
+    if (value === null) {
+      delete result[key];
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 export function mergeProfile(
   base: MasterProfile,
   partial: DeepPartial<MasterProfile>,
@@ -75,8 +98,25 @@ export function mergeProfile(
       continue;
     }
 
+    // Deep-merge plain objects (address, links, preferences, etc.)
+    if (isPlainObject(value) && isPlainObject(merged[key])) {
+      merged[key] = mergeObjects(
+        merged[key] as Record<string, unknown>,
+        value as Record<string, unknown>,
+      );
+      continue;
+    }
+
     merged[key] = value;
   }
 
-  return merged as MasterProfile;
+  // Validate merged result before returning
+  try {
+    return MasterProfileSchema.parse(merged);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      throw new ProfileValidationError(err);
+    }
+    throw err;
+  }
 }

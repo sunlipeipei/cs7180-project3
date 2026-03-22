@@ -44,10 +44,9 @@ export async function saveProfile(profile: MasterProfile, path: string): Promise
     throw err;
   }
 
-  const dir = dirname(path);
-  await mkdir(dir, { recursive: true });
-
   try {
+    const dir = dirname(path);
+    await mkdir(dir, { recursive: true });
     await writeFile(path, JSON.stringify(profile, null, 2) + '\n', 'utf-8');
   } catch (err: any) {
     throw new ProfileIOError(`Failed to write profile: ${err.message}`, err);
