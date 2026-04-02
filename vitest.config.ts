@@ -3,10 +3,12 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     globals: true,
+    environment: 'node',
+    exclude: ['node_modules', '.next', 'app/**'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/**/*.test.ts', 'src/**/__tests__/**'],
+      exclude: ['src/**/*.test.ts', 'src/**/__tests__/**', 'src/generated/**'],
       thresholds: {
         'src/profile/': {
           statements: 90,
