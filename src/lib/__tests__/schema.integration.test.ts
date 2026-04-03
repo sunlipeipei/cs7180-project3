@@ -74,9 +74,7 @@ describe('Profile model constraints', () => {
 
     await prisma.profile.create({ data: { userId: user.id, data } });
 
-    await expect(
-      prisma.profile.create({ data: { userId: user.id, data } })
-    ).rejects.toThrow();
+    await expect(prisma.profile.create({ data: { userId: user.id, data } })).rejects.toThrow();
   });
 
   it('cascades delete to Profile when User is deleted', async () => {

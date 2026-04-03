@@ -29,8 +29,4 @@ export {
 
 export { loadProfile, saveProfile } from './profileManager.js';
 export { mergeProfile } from './mergeProfile.js';
-export {
-  ProfileValidationError,
-  ProfileNotFoundError,
-  ProfileIOError,
-} from './errors.js';
+export { ProfileValidationError, ProfileNotFoundError, ProfileIOError } from './errors.js';

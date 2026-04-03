@@ -129,12 +129,12 @@ When you type `/tdd`, here's exactly what gets activated:
    coverage thresholds, file organization
 ```
 
-| What | Count | Names |
-|------|-------|-------|
-| Agents directly used | 1 | tdd-guide |
-| Skills directly used | 1 | tdd-workflow |
-| Sibling commands suggested | 6 | /plan, /build-fix, /code-review, /test-coverage, /e2e, /verify |
-| Agents reachable via siblings | 3 | planner, build-error-resolver, e2e-runner, code-reviewer |
+| What                          | Count | Names                                                          |
+| ----------------------------- | ----- | -------------------------------------------------------------- |
+| Agents directly used          | 1     | tdd-guide                                                      |
+| Skills directly used          | 1     | tdd-workflow                                                   |
+| Sibling commands suggested    | 6     | /plan, /build-fix, /code-review, /test-coverage, /e2e, /verify |
+| Agents reachable via siblings | 3     | planner, build-error-resolver, e2e-runner, code-reviewer       |
 
 The TDD command itself is simple: **1 command, 1 agent, 1 skill**. The sibling commands are just "see also" suggestions — not auto-invoked.
 

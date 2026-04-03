@@ -12,12 +12,12 @@ REFACTOR → Clean up without breaking tests
 
 ## Coverage Thresholds
 
-| Scope | Threshold |
-|---|---|
-| Overall project | 70% minimum |
-| `src/profile/` | 90% (statements, branches, functions, lines) |
-| Auth middleware, API routes | 100% (critical paths) |
-| DB adapter (`src/lib/`) | 80% minimum |
+| Scope                       | Threshold                                    |
+| --------------------------- | -------------------------------------------- |
+| Overall project             | 70% minimum                                  |
+| `src/profile/`              | 90% (statements, branches, functions, lines) |
+| Auth middleware, API routes | 100% (critical paths)                        |
+| DB adapter (`src/lib/`)     | 80% minimum                                  |
 
 ## Test Pyramid
 
@@ -32,18 +32,21 @@ REFACTOR → Clean up without breaking tests
 ```
 
 ### Unit Tests (`src/**/__tests__/`)
+
 - Mock all external dependencies (Prisma, Claude API, filesystem)
 - Fast — must run in under 1 second per file
 - Cover: validation logic, merge logic, error classes, utility functions
 - Command: `npm test`
 
 ### Integration Tests (`src/lib/__tests__/schema.integration.test.ts`)
+
 - Hit the real Neon database (requires `DATABASE_URL` in `.env`)
 - Verify: DB constraints, cascade deletes, FK relationships
 - Isolated: use unique run IDs per test run; clean up in `afterEach`
 - Command: `npm test` (same runner, dotenv loaded via `src/test/setup.ts`)
 
 ### E2E Tests (`e2e/` — to be created in Issue #26)
+
 - Use Playwright against the running Next.js app
 - Cover the critical path: sign in → paste JD → generate resume → download
 - Run in CI with Vercel preview URL

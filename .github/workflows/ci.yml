@@ -1,4 +1,14 @@
-name: CI
+# BypassHire — CI/CD Pipeline
+#
+# Stages (in dependency order):
+#   lint ──────────────────────────────────────────────────────┐
+#   typecheck ─────────────────────────────────────────────────┤
+#   unit-test (+ coverage comment) ────────────────────────────┼─→ build ─→ e2e ─→ deploy-production (main)
+#   integration-test (postgres service) ───────────────────────┤       └──→ deploy-preview (PR)
+#   security (npm audit + CodeQL) ─────────────────────────────┘
+#   ai-review (PR only, runs in parallel) ──────────────────────────────────────────────────────────
+
+name: CI/CD
 
 on:
   push:
@@ -6,18 +16,33 @@ on:
   pull_request:
     branches: [main]
 
+# Cancel in-flight runs for the same branch/PR on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  # Used by integration-test and e2e jobs (postgres service on localhost).
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bypasshire_test
+  # Used by unit-test and build jobs — satisfies Prisma's URL parser without
+  # opening a real connection (unit tests mock the prisma singleton).
+  PLACEHOLDER_DATABASE_URL: postgresql://placeholder:placeholder@localhost/placeholder
+
 jobs:
-  ci:
-    name: Lint / Typecheck / Test
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 1: Lint — ESLint + Prettier
+  # ────────────────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint (ESLint + Prettier)
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
@@ -26,16 +51,426 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      # Stage 1: Lint
-      - name: Lint
+      - name: ESLint
         run: npm run lint
 
-      # Stage 2: Type check
-      - name: Typecheck
+      - name: Prettier
+        run: npm run format:check
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 2: Type check
+  # ────────────────────────────────────────────────────────────────────────────
+  typecheck:
+    name: Typecheck (tsc --noEmit)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: TypeScript type check
         run: npx tsc --noEmit
 
-      # Stage 3: Unit tests with coverage (integration tests excluded — require live DB)
-      - name: Unit tests
-        run: npx vitest run --coverage --exclude='**/*.integration.test.ts'
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 3a: Unit tests with coverage
+  # Integration tests (*.integration.test.ts) are excluded — they need a real DB.
+  # Coverage summary is posted as a PR comment.
+  # ────────────────────────────────────────────────────────────────────────────
+  unit-test:
+    name: Unit Tests & Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run unit tests with coverage
+        run: |
+          npx vitest run \
+            --coverage \
+            --coverage.reporter=json \
+            --coverage.reporter=json-summary \
+            --coverage.reporter=text \
+            --exclude "**/*.integration.test.ts"
         env:
-          DATABASE_URL: postgresql://placeholder:placeholder@localhost/placeholder
+          DATABASE_URL: ${{ env.PLACEHOLDER_DATABASE_URL }}
+
+      - name: Post coverage comment on PR
+        if: github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vite-config-path: vitest.config.ts
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 3b: Integration tests — requires a real Postgres database
+  # Uses a postgres service container; schema applied via prisma migrate deploy.
+  # ────────────────────────────────────────────────────────────────────────────
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bypasshire_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Apply database schema
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Run integration tests
+        run: npx vitest run src/lib/__tests__/schema.integration.test.ts
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 4: Security — npm audit + GitHub CodeQL
+  # Fails the build on high or critical npm vulnerabilities.
+  # CodeQL results appear in the Security tab → Code scanning alerts.
+  # ────────────────────────────────────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit (fail on high/critical)
+        run: npm audit --audit-level=high
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          config: |
+            paths:
+              - src
+              - app
+            paths-ignore:
+              - src/generated
+              - node_modules
+              - .next
+
+      - uses: github/codeql-action/autobuild@v3
+
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:javascript-typescript
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 5: Build — all quality gates must pass first
+  # ────────────────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, unit-test, integration-test, security]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # npm run build = prisma generate && next build (see package.json)
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+          DATABASE_URL: ${{ env.PLACEHOLDER_DATABASE_URL }}
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+          retention-days: 1
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 6: E2E tests — Playwright against a running Next.js server
+  # --pass-with-no-tests allows the stage to succeed when e2e/ has no tests yet
+  # (tests will be added in Issue #26).
+  # ────────────────────────────────────────────────────────────────────────────
+  e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: build
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bypasshire_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bypasshire_e2e
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Restore build output
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next/
+
+      - name: Generate Prisma client and apply schema
+        run: npx prisma generate && npx prisma migrate deploy
+
+      - name: Start Next.js server
+        run: npm run start &
+        env:
+          PORT: 3000
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000 --timeout 30000
+
+      - name: Run Playwright E2E tests
+        run: npx playwright test --pass-with-no-tests
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 7: AI PR Review — runs in parallel, does not block deploy
+  # Uses claude-code-action to post a C.L.E.A.R. security + quality review.
+  # ────────────────────────────────────────────────────────────────────────────
+  ai-review:
+    name: AI PR Review (Claude)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Claude PR Review
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          direct_prompt: |
+            Review this pull request and post a comment using the C.L.E.A.R. framework:
+
+            **C — Context**: What does this PR do and why?
+            **L — Limitations**: What edge cases or scenarios are not handled?
+            **E — Errors**: Any bugs, logic errors, or type-safety issues?
+            **A — Alternatives**: Were better approaches missed?
+            **R — Risks**: What could break in production?
+
+            Also check for OWASP Top 10 issues specific to this codebase:
+            - All DB queries must be scoped to authenticated `userId` from Clerk session
+            - User input must be validated with Zod before reaching the DB or Claude API
+            - No `dangerouslySetInnerHTML` with user-controlled content
+            - GitHub/external URLs must be validated before fetch (SSRF risk)
+            - No secrets or API keys in code
+
+            Be concise and specific. Label CRITICAL issues clearly.
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 8: Preview deploy — Vercel preview on every PR
+  # Posts preview URL as a PR comment (updates on re-push, never duplicates).
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy-preview:
+    name: Deploy Preview (Vercel)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'pull_request'
+
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel project config
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build via Vercel CLI
+        run: vercel build --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy preview
+        id: deploy
+        run: |
+          URL=$(vercel deploy --prebuilt --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Post preview URL on PR
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## Vercel Preview Deployment
+
+            | | |
+            |---|---|
+            | **Preview URL** | ${{ steps.deploy.outputs.url }} |
+            | **Commit** | `${{ github.sha }}` |
+            | **Branch** | `${{ github.head_ref }}` |
+          edit-mode: replace
+          body-includes: 'Vercel Preview Deployment'
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Stage 9: Production deploy — only on merge to main, after E2E passes
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy-production:
+    name: Deploy Production (Vercel)
+    runs-on: ubuntu-latest
+    needs: [build, e2e]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Pull Vercel project config
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Build via Vercel CLI
+        run: vercel build --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to production
+        run: vercel deploy --prebuilt --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

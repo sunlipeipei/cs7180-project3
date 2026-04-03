@@ -17,6 +17,7 @@ This command invokes the **tdd-guide** agent to enforce test-driven development 
 ## When to Use
 
 Use `/tdd` when:
+
 - Implementing new features
 - Adding new functions/components
 - Fixing bugs (write test that reproduces bug first)
@@ -48,7 +49,7 @@ REPEAT:   Next feature/scenario
 
 ## Example Usage
 
-```
+````
 User: /tdd I need a function to match resume sections to job description requirements
 
 Agent (tdd-guide):
@@ -83,56 +84,61 @@ export function matchSectionsToRequirements(
   // TODO: Implementation
   throw new Error('Not implemented')
 }
-```
+````
 
 ## Step 2: Write Failing Test (RED)
 
 ```typescript
 // lib/resume/section-matcher.test.ts
-import { matchSectionsToRequirements } from './section-matcher'
+import { matchSectionsToRequirements } from './section-matcher';
 
 describe('matchSectionsToRequirements', () => {
   it('should score highly when section skills match required requirements', () => {
-    const sections = [{
-      title: 'Backend Development',
-      content: 'Built microservices handling 10K req/s',
-      skills: ['Node.js', 'TypeScript', 'PostgreSQL']
-    }]
+    const sections = [
+      {
+        title: 'Backend Development',
+        content: 'Built microservices handling 10K req/s',
+        skills: ['Node.js', 'TypeScript', 'PostgreSQL'],
+      },
+    ];
     const requirements = [
       { skill: 'Node.js', category: 'technical' as const, priority: 'required' as const },
-      { skill: 'TypeScript', category: 'technical' as const, priority: 'required' as const }
-    ]
+      { skill: 'TypeScript', category: 'technical' as const, priority: 'required' as const },
+    ];
 
-    const results = matchSectionsToRequirements(sections, requirements)
+    const results = matchSectionsToRequirements(sections, requirements);
 
-    expect(results[0].relevanceScore).toBeGreaterThan(70)
-    expect(results[0].matchedRequirements).toHaveLength(2)
-  })
+    expect(results[0].relevanceScore).toBeGreaterThan(70);
+    expect(results[0].matchedRequirements).toHaveLength(2);
+  });
 
   it('should score low when section has no matching skills', () => {
-    const sections = [{
-      title: 'Graphic Design',
-      content: 'Created marketing materials',
-      skills: ['Figma', 'Photoshop']
-    }]
+    const sections = [
+      {
+        title: 'Graphic Design',
+        content: 'Created marketing materials',
+        skills: ['Figma', 'Photoshop'],
+      },
+    ];
     const requirements = [
-      { skill: 'Python', category: 'technical' as const, priority: 'required' as const }
-    ]
+      { skill: 'Python', category: 'technical' as const, priority: 'required' as const },
+    ];
 
-    const results = matchSectionsToRequirements(sections, requirements)
+    const results = matchSectionsToRequirements(sections, requirements);
 
-    expect(results[0].relevanceScore).toBeLessThan(20)
-    expect(results[0].matchedRequirements).toHaveLength(0)
-  })
+    expect(results[0].relevanceScore).toBeLessThan(20);
+    expect(results[0].matchedRequirements).toHaveLength(0);
+  });
 
   it('should handle empty sections array', () => {
-    const results = matchSectionsToRequirements([], [
-      { skill: 'React', category: 'technical' as const, priority: 'required' as const }
-    ])
+    const results = matchSectionsToRequirements(
+      [],
+      [{ skill: 'React', category: 'technical' as const, priority: 'required' as const }]
+    );
 
-    expect(results).toEqual([])
-  })
-})
+    expect(results).toEqual([]);
+  });
+});
 ```
 
 ## Step 3: Run Tests - Verify FAIL
@@ -157,24 +163,21 @@ export function matchSectionsToRequirements(
   sections: ResumeSection[],
   requirements: JobRequirement[]
 ): MatchResult[] {
-  if (sections.length === 0) return []
+  if (sections.length === 0) return [];
 
-  return sections.map(section => {
-    const matched = requirements.filter(req =>
-      section.skills.some(skill =>
-        skill.toLowerCase() === req.skill.toLowerCase()
-      )
-    )
+  return sections.map((section) => {
+    const matched = requirements.filter((req) =>
+      section.skills.some((skill) => skill.toLowerCase() === req.skill.toLowerCase())
+    );
 
-    const requiredCount = requirements.filter(r => r.priority === 'required').length
-    const matchedRequired = matched.filter(r => r.priority === 'required').length
+    const requiredCount = requirements.filter((r) => r.priority === 'required').length;
+    const matchedRequired = matched.filter((r) => r.priority === 'required').length;
 
-    const relevanceScore = requiredCount > 0
-      ? Math.round((matchedRequired / requiredCount) * 100)
-      : 0
+    const relevanceScore =
+      requiredCount > 0 ? Math.round((matchedRequired / requiredCount) * 100) : 0;
 
-    return { section, matchedRequirements: matched, relevanceScore }
-  })
+    return { section, matchedRequirements: matched, relevanceScore };
+  });
 }
 ```
 
@@ -200,51 +203,49 @@ PASS lib/resume/section-matcher.test.ts
 const PRIORITY_WEIGHTS = {
   required: 1.0,
   preferred: 0.5,
-} as const
+} as const;
 
 function normalizeSkill(skill: string): string {
-  return skill.toLowerCase().trim()
+  return skill.toLowerCase().trim();
 }
 
-function calculateRelevance(
-  matched: JobRequirement[],
-  allRequirements: JobRequirement[]
-): number {
-  if (allRequirements.length === 0) return 0
+function calculateRelevance(matched: JobRequirement[], allRequirements: JobRequirement[]): number {
+  if (allRequirements.length === 0) return 0;
 
-  const weightedMatched = matched.reduce((sum, r) => sum + PRIORITY_WEIGHTS[r.priority], 0)
-  const weightedTotal = allRequirements.reduce((sum, r) => sum + PRIORITY_WEIGHTS[r.priority], 0)
+  const weightedMatched = matched.reduce((sum, r) => sum + PRIORITY_WEIGHTS[r.priority], 0);
+  const weightedTotal = allRequirements.reduce((sum, r) => sum + PRIORITY_WEIGHTS[r.priority], 0);
 
-  return Math.round((weightedMatched / weightedTotal) * 100)
+  return Math.round((weightedMatched / weightedTotal) * 100);
 }
 
 export function matchSectionsToRequirements(
   sections: ResumeSection[],
   requirements: JobRequirement[]
 ): MatchResult[] {
-  if (sections.length === 0) return []
+  if (sections.length === 0) return [];
 
-  const normalizedReqs = requirements.map(r => ({
+  const normalizedReqs = requirements.map((r) => ({
     ...r,
-    normalizedSkill: normalizeSkill(r.skill)
-  }))
+    normalizedSkill: normalizeSkill(r.skill),
+  }));
 
-  return sections.map(section => {
-    const sectionSkills = new Set(section.skills.map(normalizeSkill))
+  return sections.map((section) => {
+    const sectionSkills = new Set(section.skills.map(normalizeSkill));
     const matched = normalizedReqs
-      .filter(req => sectionSkills.has(req.normalizedSkill))
-      .map(({ normalizedSkill, ...req }) => req)
+      .filter((req) => sectionSkills.has(req.normalizedSkill))
+      .map(({ normalizedSkill, ...req }) => req);
 
     return {
       section,
       matchedRequirements: matched,
       relevanceScore: calculateRelevance(matched, requirements),
-    }
-  })
+    };
+  });
 }
 ```
 
 ✅ TDD session complete! Run `/test-coverage` to verify coverage meets 80%+ target.
+
 ```
 
 ## TDD Best Practices
@@ -311,3 +312,4 @@ Never skip the RED phase. Never write code before tests.
 - Use `/code-review` to review implementation
 - Use `/test-coverage` to verify coverage
 
+```

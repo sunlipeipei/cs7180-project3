@@ -30,7 +30,7 @@ describe('loadProfile', () => {
 
   it('should throw ProfileNotFoundError for missing file', async () => {
     await expect(loadProfile(join(TEST_DIR, 'nonexistent.json'))).rejects.toThrow(
-      ProfileNotFoundError,
+      ProfileNotFoundError
     );
   });
 

@@ -32,17 +32,17 @@ User
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| Framework | Next.js 15 (App Router) | Full-stack, Vercel-native, RSC support |
-| Database | PostgreSQL via Neon | Serverless-friendly, free tier, Vercel integration |
-| ORM | Prisma 7 (driver adapters) | Type-safe queries, migration history |
-| Auth | Clerk | Managed auth, Next.js middleware integration |
-| AI | Anthropic Claude API | Core intelligence for tailoring and Q&A |
-| Validation | Zod | Runtime schema validation for all API boundaries |
-| Testing | Vitest + Playwright | Fast unit/integration + E2E |
-| Deployment | Vercel | Preview deploys, env var management |
-| CI/CD | GitHub Actions | Lint, typecheck, tests, security, deploy |
+| Layer      | Technology                 | Rationale                                          |
+| ---------- | -------------------------- | -------------------------------------------------- |
+| Framework  | Next.js 15 (App Router)    | Full-stack, Vercel-native, RSC support             |
+| Database   | PostgreSQL via Neon        | Serverless-friendly, free tier, Vercel integration |
+| ORM        | Prisma 7 (driver adapters) | Type-safe queries, migration history               |
+| Auth       | Clerk                      | Managed auth, Next.js middleware integration       |
+| AI         | Anthropic Claude API       | Core intelligence for tailoring and Q&A            |
+| Validation | Zod                        | Runtime schema validation for all API boundaries   |
+| Testing    | Vitest + Playwright        | Fast unit/integration + E2E                        |
+| Deployment | Vercel                     | Preview deploys, env var management                |
+| CI/CD      | GitHub Actions             | Lint, typecheck, tests, security, deploy           |
 
 ## Data Model
 
@@ -69,13 +69,13 @@ docs/              Architecture, testing strategy, security, PRD
 
 ## Implementation Status
 
-| Phase | Feature | Status |
-|---|---|---|
-| Foundation | Next.js + Prisma + Neon setup | Done (PR #33) |
-| Foundation | Authentication (Clerk) | Issue #18 |
-| Phase 1 | Job Description Intake | Issue #5 |
-| Phase 1 | Resume Template Upload | Issue #6 |
-| Phase 1 | GitHub Context Extraction | Issue #7 |
-| Phase 1 | Resume Tailoring Engine | Issue #8 |
-| Phase 2 | Interactive Editing UI | Issues #9–#13 |
-| Phase 3 | Auto-Fill Browser Extension | Issues #14–#16 |
+| Phase      | Feature                       | Status         |
+| ---------- | ----------------------------- | -------------- |
+| Foundation | Next.js + Prisma + Neon setup | Done (PR #33)  |
+| Foundation | Authentication (Clerk)        | Issue #18      |
+| Phase 1    | Job Description Intake        | Issue #5       |
+| Phase 1    | Resume Template Upload        | Issue #6       |
+| Phase 1    | GitHub Context Extraction     | Issue #7       |
+| Phase 1    | Resume Tailoring Engine       | Issue #8       |
+| Phase 2    | Interactive Editing UI        | Issues #9–#13  |
+| Phase 3    | Auto-Fill Browser Extension   | Issues #14–#16 |

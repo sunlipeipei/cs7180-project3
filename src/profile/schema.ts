@@ -1,10 +1,9 @@
 import { z } from 'zod';
 
 // ISO 8601 date string (YYYY-MM-DD)
-const isoDateString = z.string().regex(
-  /^\d{4}-\d{2}-\d{2}$/,
-  'Must be an ISO 8601 date (YYYY-MM-DD)',
-);
+const isoDateString = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be an ISO 8601 date (YYYY-MM-DD)');
 
 // --- Sub-schemas ---
 

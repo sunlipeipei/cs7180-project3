@@ -3,6 +3,7 @@
 ## OWASP Top 10 — BypassHire Notes
 
 ### A01: Broken Access Control
+
 **Risk:** Users accessing other users' profiles, resumes, or job descriptions.
 
 - All DB queries **must** scope to `userId` obtained from the Clerk session — never from request body or URL params
@@ -11,6 +12,7 @@
 - Test: integration tests verify FK constraints prevent cross-user data access
 
 ### A02: Cryptographic Failures (Sensitive Data Exposure)
+
 **Risk:** Leaking API keys, database credentials, or user PII.
 
 - `DATABASE_URL`, `CLERK_SECRET_KEY`, `ANTHROPIC_API_KEY` must **never** be committed
@@ -20,6 +22,7 @@
 - Neon connection requires `sslmode=require` — enforced in `DATABASE_URL`
 
 ### A03: Injection
+
 **Risk:** SQL injection via user input; prompt injection via job description content.
 
 - **SQL injection:** Prisma uses parameterized queries exclusively — no raw SQL with user input
@@ -27,12 +30,14 @@
 - Zod validates all API input before it reaches the DB or Claude API
 
 ### A04: Insecure Design
+
 **Risk:** Auto-submitting job applications without user consent.
 
 - Phase 3 (auto-fill) **must never auto-submit** — FR-3.5 requires explicit user review and confirmation before any form submission
 - This is a hard product requirement enforced at the design level
 
 ### A05: Security Misconfiguration
+
 **Risk:** Exposed dev endpoints, default credentials, misconfigured CORS.
 
 - No default credentials anywhere — Clerk manages all auth
@@ -41,6 +46,7 @@
 - `npm audit` runs in CI on every PR to catch misconfigured dependencies
 
 ### A06: Vulnerable and Outdated Components
+
 **Risk:** Dependencies with known CVEs.
 
 - `npm audit` is a required CI stage (Issue #22 / S2-1)
@@ -48,6 +54,7 @@
 - Keep `next`, `@prisma/client`, `zod`, and `@anthropic-ai/sdk` on latest stable
 
 ### A07: Identification and Authentication Failures
+
 **Risk:** Broken login, session fixation, missing auth checks.
 
 - Clerk handles all authentication — do not implement custom auth
@@ -56,6 +63,7 @@
 - Session tokens managed by Clerk (HttpOnly cookies, short-lived JWTs)
 
 ### A08: Software and Data Integrity Failures
+
 **Risk:** Corrupted profile data stored in DB, untrusted JSON.
 
 - All JSON read from the DB is re-validated with `MasterProfileSchema.safeParse()` before use (see `profileRepository.ts:14`)
@@ -63,6 +71,7 @@
 - CI pipeline verifies `npm run build` and `tsc --noEmit` on every PR
 
 ### A09: Security Logging and Monitoring Failures
+
 **Risk:** Unable to detect attacks or debug incidents.
 
 - Log auth events (sign-in, sign-out, auth failures) — Clerk provides audit logs
@@ -71,6 +80,7 @@
 - Sentry will be configured in Sprint 2 for error tracking
 
 ### A10: Server-Side Request Forgery (SSRF)
+
 **Risk:** Attacker-controlled URLs passed to GitHub context extraction.
 
 - FR-1.3 (GitHub context extraction) accepts repo URLs from users

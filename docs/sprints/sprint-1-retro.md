@@ -12,16 +12,16 @@
 
 **Goal:** Establish the full-stack foundation (Next.js + PostgreSQL + Clerk auth) and Claude Code mastery infrastructure.
 
-| Outcome | Status |
-|---|---|
-| Next.js + Prisma + Neon foundation (#17) | Done |
-| CLAUDE.md refactor + security docs (#19) | Done |
-| Hooks configured (#20) | Done |
-| MCP servers integrated (#21) | Done |
-| Clerk auth (#18) | In progress |
-| Basic CI/CD (#22) | In progress |
-| Sprint docs (#23) | Done |
-| Master Profile module (#2) | Done |
+| Outcome                                  | Status      |
+| ---------------------------------------- | ----------- |
+| Next.js + Prisma + Neon foundation (#17) | Done        |
+| CLAUDE.md refactor + security docs (#19) | Done        |
+| Hooks configured (#20)                   | Done        |
+| MCP servers integrated (#21)             | Done        |
+| Clerk auth (#18)                         | In progress |
+| Basic CI/CD (#22)                        | In progress |
+| Sprint docs (#23)                        | Done        |
+| Master Profile module (#2)               | Done        |
 
 ---
 
@@ -44,9 +44,9 @@
 
 ## Action Items
 
-| Action | Owner | Due |
-|---|---|---|
-| Complete #18 (Clerk auth) as first Sprint 2 priority | Lipeipei | Apr 13, 2026 |
-| Finish #22 (CI/CD stages + branch protection) | Lipeipei | Apr 13, 2026 |
-| Add 20% buffer to story point estimates for issues with new dependencies | Both | Sprint 2 planning |
-| Start Sprint 2 issues no later than Apr 12 kickoff | Both | Apr 12, 2026 |
+| Action                                                                   | Owner    | Due               |
+| ------------------------------------------------------------------------ | -------- | ----------------- |
+| Complete #18 (Clerk auth) as first Sprint 2 priority                     | Lipeipei | Apr 13, 2026      |
+| Finish #22 (CI/CD stages + branch protection)                            | Lipeipei | Apr 13, 2026      |
+| Add 20% buffer to story point estimates for issues with new dependencies | Both     | Sprint 2 planning |
+| Start Sprint 2 issues no later than Apr 12 kickoff                       | Both     | Apr 12, 2026      |
