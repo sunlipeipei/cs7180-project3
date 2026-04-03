@@ -20,6 +20,13 @@
       "env": {
         "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
       }
+    },
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "${GOOG_API_KEY}"
+      }
     }
   }
 }

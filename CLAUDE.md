@@ -54,7 +54,12 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 - **Auth:** `VERCEL_API_TOKEN` — API token from vercel.com/account/tokens
 - **Use:** Check deployment status, inspect environment variables, and tail logs during development
 
-**Setup:** Add both tokens to your local `.env` (see `.env.example`), then run `/mcp` in Claude Code to enable the servers.
+### Google Stitch MCP (`stitch`)
+- **Transport:** HTTP — `https://stitch.googleapis.com/mcp`
+- **Auth:** `GOOG_API_KEY` — Google API key passed via `X-Goog-Api-Key` header
+- **Use:** Google Stitch services integration (HTTP-based MCP, no Docker/npx required)
+
+**Setup:** Add all tokens to your local `.env` (see `.env.example`), then run `/mcp` in Claude Code to enable the servers.
 
 ## Enforced Conventions
 
@@ -67,7 +72,7 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 ## Claude Code Features in Use
 
 - **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20)
-- **MCP:** GitHub + Vercel MCP servers via `.mcp.json` (see Issue #21)
+- **MCP:** GitHub, Vercel, and Stitch MCP servers via `.mcp.json` (see Issue #21)
 - **Agents:** `.claude/agents/` — planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
 - **Skills:** `.claude/skills/` — coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop
 
