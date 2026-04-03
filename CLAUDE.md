@@ -59,7 +59,12 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 - **Auth:** `GOOG_API_KEY` — Google API key passed via `X-Goog-Api-Key` header
 - **Use:** Google Stitch services integration (HTTP-based MCP, no Docker/npx required)
 
-**Setup:** Add all tokens to your local `.env` (see `.env.example`), then run `/mcp` in Claude Code to enable the servers.
+### Playwright MCP (`playwright`)
+- **Package:** `@playwright/mcp` (official Microsoft package, via npx)
+- **Auth:** None required
+- **Use:** Browser automation for E2E testing — navigate pages, click, fill forms, take screenshots, and inspect the DOM directly from Claude Code sessions
+
+**Setup:** Add all tokens to your local `.env` (see `.env.example`), then run `/mcp` in Claude Code to enable the servers. Playwright MCP requires no credentials — just enable it.
 
 ## Enforced Conventions
 
@@ -72,7 +77,7 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 ## Claude Code Features in Use
 
 - **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20)
-- **MCP:** GitHub, Vercel, and Stitch MCP servers via `.mcp.json` (see Issue #21)
+- **MCP:** GitHub, Vercel, Stitch, and Playwright MCP servers via `.mcp.json` (see Issue #21)
 - **Agents:** `.claude/agents/` — planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
 - **Skills:** `.claude/skills/` — coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop
 
