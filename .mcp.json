@@ -13,6 +13,13 @@
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
+    },
+    "vercel": {
+      "command": "npx",
+      "args": ["-y", "--package=vercel-mcp-server", "vercel-mcp"],
+      "env": {
+        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
+      }
     }
   }
 }
