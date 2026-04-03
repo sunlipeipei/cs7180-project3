@@ -24,6 +24,22 @@ Use this command order for every feature:
 - `/e2e` — Generate Playwright end-to-end tests
 - `/verify` — Final check: build + types + lint + tests + git status
 
+## Automated Quality Hooks
+
+Two Claude Code hooks are configured in `.claude/settings.json` and fire automatically during development sessions:
+
+### Hook 1 — PostToolUse: lint-on-edit
+**Trigger:** After any `Edit` or `Write` tool call  
+**What it does:** Checks if the modified file ends in `.ts` or `.tsx`, then runs ESLint (using the local `eslint.config.js`) and reports violations inline in the transcript.  
+**Config:** `.claude/settings.json` → `hooks.PostToolUse` (matcher: `Edit|Write`)
+
+### Hook 2 — Stop: test-runner guard
+**Trigger:** Before the Claude Code session ends (Stop event)  
+**What it does:** Runs `npm test` (vitest). If tests are failing, returns `continue: false` with a message blocking the session from closing until the agent fixes the failures.  
+**Config:** `.claude/settings.json` → `hooks.Stop`
+
+To review or temporarily disable hooks, open `/hooks` in Claude Code.
+
 ## Enforced Conventions
 
 - **TDD is mandatory** — tests written BEFORE implementation, visible in git
