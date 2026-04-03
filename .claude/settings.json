@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -z \"$f\" ] && exit 0; echo \"$f\" | grep -qE '\\.(ts|tsx)$' && node_modules/.bin/eslint \"$f\" 2>&1 || true; }",
+            "statusMessage": "ESLint checking...",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npm test > /tmp/bypasshire-test.txt 2>&1 && echo '{\"continue\": true}' || echo '{\"continue\": false, \"stopReason\": \"Tests are failing \\u2014 fix them before ending the session.\", \"systemMessage\": \"Tests failed. Run npm test to see failures and fix before exiting.\"}'",
+            "statusMessage": "Running tests before exit...",
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}
