@@ -40,6 +40,32 @@ Two Claude Code hooks are configured in `.claude/settings.json` and fire automat
 
 To review or temporarily disable hooks, open `/hooks` in Claude Code.
 
+## MCP Servers
+
+Two MCP servers are configured in `.mcp.json` at the repo root:
+
+### GitHub MCP (`github`)
+- **Image:** `ghcr.io/github/github-mcp-server` (official Docker image)
+- **Auth:** `GITHUB_PERSONAL_ACCESS_TOKEN` — PAT with `repo` read scope
+- **Use:** Fetch README, repo metadata, file contents, and language stats during FR-1.3 context extraction
+
+### Vercel MCP (`vercel`)
+- **Package:** `vercel-mcp-server` (via `npx`)
+- **Auth:** `VERCEL_API_TOKEN` — API token from vercel.com/account/tokens
+- **Use:** Check deployment status, inspect environment variables, and tail logs during development
+
+### Google Stitch MCP (`stitch`)
+- **Transport:** HTTP — `https://stitch.googleapis.com/mcp`
+- **Auth:** `GOOG_API_KEY` — Google API key passed via `X-Goog-Api-Key` header
+- **Use:** Google Stitch services integration (HTTP-based MCP, no Docker/npx required)
+
+### Playwright MCP (`playwright`)
+- **Package:** `@playwright/mcp` (official Microsoft package, via npx)
+- **Auth:** None required
+- **Use:** Browser automation for E2E testing — navigate pages, click, fill forms, take screenshots, and inspect the DOM directly from Claude Code sessions
+
+**Setup:** Add all tokens to your local `.env` (see `.env.example`), then run `/mcp` in Claude Code to enable the servers. Playwright MCP requires no credentials — just enable it.
+
 ## Enforced Conventions
 
 - **TDD is mandatory** — tests written BEFORE implementation, visible in git
@@ -51,7 +77,7 @@ To review or temporarily disable hooks, open `/hooks` in Claude Code.
 ## Claude Code Features in Use
 
 - **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20)
-- **MCP:** GitHub MCP server via `.mcp.json` (see Issue #21)
+- **MCP:** GitHub, Vercel, Stitch, and Playwright MCP servers via `.mcp.json` (see Issue #21)
 - **Agents:** `.claude/agents/` — planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
 - **Skills:** `.claude/skills/` — coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop
 
