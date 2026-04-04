@@ -22,9 +22,7 @@ function makeBaseProfile(overrides: Partial<MasterProfile> = {}): MasterProfile 
         descriptions: ['Built stuff'],
       },
     ],
-    education: [
-      { school: 'MIT', degree: 'B.S.' },
-    ],
+    education: [{ school: 'MIT', degree: 'B.S.' }],
     ...overrides,
   };
 }
@@ -209,17 +207,10 @@ describe('mergeProfile', () => {
   describe('preserves array order', () => {
     it('should preserve order of existing items and append new ones at end', () => {
       const base = makeBaseProfile({
-        skills: [
-          { name: 'A' },
-          { name: 'B' },
-          { name: 'C' },
-        ],
+        skills: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
       });
       const partial = {
-        skills: [
-          { name: 'B', level: 'expert' },
-          { name: 'D' },
-        ],
+        skills: [{ name: 'B', level: 'expert' }, { name: 'D' }],
       };
 
       const merged = mergeProfile(base, partial);
@@ -258,7 +249,7 @@ describe('mergeProfile', () => {
       const merged = mergeProfile(base, partial);
 
       expect(merged.address?.city).toBe('NYC');
-      expect(merged.address?.state).toBe('CA');  // preserved, not wiped
+      expect(merged.address?.state).toBe('CA'); // preserved, not wiped
       expect(merged.address?.country).toBe('US'); // preserved, not wiped
     });
 

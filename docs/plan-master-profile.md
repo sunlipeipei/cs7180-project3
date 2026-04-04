@@ -9,6 +9,7 @@ A TypeScript module that manages the user's "master profile" — a JSON file con
 ## Prerequisites: Project Setup
 
 Before any TDD cycle can run, the project needs scaffolding:
+
 - `package.json` with dependencies: `typescript`, `zod`, `vitest`, `@vitest/coverage-v8`
 - `tsconfig.json` with strict mode, ESM module resolution
 - `vitest.config.ts` with coverage thresholds (90% for `src/profile/`)
@@ -39,23 +40,23 @@ src/
 
 ### MasterProfile (top-level)
 
-| Field | Type | Required | Notes |
-|-------|------|----------|-------|
-| `schemaVersion` | `number` | Yes | Currently `1`, for future migrations |
-| `name` | `string` | Yes | Full name |
-| `email` | `string` | Yes | Validated format |
-| `phone` | `string` | Yes | |
-| `address` | `Address` | No | Structured (FR-3.2: Workday requires it) |
-| `links` | `Links` | No | GitHub, LinkedIn, portfolio, etc. |
-| `summary` | `string` | No | Professional summary |
-| `skills` | `Skill[]` | Yes | Structured with categories |
-| `workExperience` | `WorkExperience[]` | Yes | Can be empty array |
-| `education` | `Education[]` | Yes | Can be empty array |
-| `projects` | `Project[]` | No | |
-| `certifications` | `Certification[]` | No | FR-3.2: listed alongside skills |
-| `resumeTemplatePath` | `string` | No | Path to .docx template (FR-1.2) |
-| `contextSources` | `ContextSources` | No | GitHub repos + doc paths (FR-1.3) |
-| `preferences` | `Preferences` | No | Screening question defaults (FR-3.4) |
+| Field                | Type               | Required | Notes                                    |
+| -------------------- | ------------------ | -------- | ---------------------------------------- |
+| `schemaVersion`      | `number`           | Yes      | Currently `1`, for future migrations     |
+| `name`               | `string`           | Yes      | Full name                                |
+| `email`              | `string`           | Yes      | Validated format                         |
+| `phone`              | `string`           | Yes      |                                          |
+| `address`            | `Address`          | No       | Structured (FR-3.2: Workday requires it) |
+| `links`              | `Links`            | No       | GitHub, LinkedIn, portfolio, etc.        |
+| `summary`            | `string`           | No       | Professional summary                     |
+| `skills`             | `Skill[]`          | Yes      | Structured with categories               |
+| `workExperience`     | `WorkExperience[]` | Yes      | Can be empty array                       |
+| `education`          | `Education[]`      | Yes      | Can be empty array                       |
+| `projects`           | `Project[]`        | No       |                                          |
+| `certifications`     | `Certification[]`  | No       | FR-3.2: listed alongside skills          |
+| `resumeTemplatePath` | `string`           | No       | Path to .docx template (FR-1.2)          |
+| `contextSources`     | `ContextSources`   | No       | GitHub repos + doc paths (FR-1.3)        |
+| `preferences`        | `Preferences`      | No       | Screening question defaults (FR-3.4)     |
 
 ### Sub-types
 
@@ -92,13 +93,13 @@ src/
 
 Array merge uses identity-based deduplication:
 
-| Array | Identity Key | Conflict Resolution |
-|-------|-------------|-------------------|
+| Array            | Identity Key                      | Conflict Resolution                                  |
+| ---------------- | --------------------------------- | ---------------------------------------------------- |
 | `workExperience` | `company` + `title` + `startDate` | Partial fields override, `descriptions` are replaced |
-| `education` | `school` + `degree` | Partial fields override |
-| `projects` | `name` | Partial fields override |
-| `skills` | `name` | Partial fields override (category, level) |
-| `certifications` | `name` + `issuer` | Partial fields override |
+| `education`      | `school` + `degree`               | Partial fields override                              |
+| `projects`       | `name`                            | Partial fields override                              |
+| `skills`         | `name`                            | Partial fields override (category, level)            |
+| `certifications` | `name` + `issuer`                 | Partial fields override                              |
 
 - Scalar fields: partial value overwrites existing (last-write-wins)
 - `undefined` in partial means "skip" (keep existing value)
@@ -114,42 +115,46 @@ Array merge uses identity-based deduplication:
 ## TDD Plan (Red → Green → Refactor)
 
 ### Cycle 1: Define types & validate profile structure
+
 - **RED:** Write tests that validate a correct profile passes and an incomplete one fails (missing required fields like `name`, `email`). Test nested validation (invalid work experience within valid profile). Test optional vs required field boundaries. Test email format validation, date format validation.
 - **GREEN:** Implement `MasterProfile` type + Zod schema with all sub-types
 - **REFACTOR:** Clean up schema, extract sub-schemas (WorkExperience, Education, Project, Skill, etc.)
 
 ### Cycle 2: Load profile from JSON file
+
 - **RED:** Write tests for `loadProfile(path)` — valid file returns profile, missing file throws `ProfileNotFoundError`, malformed JSON throws `ProfileIOError`, valid JSON but wrong schema throws `ProfileValidationError`, empty file throws
 - **GREEN:** Implement `loadProfile` with fs + Zod parse
 - **REFACTOR:** Improve error messages, extract custom error classes to `errors.ts`
 
 ### Cycle 3: Save profile to JSON file
+
 - **RED:** Write tests for `saveProfile(profile, path)` — writes valid JSON (pretty-printed), creates parent dirs if needed, validates before writing, throws `ProfileIOError` when destination path is not writable
 - **GREEN:** Implement `saveProfile`
 - **REFACTOR:** Extract shared file utilities
 
 ### Cycle 4: Merge/update partial profile
+
 - **RED:** Write tests for `mergeProfile(existing, partial)` — merges scalar fields (last-write-wins), appends new array items, deduplicates by identity keys, handles null (clear) vs undefined (skip), preserves array order, replaces `descriptions` array on matched `workExperience` (not element-by-element merge)
 - **GREEN:** Implement deep merge logic in `mergeProfile.ts`
 - **REFACTOR:** Simplify merge, add barrel exports in `index.ts`
 
 ## Commit Plan
 
-| # | Message | Phase |
-|---|---------|-------|
-| 0 | `chore: initialize TypeScript project with Zod and Vitest` | SETUP |
-| 1 | `test: add failing tests for profile validation` | RED |
-| 2 | `feat: implement MasterProfile types and Zod schema` | GREEN |
-| 3 | `refactor: extract sub-schemas for work, education, project` | REFACTOR |
-| 4 | `test: add failing tests for loadProfile` | RED |
-| 5 | `feat: implement loadProfile with file reading and validation` | GREEN |
-| 6 | `refactor: improve error handling with custom error types` | REFACTOR |
-| 7 | `test: add failing tests for saveProfile` | RED |
-| 8 | `feat: implement saveProfile with directory creation` | GREEN |
-| 9 | `refactor: extract shared file utilities` | REFACTOR |
-| 10 | `test: add failing tests for mergeProfile` | RED |
-| 11 | `feat: implement mergeProfile with deep merge and dedup` | GREEN |
-| 12 | `refactor: clean up merge logic, add barrel exports` | REFACTOR |
+| #   | Message                                                        | Phase    |
+| --- | -------------------------------------------------------------- | -------- |
+| 0   | `chore: initialize TypeScript project with Zod and Vitest`     | SETUP    |
+| 1   | `test: add failing tests for profile validation`               | RED      |
+| 2   | `feat: implement MasterProfile types and Zod schema`           | GREEN    |
+| 3   | `refactor: extract sub-schemas for work, education, project`   | REFACTOR |
+| 4   | `test: add failing tests for loadProfile`                      | RED      |
+| 5   | `feat: implement loadProfile with file reading and validation` | GREEN    |
+| 6   | `refactor: improve error handling with custom error types`     | REFACTOR |
+| 7   | `test: add failing tests for saveProfile`                      | RED      |
+| 8   | `feat: implement saveProfile with directory creation`          | GREEN    |
+| 9   | `refactor: extract shared file utilities`                      | REFACTOR |
+| 10  | `test: add failing tests for mergeProfile`                     | RED      |
+| 11  | `feat: implement mergeProfile with deep merge and dedup`       | GREEN    |
+| 12  | `refactor: clean up merge logic, add barrel exports`           | REFACTOR |
 
 ## Acceptance Criteria
 

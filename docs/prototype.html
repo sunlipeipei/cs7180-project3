@@ -1,1001 +1,1678 @@
-<!DOCTYPE html>
+<!doctype html>
 <html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BypassHire — Design Reference</title>
 
-<head>
-  <meta charset="utf-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>BypassHire — Design Reference</title>
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Dependencies -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
-  <!-- Design Tokens -->
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "tertiary-container": "#001a43",
-            "tertiary": "#aec6ff",
-            "primary-fixed-dim": "#c6c5d4",
-            "secondary-fixed": "#a6eeff",
-            "on-primary-fixed-variant": "#454652",
-            "surface-tint": "#c6c5d4",
-            "background": "#13131b",
-            "tertiary-fixed": "#d8e2ff",
-            "secondary-container": "#00b6d0",
-            "inverse-primary": "#5d5d6a",
-            "on-tertiary-container": "#5a82d5",
-            "primary-fixed": "#e2e1f1",
-            "surface-container": "#1f1f27",
-            "primary-container": "#1a1b26",
-            "surface-container-lowest": "#0d0d15",
-            "outline": "#919096",
-            "secondary-fixed-dim": "#4ad7f3",
-            "surface-container-high": "#292932",
-            "surface-dim": "#13131b",
-            "surface-container-highest": "#34343d",
-            "secondary": "#4ad7f3",
-            "on-secondary-fixed": "#001f25",
-            "on-primary-container": "#838391",
-            "outline-variant": "#47464c",
-            "on-secondary": "#00363f",
-            "on-background": "#e4e1ed",
-            "inverse-surface": "#e4e1ed",
-            "on-tertiary": "#002e6b",
-            "surface-variant": "#34343d",
-            "on-surface-variant": "#c8c5cc",
-            "on-secondary-fixed-variant": "#004e5b",
-            "error": "#ffb4ab",
-            "on-tertiary-fixed": "#001a43",
-            "primary": "#c6c5d4",
-            "error-container": "#93000a",
-            "on-primary-fixed": "#1a1b26",
-            "on-tertiary-fixed-variant": "#0c4393",
-            "surface": "#13131b",
-            "on-surface": "#e4e1ed",
-            "surface-bright": "#393841",
-            "on-error-container": "#ffdad6",
-            "on-error": "#690005",
-            "on-secondary-container": "#00424d",
-            "surface-container-low": "#1b1b23",
-            "on-primary": "#2f303b",
-            "inverse-on-surface": "#303038",
-            "tertiary-fixed-dim": "#aec6ff"
+    <!-- Design Tokens -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'tertiary-container': '#001a43',
+              tertiary: '#aec6ff',
+              'primary-fixed-dim': '#c6c5d4',
+              'secondary-fixed': '#a6eeff',
+              'on-primary-fixed-variant': '#454652',
+              'surface-tint': '#c6c5d4',
+              background: '#13131b',
+              'tertiary-fixed': '#d8e2ff',
+              'secondary-container': '#00b6d0',
+              'inverse-primary': '#5d5d6a',
+              'on-tertiary-container': '#5a82d5',
+              'primary-fixed': '#e2e1f1',
+              'surface-container': '#1f1f27',
+              'primary-container': '#1a1b26',
+              'surface-container-lowest': '#0d0d15',
+              outline: '#919096',
+              'secondary-fixed-dim': '#4ad7f3',
+              'surface-container-high': '#292932',
+              'surface-dim': '#13131b',
+              'surface-container-highest': '#34343d',
+              secondary: '#4ad7f3',
+              'on-secondary-fixed': '#001f25',
+              'on-primary-container': '#838391',
+              'outline-variant': '#47464c',
+              'on-secondary': '#00363f',
+              'on-background': '#e4e1ed',
+              'inverse-surface': '#e4e1ed',
+              'on-tertiary': '#002e6b',
+              'surface-variant': '#34343d',
+              'on-surface-variant': '#c8c5cc',
+              'on-secondary-fixed-variant': '#004e5b',
+              error: '#ffb4ab',
+              'on-tertiary-fixed': '#001a43',
+              primary: '#c6c5d4',
+              'error-container': '#93000a',
+              'on-primary-fixed': '#1a1b26',
+              'on-tertiary-fixed-variant': '#0c4393',
+              surface: '#13131b',
+              'on-surface': '#e4e1ed',
+              'surface-bright': '#393841',
+              'on-error-container': '#ffdad6',
+              'on-error': '#690005',
+              'on-secondary-container': '#00424d',
+              'surface-container-low': '#1b1b23',
+              'on-primary': '#2f303b',
+              'inverse-on-surface': '#303038',
+              'tertiary-fixed-dim': '#aec6ff',
+            },
+            fontFamily: {
+              headline: ['Space Grotesk'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
           },
-          fontFamily: {
-            "headline": ["Space Grotesk"],
-            "body": ["Inter"],
-            "label": ["Inter"]
-          },
-          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
         },
-      },
-    }
-  </script>
+      };
+    </script>
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #13131b;
-      color: #e4e1ed;
-    }
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #13131b;
+        color: #e4e1ed;
+      }
 
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
 
-    /* Shared glass surface */
-    .glass-panel, .glass-card, .glass-effect {
-      background: rgba(0, 182, 208, 0.12);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
+      /* Shared glass surface */
+      .glass-panel,
+      .glass-card,
+      .glass-effect {
+        background: rgba(0, 182, 208, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
 
-    /* Screen 1 */
-    .glow-line { box-shadow: 0 0 10px #4ad7f3; }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #292932; border-radius: 10px; }
+      /* Screen 1 */
+      .glow-line {
+        box-shadow: 0 0 10px #4ad7f3;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #292932;
+        border-radius: 10px;
+      }
 
-    /* Screens 2 & 4 */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      /* Screens 2 & 4 */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
 
-    /* Screen 3 */
-    .custom-mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    }
+      /* Screen 3 */
+      .custom-mono {
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+          monospace;
+      }
 
-    /* Screen 4 */
-    .headline-font { font-family: 'Space Grotesk', sans-serif; }
-    .ai-glow { box-shadow: 0 0 15px rgba(74, 215, 243, 0.2); }
-    .resume-page { box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3); }
+      /* Screen 4 */
+      .headline-font {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .ai-glow {
+        box-shadow: 0 0 15px rgba(74, 215, 243, 0.2);
+      }
+      .resume-page {
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      }
 
-    /* Reference nav */
-    #ref-nav { height: 36px; }
+      /* Reference nav */
+      #ref-nav {
+        height: 36px;
+      }
 
-    /* Screen switcher */
-    .screen { display: none; }
-    .screen.active { display: block; }
-    #screen-autofill.active { display: flex; height: calc(100vh - 36px); overflow: hidden; }
+      /* Screen switcher */
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+      }
+      #screen-autofill.active {
+        display: flex;
+        height: calc(100vh - 36px);
+        overflow: hidden;
+      }
 
-    /* Reference nav tab */
-    .ref-tab {
-      padding: 0 14px;
-      height: 100%;
-      display: inline-flex;
-      align-items: center;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #c8c5cc;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      background: transparent;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      transition: color 0.15s, border-color 0.15s;
-    }
-    .ref-tab:hover { color: #e4e1ed; }
-    .ref-tab.active { color: #4ad7f3; border-bottom-color: #4ad7f3; }
-  </style>
-</head>
+      /* Reference nav tab */
+      .ref-tab {
+        padding: 0 14px;
+        height: 100%;
+        display: inline-flex;
+        align-items: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #c8c5cc;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        background: transparent;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+      }
+      .ref-tab:hover {
+        color: #e4e1ed;
+      }
+      .ref-tab.active {
+        color: #4ad7f3;
+        border-bottom-color: #4ad7f3;
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <!-- ─── Reference Navigation Bar ─────────────────────────────────── -->
+    <nav
+      id="ref-nav"
+      class="fixed top-0 left-0 w-full z-[9999] bg-surface-container-lowest border-b border-outline-variant/30 flex items-stretch"
+    >
+      <span
+        class="px-4 flex items-center text-[10px] font-headline font-bold uppercase tracking-widest text-outline border-r border-outline-variant/20 whitespace-nowrap"
+      >
+        Design Reference
+      </span>
+      <button class="ref-tab active" data-screen="screen-autofill">Auto-Fill</button>
+      <button class="ref-tab" data-screen="screen-setup">Project Setup</button>
+      <button class="ref-tab" data-screen="screen-dashboard">Dashboard</button>
+      <button class="ref-tab" data-screen="screen-editor">Resume Editor</button>
+    </nav>
+    <!-- Spacer for fixed ref nav -->
+    <div style="height: 36px"></div>
 
-  <!-- ─── Reference Navigation Bar ─────────────────────────────────── -->
-  <nav id="ref-nav" class="fixed top-0 left-0 w-full z-[9999] bg-surface-container-lowest border-b border-outline-variant/30 flex items-stretch">
-    <span class="px-4 flex items-center text-[10px] font-headline font-bold uppercase tracking-widest text-outline border-r border-outline-variant/20 whitespace-nowrap">
-      Design Reference
-    </span>
-    <button class="ref-tab active" data-screen="screen-autofill">Auto-Fill</button>
-    <button class="ref-tab" data-screen="screen-setup">Project Setup</button>
-    <button class="ref-tab" data-screen="screen-dashboard">Dashboard</button>
-    <button class="ref-tab" data-screen="screen-editor">Resume Editor</button>
-  </nav>
-  <!-- Spacer for fixed ref nav -->
-  <div style="height: 36px;"></div>
-
-
-  <!-- ═══════════════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════════════
        SCREEN 1 · Auto-Fill (Browser Extension on Workday Form)
        ═══════════════════════════════════════════════════════════════════ -->
-  <div class="screen active" id="screen-autofill">
-
-    <!-- WORKDAY MOCKUP CANVAS (Left) -->
-    <main class="flex-grow bg-white text-slate-800 overflow-y-auto p-12">
-      <div class="max-w-3xl mx-auto">
-        <div class="flex items-center justify-between mb-10">
-          <img class="h-8 opacity-80 grayscale" alt="Company logo"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuByt4Wl1Iyn7k7KxZcDapG3_ySYQIGmpAvODl0lMEghCZ5BJrJioNwCbwfHhHiPea_PVN1NQ2SJ1BjlyCPpEbiQngffQS352BIfwdZaZ95MA9LHw2dhfaBBlgrvuyAQJjFKZp1PxGm5FuO226ucWR5o6_TzTYHTJdWv6G9yLvipoxs-64lsUgs6BCsSV1tgHLeVla7DBXCHTT_FsXlimhMh3qR689PL1VT-_c7Y-xRDLDworQ3Op7rEjL7YNHetP2vEVJEl_8K7RTg" />
-          <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Step 2 of 4: My Experience</span>
-        </div>
-        <h1 class="text-2xl font-bold mb-8 text-slate-900">Application for Senior Systems Architect</h1>
-        <div class="space-y-8">
-
-          <!-- Full Legal Name -->
-          <div>
-            <label class="block text-sm font-semibold mb-2 text-slate-600">Full Legal Name</label>
-            <div class="relative group">
-              <input class="w-full bg-slate-50 border-2 border-secondary/40 ring-2 ring-secondary/10 p-4 rounded-xl text-slate-900 focus:outline-none transition-all" readonly type="text" value="Alex Rivera" />
-              <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-              </div>
-            </div>
+    <div class="screen active" id="screen-autofill">
+      <!-- WORKDAY MOCKUP CANVAS (Left) -->
+      <main class="flex-grow bg-white text-slate-800 overflow-y-auto p-12">
+        <div class="max-w-3xl mx-auto">
+          <div class="flex items-center justify-between mb-10">
+            <img
+              class="h-8 opacity-80 grayscale"
+              alt="Company logo"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuByt4Wl1Iyn7k7KxZcDapG3_ySYQIGmpAvODl0lMEghCZ5BJrJioNwCbwfHhHiPea_PVN1NQ2SJ1BjlyCPpEbiQngffQS352BIfwdZaZ95MA9LHw2dhfaBBlgrvuyAQJjFKZp1PxGm5FuO226ucWR5o6_TzTYHTJdWv6G9yLvipoxs-64lsUgs6BCsSV1tgHLeVla7DBXCHTT_FsXlimhMh3qR689PL1VT-_c7Y-xRDLDworQ3Op7rEjL7YNHetP2vEVJEl_8K7RTg"
+            />
+            <span class="text-xs font-bold uppercase tracking-widest text-slate-400"
+              >Step 2 of 4: My Experience</span
+            >
           </div>
-
-          <!-- Email + Phone -->
-          <div class="grid grid-cols-2 gap-6">
+          <h1 class="text-2xl font-bold mb-8 text-slate-900">
+            Application for Senior Systems Architect
+          </h1>
+          <div class="space-y-8">
+            <!-- Full Legal Name -->
             <div>
-              <label class="block text-sm font-semibold mb-2 text-slate-600">Email Address</label>
-              <input class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 focus:outline-none" readonly type="email" value="alex.rivera.dev@gmail.com" />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold mb-2 text-slate-600">Phone Number</label>
-              <input class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 focus:outline-none" readonly type="tel" value="+1 (555) 012-3456" />
-            </div>
-          </div>
-
-          <!-- Work Experience -->
-          <div class="bg-slate-50 p-6 rounded-xl border-2 border-secondary/20 relative">
-            <div class="absolute -top-3 left-6 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">
-              AI Populated
-            </div>
-            <h3 class="text-sm font-bold text-slate-900 mb-4">Work Experience</h3>
-            <div class="space-y-6">
-              <div class="border-l-2 border-slate-200 pl-4">
-                <p class="font-bold text-slate-800">Lead Infrastructure Engineer</p>
-                <p class="text-xs text-slate-500 mb-2">CloudScale Systems • Jan 2021 - Present</p>
-                <p class="text-sm text-slate-600 leading-relaxed italic">"Spearheaded the migration of legacy monolith to microservices architecture, reducing latency by 40%..."</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Education -->
-          <div>
-            <label class="block text-sm font-semibold mb-2 text-slate-600">Highest Level of Education</label>
-            <select class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 appearance-none">
-              <option selected>Bachelor of Science in Computer Science</option>
-            </select>
-          </div>
-
-          <!-- Screening Question -->
-          <div class="pt-6 border-t border-slate-100">
-            <label class="block text-sm font-semibold mb-4 text-slate-600">Why are you interested in this position?</label>
-            <div class="bg-slate-50 border-2 border-secondary/40 p-6 rounded-xl text-slate-700 leading-relaxed min-h-[120px]">
-              I am particularly drawn to the scalability challenges mentioned in the job description. My recent
-              experience at CloudScale Systems involved optimizing high-throughput distributed systems, and I am eager
-              to apply these technical insights to your current architecture roadmap...
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-12 flex justify-end gap-4">
-          <button class="px-8 py-3 rounded-xl border border-slate-200 text-slate-400 font-semibold">Save for Later</button>
-          <button class="px-8 py-3 rounded-xl bg-slate-200 text-slate-400 font-semibold cursor-not-allowed">Continue</button>
-        </div>
-      </div>
-    </main>
-
-    <!-- BYPASS HIRE EXTENSION SIDEBAR (Right) -->
-    <aside class="w-96 h-full bg-surface-container-low border-l border-outline-variant/15 flex flex-col z-50">
-      <!-- Extension Header -->
-      <div class="p-6 bg-surface-container-high/50 flex flex-col gap-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-              <span class="material-symbols-outlined text-on-secondary text-xl font-bold">architecture</span>
-            </div>
-            <span class="font-headline font-bold text-lg tracking-tight">BypassHire</span>
-          </div>
-          <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface">close</span>
-        </div>
-        <div class="glass-panel p-3 rounded-xl flex items-center gap-3">
-          <span class="material-symbols-outlined text-secondary animate-pulse" style="font-variation-settings: 'FILL' 1;">magic_button</span>
-          <div>
-            <p class="font-headline text-xs font-bold uppercase tracking-widest text-secondary">AI Auto-Fill Active</p>
-            <p class="text-[10px] text-on-surface-variant">Ready to sync 18 fields</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scrollable Content -->
-      <div class="flex-grow overflow-y-auto custom-scrollbar p-6 space-y-8">
-
-        <!-- Field Mapping -->
-        <section>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-headline text-xs font-bold uppercase tracking-widest text-primary-fixed-dim">Review Field Mapping</h2>
-            <span class="material-symbols-outlined text-sm text-on-surface-variant cursor-pointer">tune</span>
-          </div>
-          <div class="space-y-2">
-            <div class="bg-surface-container-high p-4 rounded-xl group hover:bg-surface-container-highest transition-colors">
-              <div class="flex justify-between items-start mb-2">
-                <span class="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider">Form: Work Experience</span>
-                <span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-              </div>
-              <p class="text-sm font-medium text-on-surface line-clamp-2 leading-relaxed">Lead Infrastructure Engineer at CloudScale Systems (2021-Present)</p>
-            </div>
-            <div class="bg-surface-container-high p-4 rounded-xl group hover:bg-surface-container-highest transition-colors">
-              <div class="flex justify-between items-start mb-2">
-                <span class="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider">Form: Education</span>
-                <span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-              </div>
-              <p class="text-sm font-medium text-on-surface">B.S. Computer Science</p>
-            </div>
-            <div class="bg-surface-container-high p-4 rounded-xl border border-secondary/20 group hover:bg-surface-container-highest transition-colors">
-              <div class="flex justify-between items-start mb-2">
-                <span class="text-[10px] font-medium text-secondary uppercase tracking-wider">Form: Skills</span>
-                <span class="material-symbols-outlined text-secondary-fixed-dim text-sm">info</span>
-              </div>
-              <div class="flex flex-wrap gap-1">
-                <span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium">Kubernetes</span>
-                <span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium">Rust</span>
-                <span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium">Terraform</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Screening Questions -->
-        <section>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="font-headline text-xs font-bold uppercase tracking-widest text-primary-fixed-dim">Screening Questions</h2>
-            <span class="text-[10px] text-secondary font-bold">2 Generated</span>
-          </div>
-          <div class="bg-surface-container-lowest p-5 rounded-xl border-l-2 border-secondary">
-            <div class="flex justify-between items-start mb-3">
-              <p class="text-[11px] font-bold text-on-surface/80">"Why do you want to work here?"</p>
-              <button class="text-secondary text-[10px] font-bold uppercase tracking-tighter hover:underline">Edit</button>
-            </div>
-            <p class="text-xs text-on-surface-variant leading-relaxed">
-              "Leveraging my expertise in distributed systems, I aim to contribute to your architecture's resilience..."
-            </p>
-            <div class="mt-4 flex items-center gap-2">
-              <div class="h-1 flex-grow bg-surface-variant rounded-full overflow-hidden">
-                <div class="h-full bg-secondary w-[85%] glow-line"></div>
-              </div>
-              <span class="text-[9px] text-on-surface-variant font-mono">Tailored: 85%</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Application Score -->
-        <div class="p-4 rounded-xl bg-surface-container-highest/30 flex items-center gap-4">
-          <div class="w-10 h-10 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-surface-variant text-lg">insights</span>
-          </div>
-          <div>
-            <p class="text-[11px] font-bold text-on-surface">Application Score</p>
-            <p class="text-[10px] text-on-surface-variant">High match for technical requirements.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer Actions -->
-      <div class="p-6 bg-surface-container-low border-t border-outline-variant/10 space-y-3">
-        <button class="w-full bg-secondary text-on-secondary py-4 rounded-xl font-headline font-bold text-sm tracking-wide hover:opacity-90 transition-all flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-xl">sync</span>
-          Review &amp; Sync to Form
-        </button>
-        <button class="w-full bg-surface-container-highest text-on-surface py-3 rounded-xl font-headline font-bold text-xs tracking-widest uppercase opacity-60 hover:opacity-100 transition-all">
-          Submit Application
-        </button>
-        <p class="text-center text-[9px] text-on-surface-variant px-4">
-          BypassHire intelligent filler is currently in <span class="text-secondary">Precision Mode</span>.
-        </p>
-      </div>
-    </aside>
-
-    <!-- Floating Notification -->
-    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-surface-container-highest px-6 py-3 rounded-full shadow-2xl border border-outline-variant/20 z-40">
-      <div class="flex -space-x-2">
-        <img class="w-6 h-6 rounded-full border-2 border-surface" alt=""
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3hUZvx1GbAnY3AbPgWWUHzNRi81GB81-PNerRFNDxp12iSnw9rR6lP5v_JaPF4v8mY3sWJuhT5xtJU4t4Vbda4hlr0mh5Qt0W8IDw_6ovPDOHpB9x-pHlpwntoAJ02-KAVa0B2CQSVtGXerfHr7YjOaOjL8sl5YsPzDxSB8dLv6nCor8C7QdFhkYVLtYjMo6AXyk0TND1o0jSwFvYoWGyrGVT8hCspZdtJjBvehJ6L1BDrrN9P4oFArjAy2Jze4q-UW2i6qnNUic" />
-        <img class="w-6 h-6 rounded-full border-2 border-surface" alt=""
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKstn5-84D9URJG6_M0N44-My64ikVEZ967hXfs58DOKttEQL4mPqgxW2O7eRt_-C07biSNzhjfc9-_LL70_id0pOmxtZ4yC5JZaR6iuFifAkv7ADY9IV_JXU50q-NC9nuJO_tpmevz4x-k-pN2vZa5HYZr0p9WPTJyIsBFcjR0AKbFJK6J94LyTMZZ6aUasb9kVKvZHwTEKQiEnajeounpo5gLVDMjMno4vvs59sPVagIElIVuPaZc4iHbWtNg8VOXozJCVbqHcw" />
-      </div>
-      <p class="text-[11px] font-medium text-on-surface">12 other users filled this today</p>
-      <div class="h-4 w-[1px] bg-outline-variant/30"></div>
-      <span class="text-[11px] font-bold text-secondary cursor-pointer hover:underline">View Community Insights</span>
-    </div>
-  </div>
-
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       SCREEN 2 · Project Setup (Initialize Architect Engine)
-       ═══════════════════════════════════════════════════════════════════ -->
-  <div class="screen" id="screen-setup">
-
-    <!-- Sidebar (top-9 = 36px offset for ref nav) -->
-    <aside class="h-[calc(100vh-36px)] w-64 fixed left-0 top-9 bg-[#13131b] flex flex-col py-8 px-4 z-50 overflow-y-auto no-scrollbar">
-      <div class="mb-10 px-4">
-        <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter font-headline">BypassHire</h1>
-        <p class="font-headline font-medium text-xs tracking-wide text-on-primary-container">The Intelligent Architect</p>
-      </div>
-      <nav class="flex-1 space-y-1">
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">dashboard</span>Dashboard
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3] font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">description</span>Resumes
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">assignment_turned_in</span>Applications
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">settings</span>Settings
-        </a>
-      </nav>
-      <div class="mt-auto space-y-1">
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">help_outline</span>Support
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">logout</span>Logout
-        </a>
-      </div>
-    </aside>
-
-    <!-- Top Bar (top-9 = 36px offset for ref nav) -->
-    <header class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl border-b border-[#47464c]/15 flex justify-between items-center px-8">
-      <div class="flex items-center gap-4">
-        <span class="font-headline uppercase tracking-widest text-xs text-secondary-fixed-dim">Project Setup</span>
-        <span class="text-outline-variant/30">/</span>
-        <span class="font-headline uppercase tracking-widest text-xs text-on-surface">New Tailoring Project</span>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/10">
-          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
-          <span class="font-headline uppercase tracking-widest text-[10px] text-on-surface-variant">AI Status: Ready</span>
-        </div>
-        <div class="flex items-center gap-4 text-on-surface-variant">
-          <button class="material-symbols-outlined hover:text-secondary transition-colors">notifications</button>
-          <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
-            <span class="text-xs font-medium font-headline">ARCHITECT_01</span>
-            <img alt="User" class="w-8 h-8 rounded-lg bg-surface-container-highest"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzFEBuIS95Zu1z2q8oRdi51BCxD4vAa3yPJ075iYlixYk7CT3iXctKgKFzC2UBDfjyo8Q_DUw60t78_utT_XjwRBbQjgA17Qo42NH4h-CNvaE2iMsiiBQ6tBp2nc9b2eNnsZkyAB7icXGQTqI-ijvHYF3p3cmpkMjY3TnBXjiY3w26h5qqeMVuQWiTZ6ooQqkuU9rIbUVA6sI7QNYGp8KR89247NHmfWh_4jYsq2R7IC0fINssQslIlNC31bnA-6be1eMW4o5HdY0" />
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="ml-64 pt-16 min-h-screen bg-surface overflow-y-auto">
-      <div class="max-w-5xl mx-auto py-12 px-8">
-        <section class="mb-12">
-          <h2 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">Initialize Architect Engine</h2>
-          <p class="text-on-surface-variant max-w-2xl leading-relaxed">Provide the structural parameters for your next role. Our AI will analyze the requirements and align your professional narrative for maximum technical impact.</p>
-        </section>
-
-        <!-- 01: Project Details -->
-        <section class="mb-10 bg-surface-container-low p-8 rounded-xl">
-          <div class="flex items-center gap-3 mb-8">
-            <span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">01</span>
-            <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Project Details</h3>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Job Title</label>
-              <input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="e.g. Senior Backend Engineer" type="text" />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Company Name</label>
-              <input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="e.g. Neuralink" type="text" />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Job URL (Optional)</label>
-              <input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="https://careers.company.com/..." type="url" />
-            </div>
-          </div>
-        </section>
-
-        <!-- 02 / 03: Tailoring Context -->
-        <section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Job Description -->
-          <div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
-            <div class="flex items-center justify-between mb-6">
-              <div class="flex items-center gap-3">
-                <span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">02</span>
-                <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Job Description</h3>
-              </div>
-              <button class="text-xs font-bold text-secondary hover:underline flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">auto_fix_high</span>Fetch from URL
-              </button>
-            </div>
-            <div class="flex-1 bg-surface-container-lowest rounded-lg border border-outline-variant/5 group focus-within:border-secondary/30 transition-all p-4">
-              <textarea class="w-full h-full bg-transparent border-0 focus:ring-0 text-sm leading-relaxed text-on-surface-variant resize-none font-body placeholder:text-on-surface-variant/20" placeholder="Paste the full job description text here for deep analysis..."></textarea>
-            </div>
-          </div>
-          <!-- Your Context -->
-          <div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
-            <div class="flex items-center gap-3 mb-6">
-              <span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">03</span>
-              <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Your Context</h3>
-            </div>
-            <div class="flex-1 space-y-4">
-              <div class="bg-surface-container-high border-2 border-dashed border-outline-variant/20 rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-secondary/40 transition-all group">
-                <span class="material-symbols-outlined text-4xl text-outline-variant/40 group-hover:text-secondary mb-3 transition-colors">upload_file</span>
-                <p class="text-sm font-medium text-on-surface mb-1">Upload Master Profile</p>
-                <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Supports PDF, DOCX, or JSON</p>
-              </div>
-              <div class="grid grid-cols-2 gap-4">
-                <button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group">
-                  <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary">code</span>
-                  <span class="text-xs font-bold uppercase tracking-widest text-on-surface">Link GitHub</span>
-                </button>
-                <button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group">
-                  <span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary">folder_special</span>
-                  <span class="text-xs font-bold uppercase tracking-widest text-on-surface">Projects</span>
-                </button>
-              </div>
-            </div>
-            <div class="mt-6 flex items-center gap-4 px-2">
-              <div class="flex -space-x-2">
-                <div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center border-2 border-surface-container-low">
-                  <span class="material-symbols-outlined text-xs text-tertiary">description</span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-[#1e2a1e] flex items-center justify-center border-2 border-surface-container-low">
-                  <span class="material-symbols-outlined text-xs text-[#4ade80]">terminal</span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-[#2a1e1e] flex items-center justify-center border-2 border-surface-container-low">
-                  <span class="material-symbols-outlined text-xs text-[#f87171]">picture_as_pdf</span>
+              <label class="block text-sm font-semibold mb-2 text-slate-600">Full Legal Name</label>
+              <div class="relative group">
+                <input
+                  class="w-full bg-slate-50 border-2 border-secondary/40 ring-2 ring-secondary/10 p-4 rounded-xl text-slate-900 focus:outline-none transition-all"
+                  readonly
+                  type="text"
+                  value="Alex Rivera"
+                />
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <span
+                    class="material-symbols-outlined text-secondary text-lg"
+                    style="font-variation-settings: 'FILL' 1"
+                    >auto_awesome</span
+                  >
                 </div>
               </div>
-              <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Sources Linked (0)</p>
             </div>
-          </div>
-        </section>
 
-        <!-- 04: Tailoring Options -->
-        <section class="mb-12 bg-surface-container-low p-8 rounded-xl">
-          <div class="flex items-center gap-3 mb-8">
-            <span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">04</span>
-            <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Tailoring Options</h3>
-          </div>
-          <div class="flex flex-col md:flex-row gap-12">
-            <div class="flex items-start gap-4 flex-1">
-              <div class="relative inline-flex items-center cursor-pointer mt-1">
-                <input checked class="sr-only peer" type="checkbox" />
-                <div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+            <!-- Email + Phone -->
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-semibold mb-2 text-slate-600">Email Address</label>
+                <input
+                  class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 focus:outline-none"
+                  readonly
+                  type="email"
+                  value="alex.rivera.dev@gmail.com"
+                />
               </div>
               <div>
-                <p class="text-sm font-bold text-on-surface mb-1">Keep original style template</p>
-                <p class="text-xs text-on-surface-variant">Maintains your current layout formatting while updating content.</p>
+                <label class="block text-sm font-semibold mb-2 text-slate-600">Phone Number</label>
+                <input
+                  class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 focus:outline-none"
+                  readonly
+                  type="tel"
+                  value="+1 (555) 012-3456"
+                />
               </div>
             </div>
-            <div class="flex items-start gap-4 flex-1">
-              <div class="relative inline-flex items-center cursor-pointer mt-1">
-                <input class="sr-only peer" type="checkbox" />
-                <div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+
+            <!-- Work Experience -->
+            <div class="bg-slate-50 p-6 rounded-xl border-2 border-secondary/20 relative">
+              <div
+                class="absolute -top-3 left-6 bg-secondary text-on-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
+              >
+                AI Populated
               </div>
-              <div>
-                <p class="text-sm font-bold text-on-surface mb-1">Emphasize specific skills</p>
-                <p class="text-xs text-on-surface-variant">Prioritizes technical keywords from the job description in the summary section.</p>
+              <h3 class="text-sm font-bold text-slate-900 mb-4">Work Experience</h3>
+              <div class="space-y-6">
+                <div class="border-l-2 border-slate-200 pl-4">
+                  <p class="font-bold text-slate-800">Lead Infrastructure Engineer</p>
+                  <p class="text-xs text-slate-500 mb-2">CloudScale Systems • Jan 2021 - Present</p>
+                  <p class="text-sm text-slate-600 leading-relaxed italic">
+                    "Spearheaded the migration of legacy monolith to microservices architecture,
+                    reducing latency by 40%..."
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        <!-- CTA -->
-        <div class="flex flex-col items-center">
-          <button class="w-full max-w-md bg-secondary text-on-secondary py-5 rounded-xl font-headline font-bold text-lg uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(74,215,243,0.3)] hover:shadow-[0_0_30px_rgba(74,215,243,0.5)] transition-all active:scale-[0.98]">
-            Start Tailoring
-          </button>
-          <div class="mt-4 flex items-center gap-2 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm">lock</span>
-            <span class="text-[10px] uppercase tracking-widest font-bold">Encrypted Architect Processing</span>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       SCREEN 3 · Dashboard
-       ═══════════════════════════════════════════════════════════════════ -->
-  <div class="screen" id="screen-dashboard">
-
-    <!-- Sidebar (top-9 = 36px offset for ref nav) -->
-    <aside class="h-[calc(100vh-36px)] w-64 fixed left-0 top-9 bg-[#13131b] flex flex-col py-8 px-4 z-50">
-      <div class="mb-10 px-2">
-        <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter font-headline">BypassHire</h1>
-        <p class="text-[10px] font-headline uppercase tracking-[0.2em] text-on-primary-container">The Intelligent Architect</p>
-      </div>
-      <button class="mb-8 w-full py-3 bg-secondary text-on-secondary font-headline font-bold rounded-xl active:scale-90 transition-transform flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-sm">add</span>New Resume
-      </button>
-      <nav class="flex-1 space-y-2">
-        <a class="flex items-center gap-3 px-4 py-3 text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3] font-headline font-medium text-sm tracking-wide" href="#">
-          <span class="material-symbols-outlined">dashboard</span>Dashboard
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">description</span>Resumes
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">assignment_turned_in</span>Applications
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">settings</span>Settings
-        </a>
-      </nav>
-      <div class="mt-auto space-y-2 pt-4 border-t border-outline-variant/10">
-        <a class="flex items-center gap-3 px-4 py-2 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">help_outline</span>Support
-        </a>
-        <a class="flex items-center gap-3 px-4 py-2 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">logout</span>Logout
-        </a>
-      </div>
-    </aside>
-
-    <!-- Top Bar (top-9 = 36px offset for ref nav) -->
-    <header class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl border-b border-[#47464c]/15 flex justify-between items-center px-8">
-      <div class="flex items-center gap-4">
-        <div class="glass-card px-3 py-1 rounded-full border border-secondary/20 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-secondary animate-pulse shadow-[0_0_8px_#4ad7f3]"></span>
-          <span class="font-headline uppercase tracking-widest text-[10px] text-secondary">AI Status: Ready</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="relative flex items-center">
-          <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-sm">search</span>
-          <input class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-1.5 text-[10px] font-headline tracking-widest focus:ring-1 focus:ring-secondary/50 w-64 placeholder:text-outline/50 uppercase" placeholder="SEARCH ASSETS..." type="text" />
-        </div>
-        <div class="flex items-center gap-4">
-          <button class="text-on-surface-variant hover:text-secondary transition-all">
-            <span class="material-symbols-outlined">notifications</span>
-          </button>
-          <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant/30">
-            <img class="h-full w-full object-cover" alt="User"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS-GXC6Hm3IC2BcL4mQeQauUIS2NzwQph_20gGxNkGUdHC7Vx1v_McMw0A9uaYksyNy3_7Sb5vd_pqNC2lyOB56S64mP6iHXrmctrFj3IEuMjZuSdiglqtcOOnJN-6860NBLwv_ayOVHOOKW6n5MZX_PGWUuQckxF-JBcRaAkqZw3Ga7c6AaJNPy8ZEiL53JaYnJoeITbZkYl-TxUTFUdclwGmZ5qyfzOs1hyxwe5zrLFJ3pJF5ywc1NahB2aBvlL-e6x846A7Cuo" />
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="ml-64 min-h-screen overflow-y-auto">
-      <section class="pt-24 px-10 pb-12">
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-12 gap-6 mb-12">
-          <div class="col-span-12 md:col-span-4 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span class="material-symbols-outlined text-6xl">auto_awesome</span>
-            </div>
-            <p class="font-headline uppercase tracking-[0.2em] text-[10px] text-on-surface-variant mb-2">Resumes Tailored</p>
-            <h2 class="text-4xl font-headline font-bold text-on-surface">128</h2>
-            <p class="text-[11px] text-secondary mt-2 flex items-center gap-1 font-medium">
-              <span class="material-symbols-outlined text-xs">trending_up</span>+14% vs last month
-            </p>
-          </div>
-          <div class="col-span-12 md:col-span-4 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span class="material-symbols-outlined text-6xl">timer</span>
-            </div>
-            <p class="font-headline uppercase tracking-[0.2em] text-[10px] text-on-surface-variant mb-2">Time Saved</p>
-            <h2 class="text-4xl font-headline font-bold text-on-surface">42.5h</h2>
-            <p class="text-[11px] text-secondary mt-2 flex items-center gap-1 font-medium">
-              <span class="material-symbols-outlined text-xs">bolt</span>Estimated AI Efficiency
-            </p>
-          </div>
-          <div class="col-span-12 md:col-span-4 bg-surface-container-high p-6 rounded-xl border border-secondary/10 flex flex-col justify-between">
+            <!-- Education -->
             <div>
-              <p class="font-headline uppercase tracking-[0.2em] text-[10px] text-secondary mb-2">Architect Pro</p>
-              <h3 class="text-xl font-headline font-semibold text-on-surface leading-tight">Advanced Tailoring Unlocked</h3>
+              <label class="block text-sm font-semibold mb-2 text-slate-600"
+                >Highest Level of Education</label
+              >
+              <select
+                class="w-full bg-slate-50 border-2 border-secondary/40 p-4 rounded-xl text-slate-900 appearance-none"
+              >
+                <option selected>Bachelor of Science in Computer Science</option>
+              </select>
             </div>
-            <button class="mt-4 text-xs font-headline font-bold uppercase tracking-widest text-on-secondary bg-secondary px-4 py-2 rounded-lg w-fit hover:opacity-90">View Plan</button>
-          </div>
-        </div>
 
-        <!-- Recent Resumes + Live Applications -->
-        <div class="grid grid-cols-12 gap-10">
-          <div class="col-span-12 lg:col-span-8">
-            <div class="flex items-center justify-between mb-6">
-              <h3 class="font-headline text-lg font-bold uppercase tracking-widest text-on-surface flex items-center gap-3">
-                Recent Resumes<span class="h-[1px] w-12 bg-outline-variant/30"></span>
-              </h3>
-              <a class="text-[10px] font-headline font-bold uppercase tracking-widest text-secondary hover:underline underline-offset-4" href="#">View All Library</a>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-secondary/40">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="bg-primary-container p-2 rounded-lg"><span class="material-symbols-outlined text-secondary text-xl">google</span></div>
-                  <span class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-secondary/10 text-secondary rounded">Tailored</span>
-                </div>
-                <h4 class="font-headline text-base font-semibold text-on-surface mb-1">Senior SWE at Google</h4>
-                <p class="text-[11px] text-on-surface-variant font-medium mb-4">Generated Oct 24, 2023</p>
-                <div class="flex flex-wrap gap-2">
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">K8s</span>
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Go</span>
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">L5+</span>
-                </div>
-              </div>
-              <div class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-outline-variant/40">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="bg-primary-container p-2 rounded-lg"><span class="material-symbols-outlined text-on-primary-container text-xl">payments</span></div>
-                  <span class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded">Draft</span>
-                </div>
-                <h4 class="font-headline text-base font-semibold text-on-surface mb-1">Fullstack Dev at Stripe</h4>
-                <p class="text-[11px] text-on-surface-variant font-medium mb-4">Modified 2 days ago</p>
-                <div class="flex flex-wrap gap-2">
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">React</span>
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Fintech</span>
-                </div>
-              </div>
-              <div class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-secondary/40">
-                <div class="flex justify-between items-start mb-4">
-                  <div class="bg-primary-container p-2 rounded-lg"><span class="material-symbols-outlined text-secondary text-xl">terminal</span></div>
-                  <span class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-secondary/10 text-secondary rounded">Tailored</span>
-                </div>
-                <h4 class="font-headline text-base font-semibold text-on-surface mb-1">Infrastructure Lead at Vercel</h4>
-                <p class="text-[11px] text-on-surface-variant font-medium mb-4">Generated Oct 18, 2023</p>
-                <div class="flex flex-wrap gap-2">
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Next.js</span>
-                  <span class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Rust</span>
-                </div>
-              </div>
-              <div class="bg-surface-container-lowest border-2 border-dashed border-outline-variant/20 rounded-xl flex flex-col items-center justify-center p-5 group hover:border-secondary/40 transition-all cursor-pointer">
-                <span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors mb-2">post_add</span>
-                <span class="font-headline uppercase tracking-widest text-[10px] text-outline-variant group-hover:text-on-surface">Start New Tailor</span>
+            <!-- Screening Question -->
+            <div class="pt-6 border-t border-slate-100">
+              <label class="block text-sm font-semibold mb-4 text-slate-600"
+                >Why are you interested in this position?</label
+              >
+              <div
+                class="bg-slate-50 border-2 border-secondary/40 p-6 rounded-xl text-slate-700 leading-relaxed min-h-[120px]"
+              >
+                I am particularly drawn to the scalability challenges mentioned in the job
+                description. My recent experience at CloudScale Systems involved optimizing
+                high-throughput distributed systems, and I am eager to apply these technical
+                insights to your current architecture roadmap...
               </div>
             </div>
           </div>
 
-          <div class="col-span-12 lg:col-span-4">
-            <h3 class="font-headline text-lg font-bold uppercase tracking-widest text-on-surface mb-6">Live Applications</h3>
-            <div class="space-y-4">
-              <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
-                <div class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant group-hover:text-secondary transition-colors">
-                  <span class="material-symbols-outlined">corporate_fare</span>
-                </div>
-                <div class="flex-1">
-                  <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Airbnb</h5>
-                  <p class="text-[10px] text-on-surface-variant">Applied Oct 25 • Senior Frontend</p>
-                </div>
-                <span class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest">Applied</span>
-              </div>
-              <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
-                <div class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant">
-                  <span class="material-symbols-outlined">rocket_launch</span>
-                </div>
-                <div class="flex-1">
-                  <h5 class="text-xs font-bold font-headline uppercase tracking-wide">SpaceX</h5>
-                  <p class="text-[10px] text-on-surface-variant">Form Filled • Oct 22</p>
-                </div>
-                <span class="inline-block px-2 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-[8px] font-bold uppercase tracking-widest">In Progress</span>
-              </div>
-              <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
-                <div class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant">
-                  <span class="material-symbols-outlined">monitoring</span>
-                </div>
-                <div class="flex-1">
-                  <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Datadog</h5>
-                  <p class="text-[10px] text-on-surface-variant">Applied Oct 15 • Staff Engineer</p>
-                </div>
-                <span class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest">Applied</span>
-              </div>
-              <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
-                <div class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant">
-                  <span class="material-symbols-outlined">work</span>
-                </div>
-                <div class="flex-1">
-                  <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Figma</h5>
-                  <p class="text-[10px] text-on-surface-variant">Applied Oct 12 • Product Eng</p>
-                </div>
-                <span class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest">Applied</span>
-              </div>
-            </div>
-            <!-- AI Insight -->
-            <div class="mt-8 bg-tertiary-container/30 rounded-xl p-6 border border-tertiary/10 relative">
-              <span class="absolute -top-3 left-6 px-2 bg-surface text-[10px] font-headline font-bold text-tertiary uppercase tracking-widest">AI Insight</span>
-              <p class="text-xs text-on-surface-variant leading-relaxed">
-                Your resume for <span class="text-secondary">Stripe</span> is missing keywords found in 85% of recent Fintech job descriptions.
-              </p>
-              <button class="mt-4 text-[10px] font-headline font-bold uppercase tracking-widest text-secondary flex items-center gap-2 group">
-                Optimise Now<span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Floating Progress Bar -->
-        <div class="fixed bottom-8 right-8 w-80 glass-card p-4 rounded-xl shadow-2xl border border-secondary/20 backdrop-blur-md">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-[10px] font-headline font-bold uppercase tracking-widest text-on-surface">Tailoring Resume...</span>
-            <span class="text-[10px] font-mono text-secondary">78%</span>
-          </div>
-          <div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden">
-            <div class="h-full bg-secondary shadow-[0_0_10px_#4ad7f3] transition-all duration-500" style="width: 78%"></div>
-          </div>
-          <p class="text-[9px] text-on-surface-variant mt-2 italic">Injecting Cloud Architecture keywords based on job description...</p>
-        </div>
-      </section>
-    </main>
-  </div>
-
-
-  <!-- ═══════════════════════════════════════════════════════════════════
-       SCREEN 4 · Resume Editor (Split-Pane with AI Sidebar)
-       ═══════════════════════════════════════════════════════════════════ -->
-  <div class="screen" id="screen-editor">
-
-    <!-- Sidebar (top-9 = 36px offset for ref nav) -->
-    <aside class="w-64 fixed left-0 top-9 h-[calc(100vh-36px)] bg-[#13131b] flex flex-col py-8 px-4 z-50">
-      <div class="mb-10 px-2">
-        <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter headline-font">BypassHire</h1>
-        <p class="text-[10px] uppercase tracking-[0.2em] text-on-primary-container font-medium">The Intelligent Architect</p>
-      </div>
-      <nav class="flex-1 space-y-2">
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">dashboard</span>Dashboard
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3]" href="#">
-          <span class="material-symbols-outlined">description</span>Resumes
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">assignment_turned_in</span>Applications
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">settings</span>Settings
-        </a>
-      </nav>
-      <div class="mt-auto pt-6 border-t border-outline-variant/10 space-y-2">
-        <button class="w-full flex items-center justify-center gap-2 py-3 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-sm tracking-tight active:scale-95 transition-transform">
-          <span class="material-symbols-outlined text-sm">add</span>New Resume
-        </button>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">help_outline</span>Support
-        </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors" href="#">
-          <span class="material-symbols-outlined">logout</span>Logout
-        </a>
-      </div>
-    </aside>
-
-    <!-- Top Bar (top-9 = 36px offset for ref nav) -->
-    <header class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl flex justify-between items-center px-8 border-b border-[#47464c]/15">
-      <div class="flex items-center gap-4">
-        <div class="flex flex-col">
-          <span class="font-headline font-bold text-sm tracking-tight text-on-surface">Senior SWE at Google</span>
-          <span class="font-headline uppercase tracking-widest text-[10px] text-secondary">AI Revision 3</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-6">
-        <div class="flex items-center gap-2 bg-surface-container-high rounded-full px-4 py-1.5 border border-outline-variant/10">
-          <span class="w-2 h-2 rounded-full bg-secondary ai-glow"></span>
-          <span class="font-headline uppercase tracking-widest text-[10px] text-on-surface-variant">AI Status: Ready</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <button class="px-4 py-1.5 rounded-lg border border-outline-variant/30 text-xs font-headline font-bold uppercase tracking-wider text-on-surface hover:bg-surface-container-highest transition-all">Master Profile</button>
-          <button class="px-4 py-1.5 rounded-lg bg-secondary text-on-secondary text-xs font-headline font-bold uppercase tracking-wider hover:opacity-90 transition-opacity">Accept All Changes</button>
-        </div>
-        <div class="h-6 w-[1px] bg-outline-variant/20"></div>
-        <div class="flex items-center gap-4">
-          <button class="text-on-surface-variant hover:text-secondary transition-colors">
-            <span class="material-symbols-outlined">notifications</span>
-          </button>
-          <div class="w-8 h-8 rounded-full overflow-hidden border border-secondary/30">
-            <img class="w-full h-full object-cover" alt="User"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdqdMc-TPj24DMvwhk4ATNL7mKf7knrfW56pYZmjGHtgUzKiBbgaStJ0TKKAxQYA_u-GhbJ0Z3kx79NvDMjrGB8iGYpVr9KXS_5JuKHBB3EfBT8RNK_wiYQv4K65Zl7kN79MYcFMVWkTq4UbkXj0-f4hSPuKGLPaMsr48gnoOpyKU-HRRzLVhEzJ4mjWi79jyH5QjRcJhaXZjeYfdkta8kYnUeYf7-1_kXSteNIRHt7dJXPx0CKe5A8KOqRSSKNrx4kXCY5xooJbc" />
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Split-Pane -->
-    <main class="ml-64 pt-16 h-[calc(100vh-36px)] flex overflow-hidden">
-
-      <!-- Left: Resume Document (60%) -->
-      <section class="w-[60%] h-full overflow-y-auto no-scrollbar bg-surface-container-lowest p-12 flex justify-center">
-        <div class="resume-page w-full max-w-[800px] min-h-[1050px] bg-white text-[#1a1b26] p-16 font-body leading-relaxed text-sm selection:bg-secondary/30">
-          <div class="mb-10 text-center">
-            <h2 class="text-3xl font-bold tracking-tight mb-2">Alex Rivera</h2>
-            <p class="text-slate-500 font-medium">San Francisco, CA • alex.rivera@dev.io • github.com/arivera</p>
-          </div>
-          <div class="mb-8">
-            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4">Professional Summary</h3>
-            <p class="text-slate-700">
-              Highly analytical Software Engineer with 8+ years of experience building scalable distributed systems.
-              <span class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400">Expertise in Go, Kubernetes, and high-throughput microservices architecture.</span>
-              Proven track record of optimizing latency in real-time bidding systems by <del class="bg-red-50 text-red-600 line-through decoration-red-500">25%</del> <span class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400">40% using advanced caching strategies</span>.
-            </p>
-          </div>
-          <div class="mb-8">
-            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4">Experience</h3>
-            <div class="mb-6">
-              <div class="flex justify-between items-baseline mb-1">
-                <h4 class="font-bold text-base text-slate-900">Senior Software Engineer</h4>
-                <span class="text-xs font-medium text-slate-500 italic">2020 – Present</span>
-              </div>
-              <div class="text-xs font-bold text-slate-600 mb-3 italic">TechFlow Solutions, Remote</div>
-              <ul class="list-disc ml-4 space-y-2 text-slate-700">
-                <li>Architected and deployed a multi-region data pipeline processing 2TB/day.</li>
-                <li><span class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400">Spearheaded transition to gRPC, reducing service-to-service communication overhead by 35%.</span></li>
-                <li>Led a team of 5 engineers in migrating legacy monolith to a service-oriented architecture.</li>
-                <li><del class="bg-red-50 text-red-600 line-through decoration-red-500">Maintained existing CI/CD pipelines using Jenkins.</del></li>
-                <li><span class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400">Designed automated CI/CD workflows using GitHub Actions and Terraform for seamless multi-cloud deployments.</span></li>
-              </ul>
-            </div>
-            <div class="mb-6 opacity-60 grayscale-[0.5]">
-              <div class="flex justify-between items-baseline mb-1">
-                <h4 class="font-bold text-base text-slate-900">Full Stack Developer</h4>
-                <span class="text-xs font-medium text-slate-500 italic">2017 – 2020</span>
-              </div>
-              <div class="text-xs font-bold text-slate-600 mb-3 italic">Orbit Labs, Austin, TX</div>
-              <ul class="list-disc ml-4 space-y-2 text-slate-700">
-                <li>Developed responsive React-based dashboards for fintech monitoring.</li>
-                <li>Implemented GraphQL layers to aggregate data from 12+ legacy APIs.</li>
-              </ul>
-            </div>
-          </div>
-          <div>
-            <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4">Skills</h3>
-            <div class="grid grid-cols-2 gap-y-2 text-slate-700">
-              <p><span class="font-bold text-slate-900">Languages:</span> Go, TypeScript, Python, Rust</p>
-              <p><span class="font-bold text-slate-900">Tools:</span> Docker, Kubernetes, Terraform</p>
-              <p><span class="font-bold text-slate-900">Databases:</span> PostgreSQL, Redis, Cassandra</p>
-              <p><span class="font-bold text-slate-900">Cloud:</span> AWS, GCP, Azure</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right: AI Tailoring Sidebar (40%) -->
-      <aside class="w-[40%] h-full bg-surface-container-low border-l border-outline-variant/10 flex flex-col">
-        <!-- Job Description -->
-        <div class="p-6 border-b border-outline-variant/10 max-h-[30%] overflow-y-auto no-scrollbar">
-          <div class="flex justify-between items-center mb-4">
-            <h4 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">Target Job Description</h4>
-            <button class="text-[10px] font-bold text-secondary uppercase tracking-tighter">Edit Text</button>
-          </div>
-          <div class="bg-surface-container-lowest p-4 rounded-xl text-xs font-body leading-relaxed text-on-primary-container border border-outline-variant/5">
-            <p>We are seeking a <span class="text-secondary font-bold">Senior Software Engineer</span> to join our <span class="text-secondary font-bold">Google Cloud</span> Infrastructure team. The ideal candidate has deep expertise in <span class="text-secondary font-bold">distributed systems</span> and <span class="text-secondary font-bold">microservices</span>. You will focus on <span class="text-secondary font-bold">latency optimization</span> and <span class="text-secondary font-bold">high-throughput data processing</span> using Go and <span class="text-secondary font-bold">Kubernetes</span>. Experience with <span class="text-secondary font-bold">Infrastructure as Code (Terraform)</span> is a must...</p>
-          </div>
-        </div>
-        <!-- AI Reasoning + Chat -->
-        <div class="flex-1 flex flex-col p-6 overflow-hidden">
-          <h4 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">AI Architect Reasoning</h4>
-          <div class="flex-1 overflow-y-auto no-scrollbar space-y-6 mb-4">
-            <div class="glass-panel p-5 rounded-xl border border-secondary/10 relative overflow-hidden">
-              <div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
-              <div class="flex items-start gap-3 mb-3">
-                <span class="material-symbols-outlined text-secondary">auto_awesome</span>
-                <div>
-                  <p class="text-xs font-bold text-secondary-fixed mb-1">Tailoring Strategy Applied</p>
-                  <p class="text-xs text-on-surface-variant leading-relaxed">I've emphasized your experience with <strong>Go</strong> and <strong>Kubernetes</strong> in the professional summary and first role to align with Google's core stack requirements.</p>
-                </div>
-              </div>
-              <div class="flex gap-2">
-                <span class="px-2 py-1 rounded bg-tertiary-container text-[10px] text-tertiary font-bold uppercase tracking-tighter">Latency Focus</span>
-                <span class="px-2 py-1 rounded bg-tertiary-container text-[10px] text-tertiary font-bold uppercase tracking-tighter">GCP Alignment</span>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/20">
-                <span class="material-symbols-outlined text-sm text-on-surface-variant">person</span>
-              </div>
-              <div class="bg-surface-container-high p-4 rounded-2xl rounded-tl-none border border-outline-variant/10 text-xs text-on-surface">
-                Make the summary section more concise but keep the mention of real-time bidding systems.
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center ai-glow">
-                <span class="material-symbols-outlined text-sm text-on-secondary">smart_toy</span>
-              </div>
-              <div class="bg-surface-container-high p-4 rounded-2xl rounded-tl-none border border-outline-variant/10 text-xs text-on-surface-variant italic">
-                Analyzing... Refactoring Summary for high impact brevity...
-              </div>
-            </div>
-          </div>
-          <div class="relative group">
-            <input class="w-full bg-surface-container-lowest border-0 border-b border-outline-variant/20 py-4 pl-4 pr-12 text-sm focus:ring-0 focus:border-secondary transition-all font-body placeholder:text-outline/40" placeholder="Type AI commands (e.g. 'Strengthen my Skills section')..." type="text" />
-            <button class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors">
-              <span class="material-symbols-outlined">send</span>
+          <div class="mt-12 flex justify-end gap-4">
+            <button
+              class="px-8 py-3 rounded-xl border border-slate-200 text-slate-400 font-semibold"
+            >
+              Save for Later
+            </button>
+            <button
+              class="px-8 py-3 rounded-xl bg-slate-200 text-slate-400 font-semibold cursor-not-allowed"
+            >
+              Continue
             </button>
           </div>
         </div>
-        <!-- Action Tray -->
-        <div class="p-6 bg-surface-container-highest/30 border-t border-outline-variant/10 grid grid-cols-2 gap-4">
-          <button class="flex items-center justify-center gap-2 py-3 bg-surface-container-high border border-outline-variant/30 rounded-xl font-headline font-bold text-xs uppercase tracking-widest text-on-surface hover:bg-surface-container-highest transition-all active:scale-95">
-            <span class="material-symbols-outlined text-sm">refresh</span>Regenerate Section
+      </main>
+
+      <!-- BYPASS HIRE EXTENSION SIDEBAR (Right) -->
+      <aside
+        class="w-96 h-full bg-surface-container-low border-l border-outline-variant/15 flex flex-col z-50"
+      >
+        <!-- Extension Header -->
+        <div class="p-6 bg-surface-container-high/50 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-on-secondary text-xl font-bold"
+                  >architecture</span
+                >
+              </div>
+              <span class="font-headline font-bold text-lg tracking-tight">BypassHire</span>
+            </div>
+            <span
+              class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface"
+              >close</span
+            >
+          </div>
+          <div class="glass-panel p-3 rounded-xl flex items-center gap-3">
+            <span
+              class="material-symbols-outlined text-secondary animate-pulse"
+              style="font-variation-settings: 'FILL' 1"
+              >magic_button</span
+            >
+            <div>
+              <p class="font-headline text-xs font-bold uppercase tracking-widest text-secondary">
+                AI Auto-Fill Active
+              </p>
+              <p class="text-[10px] text-on-surface-variant">Ready to sync 18 fields</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-grow overflow-y-auto custom-scrollbar p-6 space-y-8">
+          <!-- Field Mapping -->
+          <section>
+            <div class="flex items-center justify-between mb-4">
+              <h2
+                class="font-headline text-xs font-bold uppercase tracking-widest text-primary-fixed-dim"
+              >
+                Review Field Mapping
+              </h2>
+              <span class="material-symbols-outlined text-sm text-on-surface-variant cursor-pointer"
+                >tune</span
+              >
+            </div>
+            <div class="space-y-2">
+              <div
+                class="bg-surface-container-high p-4 rounded-xl group hover:bg-surface-container-highest transition-colors"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <span
+                    class="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider"
+                    >Form: Work Experience</span
+                  >
+                  <span
+                    class="material-symbols-outlined text-secondary text-sm"
+                    style="font-variation-settings: 'FILL' 1"
+                    >check_circle</span
+                  >
+                </div>
+                <p class="text-sm font-medium text-on-surface line-clamp-2 leading-relaxed">
+                  Lead Infrastructure Engineer at CloudScale Systems (2021-Present)
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-high p-4 rounded-xl group hover:bg-surface-container-highest transition-colors"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <span
+                    class="text-[10px] font-medium text-on-surface-variant uppercase tracking-wider"
+                    >Form: Education</span
+                  >
+                  <span
+                    class="material-symbols-outlined text-secondary text-sm"
+                    style="font-variation-settings: 'FILL' 1"
+                    >check_circle</span
+                  >
+                </div>
+                <p class="text-sm font-medium text-on-surface">B.S. Computer Science</p>
+              </div>
+              <div
+                class="bg-surface-container-high p-4 rounded-xl border border-secondary/20 group hover:bg-surface-container-highest transition-colors"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <span class="text-[10px] font-medium text-secondary uppercase tracking-wider"
+                    >Form: Skills</span
+                  >
+                  <span class="material-symbols-outlined text-secondary-fixed-dim text-sm"
+                    >info</span
+                  >
+                </div>
+                <div class="flex flex-wrap gap-1">
+                  <span
+                    class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium"
+                    >Kubernetes</span
+                  >
+                  <span
+                    class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium"
+                    >Rust</span
+                  >
+                  <span
+                    class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded-full text-[10px] font-medium"
+                    >Terraform</span
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Screening Questions -->
+          <section>
+            <div class="flex items-center justify-between mb-4">
+              <h2
+                class="font-headline text-xs font-bold uppercase tracking-widest text-primary-fixed-dim"
+              >
+                Screening Questions
+              </h2>
+              <span class="text-[10px] text-secondary font-bold">2 Generated</span>
+            </div>
+            <div class="bg-surface-container-lowest p-5 rounded-xl border-l-2 border-secondary">
+              <div class="flex justify-between items-start mb-3">
+                <p class="text-[11px] font-bold text-on-surface/80">
+                  "Why do you want to work here?"
+                </p>
+                <button
+                  class="text-secondary text-[10px] font-bold uppercase tracking-tighter hover:underline"
+                >
+                  Edit
+                </button>
+              </div>
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                "Leveraging my expertise in distributed systems, I aim to contribute to your
+                architecture's resilience..."
+              </p>
+              <div class="mt-4 flex items-center gap-2">
+                <div class="h-1 flex-grow bg-surface-variant rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary w-[85%] glow-line"></div>
+                </div>
+                <span class="text-[9px] text-on-surface-variant font-mono">Tailored: 85%</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Application Score -->
+          <div class="p-4 rounded-xl bg-surface-container-highest/30 flex items-center gap-4">
+            <div
+              class="w-10 h-10 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-on-surface-variant text-lg"
+                >insights</span
+              >
+            </div>
+            <div>
+              <p class="text-[11px] font-bold text-on-surface">Application Score</p>
+              <p class="text-[10px] text-on-surface-variant">
+                High match for technical requirements.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-6 bg-surface-container-low border-t border-outline-variant/10 space-y-3">
+          <button
+            class="w-full bg-secondary text-on-secondary py-4 rounded-xl font-headline font-bold text-sm tracking-wide hover:opacity-90 transition-all flex items-center justify-center gap-2"
+          >
+            <span class="material-symbols-outlined text-xl">sync</span>
+            Review &amp; Sync to Form
           </button>
-          <button class="flex items-center justify-center gap-2 py-3 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all active:scale-95">
-            <span class="material-symbols-outlined text-sm">download</span>Export to .docx
+          <button
+            class="w-full bg-surface-container-highest text-on-surface py-3 rounded-xl font-headline font-bold text-xs tracking-widest uppercase opacity-60 hover:opacity-100 transition-all"
+          >
+            Submit Application
           </button>
+          <p class="text-center text-[9px] text-on-surface-variant px-4">
+            BypassHire intelligent filler is currently in
+            <span class="text-secondary">Precision Mode</span>.
+          </p>
         </div>
       </aside>
-    </main>
 
-    <!-- Contextual Progress Bar -->
-    <div class="fixed bottom-0 right-0 w-[40%] h-1 bg-surface-variant">
-      <div class="h-full bg-secondary ai-glow w-[75%] transition-all duration-1000 ease-out"></div>
+      <!-- Floating Notification -->
+      <div
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-surface-container-highest px-6 py-3 rounded-full shadow-2xl border border-outline-variant/20 z-40"
+      >
+        <div class="flex -space-x-2">
+          <img
+            class="w-6 h-6 rounded-full border-2 border-surface"
+            alt=""
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3hUZvx1GbAnY3AbPgWWUHzNRi81GB81-PNerRFNDxp12iSnw9rR6lP5v_JaPF4v8mY3sWJuhT5xtJU4t4Vbda4hlr0mh5Qt0W8IDw_6ovPDOHpB9x-pHlpwntoAJ02-KAVa0B2CQSVtGXerfHr7YjOaOjL8sl5YsPzDxSB8dLv6nCor8C7QdFhkYVLtYjMo6AXyk0TND1o0jSwFvYoWGyrGVT8hCspZdtJjBvehJ6L1BDrrN9P4oFArjAy2Jze4q-UW2i6qnNUic"
+          />
+          <img
+            class="w-6 h-6 rounded-full border-2 border-surface"
+            alt=""
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKstn5-84D9URJG6_M0N44-My64ikVEZ967hXfs58DOKttEQL4mPqgxW2O7eRt_-C07biSNzhjfc9-_LL70_id0pOmxtZ4yC5JZaR6iuFifAkv7ADY9IV_JXU50q-NC9nuJO_tpmevz4x-k-pN2vZa5HYZr0p9WPTJyIsBFcjR0AKbFJK6J94LyTMZZ6aUasb9kVKvZHwTEKQiEnajeounpo5gLVDMjMno4vvs59sPVagIElIVuPaZc4iHbWtNg8VOXozJCVbqHcw"
+          />
+        </div>
+        <p class="text-[11px] font-medium text-on-surface">12 other users filled this today</p>
+        <div class="h-4 w-[1px] bg-outline-variant/30"></div>
+        <span class="text-[11px] font-bold text-secondary cursor-pointer hover:underline"
+          >View Community Insights</span
+        >
+      </div>
     </div>
-  </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════════
+       SCREEN 2 · Project Setup (Initialize Architect Engine)
+       ═══════════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-setup">
+      <!-- Sidebar (top-9 = 36px offset for ref nav) -->
+      <aside
+        class="h-[calc(100vh-36px)] w-64 fixed left-0 top-9 bg-[#13131b] flex flex-col py-8 px-4 z-50 overflow-y-auto no-scrollbar"
+      >
+        <div class="mb-10 px-4">
+          <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter font-headline">
+            BypassHire
+          </h1>
+          <p class="font-headline font-medium text-xs tracking-wide text-on-primary-container">
+            The Intelligent Architect
+          </p>
+        </div>
+        <nav class="flex-1 space-y-1">
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">dashboard</span>Dashboard
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3] font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">description</span>Resumes
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">assignment_turned_in</span>Applications
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">settings</span>Settings
+          </a>
+        </nav>
+        <div class="mt-auto space-y-1">
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">help_outline</span>Support
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">logout</span>Logout
+          </a>
+        </div>
+      </aside>
 
-  <!-- Screen switcher -->
-  <script>
-    const tabs = document.querySelectorAll('.ref-tab');
-    const screens = document.querySelectorAll('.screen');
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        screens.forEach(s => s.classList.remove('active'));
-        tabs.forEach(t => t.classList.remove('active'));
-        document.getElementById(tab.dataset.screen).classList.add('active');
-        tab.classList.add('active');
-        window.scrollTo(0, 0);
+      <!-- Top Bar (top-9 = 36px offset for ref nav) -->
+      <header
+        class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl border-b border-[#47464c]/15 flex justify-between items-center px-8"
+      >
+        <div class="flex items-center gap-4">
+          <span class="font-headline uppercase tracking-widest text-xs text-secondary-fixed-dim"
+            >Project Setup</span
+          >
+          <span class="text-outline-variant/30">/</span>
+          <span class="font-headline uppercase tracking-widest text-xs text-on-surface"
+            >New Tailoring Project</span
+          >
+        </div>
+        <div class="flex items-center gap-6">
+          <div
+            class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/10"
+          >
+            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+            <span
+              class="font-headline uppercase tracking-widest text-[10px] text-on-surface-variant"
+              >AI Status: Ready</span
+            >
+          </div>
+          <div class="flex items-center gap-4 text-on-surface-variant">
+            <button class="material-symbols-outlined hover:text-secondary transition-colors">
+              notifications
+            </button>
+            <div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+              <span class="text-xs font-medium font-headline">ARCHITECT_01</span>
+              <img
+                alt="User"
+                class="w-8 h-8 rounded-lg bg-surface-container-highest"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzFEBuIS95Zu1z2q8oRdi51BCxD4vAa3yPJ075iYlixYk7CT3iXctKgKFzC2UBDfjyo8Q_DUw60t78_utT_XjwRBbQjgA17Qo42NH4h-CNvaE2iMsiiBQ6tBp2nc9b2eNnsZkyAB7icXGQTqI-ijvHYF3p3cmpkMjY3TnBXjiY3w26h5qqeMVuQWiTZ6ooQqkuU9rIbUVA6sI7QNYGp8KR89247NHmfWh_4jYsq2R7IC0fINssQslIlNC31bnA-6be1eMW4o5HdY0"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="ml-64 pt-16 min-h-screen bg-surface overflow-y-auto">
+        <div class="max-w-5xl mx-auto py-12 px-8">
+          <section class="mb-12">
+            <h2 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">
+              Initialize Architect Engine
+            </h2>
+            <p class="text-on-surface-variant max-w-2xl leading-relaxed">
+              Provide the structural parameters for your next role. Our AI will analyze the
+              requirements and align your professional narrative for maximum technical impact.
+            </p>
+          </section>
+
+          <!-- 01: Project Details -->
+          <section class="mb-10 bg-surface-container-low p-8 rounded-xl">
+            <div class="flex items-center gap-3 mb-8">
+              <span
+                class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline"
+                >01</span
+              >
+              <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">
+                Project Details
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="space-y-2">
+                <label
+                  class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label"
+                  >Job Title</label
+                >
+                <input
+                  class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                  placeholder="e.g. Senior Backend Engineer"
+                  type="text"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label"
+                  >Company Name</label
+                >
+                <input
+                  class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                  placeholder="e.g. Neuralink"
+                  type="text"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label"
+                  >Job URL (Optional)</label
+                >
+                <input
+                  class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                  placeholder="https://careers.company.com/..."
+                  type="url"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- 02 / 03: Tailoring Context -->
+          <section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Job Description -->
+            <div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
+              <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                  <span
+                    class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline"
+                    >02</span
+                  >
+                  <h3
+                    class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface"
+                  >
+                    Job Description
+                  </h3>
+                </div>
+                <button
+                  class="text-xs font-bold text-secondary hover:underline flex items-center gap-1"
+                >
+                  <span class="material-symbols-outlined text-sm">auto_fix_high</span>Fetch from URL
+                </button>
+              </div>
+              <div
+                class="flex-1 bg-surface-container-lowest rounded-lg border border-outline-variant/5 group focus-within:border-secondary/30 transition-all p-4"
+              >
+                <textarea
+                  class="w-full h-full bg-transparent border-0 focus:ring-0 text-sm leading-relaxed text-on-surface-variant resize-none font-body placeholder:text-on-surface-variant/20"
+                  placeholder="Paste the full job description text here for deep analysis..."
+                ></textarea>
+              </div>
+            </div>
+            <!-- Your Context -->
+            <div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
+              <div class="flex items-center gap-3 mb-6">
+                <span
+                  class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline"
+                  >03</span
+                >
+                <h3
+                  class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface"
+                >
+                  Your Context
+                </h3>
+              </div>
+              <div class="flex-1 space-y-4">
+                <div
+                  class="bg-surface-container-high border-2 border-dashed border-outline-variant/20 rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-secondary/40 transition-all group"
+                >
+                  <span
+                    class="material-symbols-outlined text-4xl text-outline-variant/40 group-hover:text-secondary mb-3 transition-colors"
+                    >upload_file</span
+                  >
+                  <p class="text-sm font-medium text-on-surface mb-1">Upload Master Profile</p>
+                  <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">
+                    Supports PDF, DOCX, or JSON
+                  </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                  <button
+                    class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary"
+                      >code</span
+                    >
+                    <span class="text-xs font-bold uppercase tracking-widest text-on-surface"
+                      >Link GitHub</span
+                    >
+                  </button>
+                  <button
+                    class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group"
+                  >
+                    <span
+                      class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary"
+                      >folder_special</span
+                    >
+                    <span class="text-xs font-bold uppercase tracking-widest text-on-surface"
+                      >Projects</span
+                    >
+                  </button>
+                </div>
+              </div>
+              <div class="mt-6 flex items-center gap-4 px-2">
+                <div class="flex -space-x-2">
+                  <div
+                    class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center border-2 border-surface-container-low"
+                  >
+                    <span class="material-symbols-outlined text-xs text-tertiary">description</span>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#1e2a1e] flex items-center justify-center border-2 border-surface-container-low"
+                  >
+                    <span class="material-symbols-outlined text-xs text-[#4ade80]">terminal</span>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#2a1e1e] flex items-center justify-center border-2 border-surface-container-low"
+                  >
+                    <span class="material-symbols-outlined text-xs text-[#f87171]"
+                      >picture_as_pdf</span
+                    >
+                  </div>
+                </div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                  Sources Linked (0)
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 04: Tailoring Options -->
+          <section class="mb-12 bg-surface-container-low p-8 rounded-xl">
+            <div class="flex items-center gap-3 mb-8">
+              <span
+                class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline"
+                >04</span
+              >
+              <h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">
+                Tailoring Options
+              </h3>
+            </div>
+            <div class="flex flex-col md:flex-row gap-12">
+              <div class="flex items-start gap-4 flex-1">
+                <div class="relative inline-flex items-center cursor-pointer mt-1">
+                  <input checked class="sr-only peer" type="checkbox" />
+                  <div
+                    class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"
+                  ></div>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-on-surface mb-1">Keep original style template</p>
+                  <p class="text-xs text-on-surface-variant">
+                    Maintains your current layout formatting while updating content.
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-start gap-4 flex-1">
+                <div class="relative inline-flex items-center cursor-pointer mt-1">
+                  <input class="sr-only peer" type="checkbox" />
+                  <div
+                    class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"
+                  ></div>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-on-surface mb-1">Emphasize specific skills</p>
+                  <p class="text-xs text-on-surface-variant">
+                    Prioritizes technical keywords from the job description in the summary section.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CTA -->
+          <div class="flex flex-col items-center">
+            <button
+              class="w-full max-w-md bg-secondary text-on-secondary py-5 rounded-xl font-headline font-bold text-lg uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(74,215,243,0.3)] hover:shadow-[0_0_30px_rgba(74,215,243,0.5)] transition-all active:scale-[0.98]"
+            >
+              Start Tailoring
+            </button>
+            <div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+              <span class="material-symbols-outlined text-sm">lock</span>
+              <span class="text-[10px] uppercase tracking-widest font-bold"
+                >Encrypted Architect Processing</span
+              >
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+       SCREEN 3 · Dashboard
+       ═══════════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-dashboard">
+      <!-- Sidebar (top-9 = 36px offset for ref nav) -->
+      <aside
+        class="h-[calc(100vh-36px)] w-64 fixed left-0 top-9 bg-[#13131b] flex flex-col py-8 px-4 z-50"
+      >
+        <div class="mb-10 px-2">
+          <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter font-headline">
+            BypassHire
+          </h1>
+          <p class="text-[10px] font-headline uppercase tracking-[0.2em] text-on-primary-container">
+            The Intelligent Architect
+          </p>
+        </div>
+        <button
+          class="mb-8 w-full py-3 bg-secondary text-on-secondary font-headline font-bold rounded-xl active:scale-90 transition-transform flex items-center justify-center gap-2"
+        >
+          <span class="material-symbols-outlined text-sm">add</span>New Resume
+        </button>
+        <nav class="flex-1 space-y-2">
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3] font-headline font-medium text-sm tracking-wide"
+            href="#"
+          >
+            <span class="material-symbols-outlined">dashboard</span>Dashboard
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">description</span>Resumes
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">assignment_turned_in</span>Applications
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">settings</span>Settings
+          </a>
+        </nav>
+        <div class="mt-auto space-y-2 pt-4 border-t border-outline-variant/10">
+          <a
+            class="flex items-center gap-3 px-4 py-2 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">help_outline</span>Support
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-2 text-[#c6c5d4]/60 hover:text-[#c6c5d4] font-headline font-medium text-sm tracking-wide hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">logout</span>Logout
+          </a>
+        </div>
+      </aside>
+
+      <!-- Top Bar (top-9 = 36px offset for ref nav) -->
+      <header
+        class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl border-b border-[#47464c]/15 flex justify-between items-center px-8"
+      >
+        <div class="flex items-center gap-4">
+          <div
+            class="glass-card px-3 py-1 rounded-full border border-secondary/20 flex items-center gap-2"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-secondary animate-pulse shadow-[0_0_8px_#4ad7f3]"
+            ></span>
+            <span class="font-headline uppercase tracking-widest text-[10px] text-secondary"
+              >AI Status: Ready</span
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-sm"
+              >search</span
+            >
+            <input
+              class="bg-surface-container-low border-none rounded-lg pl-10 pr-4 py-1.5 text-[10px] font-headline tracking-widest focus:ring-1 focus:ring-secondary/50 w-64 placeholder:text-outline/50 uppercase"
+              placeholder="SEARCH ASSETS..."
+              type="text"
+            />
+          </div>
+          <div class="flex items-center gap-4">
+            <button class="text-on-surface-variant hover:text-secondary transition-all">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant/30">
+              <img
+                class="h-full w-full object-cover"
+                alt="User"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS-GXC6Hm3IC2BcL4mQeQauUIS2NzwQph_20gGxNkGUdHC7Vx1v_McMw0A9uaYksyNy3_7Sb5vd_pqNC2lyOB56S64mP6iHXrmctrFj3IEuMjZuSdiglqtcOOnJN-6860NBLwv_ayOVHOOKW6n5MZX_PGWUuQckxF-JBcRaAkqZw3Ga7c6AaJNPy8ZEiL53JaYnJoeITbZkYl-TxUTFUdclwGmZ5qyfzOs1hyxwe5zrLFJ3pJF5ywc1NahB2aBvlL-e6x846A7Cuo"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="ml-64 min-h-screen overflow-y-auto">
+        <section class="pt-24 px-10 pb-12">
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-12 gap-6 mb-12">
+            <div
+              class="col-span-12 md:col-span-4 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group"
+            >
+              <div
+                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-6xl">auto_awesome</span>
+              </div>
+              <p
+                class="font-headline uppercase tracking-[0.2em] text-[10px] text-on-surface-variant mb-2"
+              >
+                Resumes Tailored
+              </p>
+              <h2 class="text-4xl font-headline font-bold text-on-surface">128</h2>
+              <p class="text-[11px] text-secondary mt-2 flex items-center gap-1 font-medium">
+                <span class="material-symbols-outlined text-xs">trending_up</span>+14% vs last month
+              </p>
+            </div>
+            <div
+              class="col-span-12 md:col-span-4 bg-surface-container-low p-6 rounded-xl relative overflow-hidden group"
+            >
+              <div
+                class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-6xl">timer</span>
+              </div>
+              <p
+                class="font-headline uppercase tracking-[0.2em] text-[10px] text-on-surface-variant mb-2"
+              >
+                Time Saved
+              </p>
+              <h2 class="text-4xl font-headline font-bold text-on-surface">42.5h</h2>
+              <p class="text-[11px] text-secondary mt-2 flex items-center gap-1 font-medium">
+                <span class="material-symbols-outlined text-xs">bolt</span>Estimated AI Efficiency
+              </p>
+            </div>
+            <div
+              class="col-span-12 md:col-span-4 bg-surface-container-high p-6 rounded-xl border border-secondary/10 flex flex-col justify-between"
+            >
+              <div>
+                <p class="font-headline uppercase tracking-[0.2em] text-[10px] text-secondary mb-2">
+                  Architect Pro
+                </p>
+                <h3 class="text-xl font-headline font-semibold text-on-surface leading-tight">
+                  Advanced Tailoring Unlocked
+                </h3>
+              </div>
+              <button
+                class="mt-4 text-xs font-headline font-bold uppercase tracking-widest text-on-secondary bg-secondary px-4 py-2 rounded-lg w-fit hover:opacity-90"
+              >
+                View Plan
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent Resumes + Live Applications -->
+          <div class="grid grid-cols-12 gap-10">
+            <div class="col-span-12 lg:col-span-8">
+              <div class="flex items-center justify-between mb-6">
+                <h3
+                  class="font-headline text-lg font-bold uppercase tracking-widest text-on-surface flex items-center gap-3"
+                >
+                  Recent Resumes<span class="h-[1px] w-12 bg-outline-variant/30"></span>
+                </h3>
+                <a
+                  class="text-[10px] font-headline font-bold uppercase tracking-widest text-secondary hover:underline underline-offset-4"
+                  href="#"
+                  >View All Library</a
+                >
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                  class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-secondary/40"
+                >
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="bg-primary-container p-2 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-xl">google</span>
+                    </div>
+                    <span
+                      class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-secondary/10 text-secondary rounded"
+                      >Tailored</span
+                    >
+                  </div>
+                  <h4 class="font-headline text-base font-semibold text-on-surface mb-1">
+                    Senior SWE at Google
+                  </h4>
+                  <p class="text-[11px] text-on-surface-variant font-medium mb-4">
+                    Generated Oct 24, 2023
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >K8s</span
+                    >
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >Go</span
+                    >
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >L5+</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-outline-variant/40"
+                >
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="bg-primary-container p-2 rounded-lg">
+                      <span class="material-symbols-outlined text-on-primary-container text-xl"
+                        >payments</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-surface-container-highest text-on-surface-variant rounded"
+                      >Draft</span
+                    >
+                  </div>
+                  <h4 class="font-headline text-base font-semibold text-on-surface mb-1">
+                    Fullstack Dev at Stripe
+                  </h4>
+                  <p class="text-[11px] text-on-surface-variant font-medium mb-4">
+                    Modified 2 days ago
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >React</span
+                    >
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >Fintech</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-low group cursor-pointer hover:bg-surface-container-high transition-all rounded-xl p-5 border-l-2 border-secondary/40"
+                >
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="bg-primary-container p-2 rounded-lg">
+                      <span class="material-symbols-outlined text-secondary text-xl">terminal</span>
+                    </div>
+                    <span
+                      class="text-[9px] font-headline uppercase tracking-widest px-2 py-1 bg-secondary/10 text-secondary rounded"
+                      >Tailored</span
+                    >
+                  </div>
+                  <h4 class="font-headline text-base font-semibold text-on-surface mb-1">
+                    Infrastructure Lead at Vercel
+                  </h4>
+                  <p class="text-[11px] text-on-surface-variant font-medium mb-4">
+                    Generated Oct 18, 2023
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >Next.js</span
+                    >
+                    <span
+                      class="custom-mono text-[9px] px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded"
+                      >Rust</span
+                    >
+                  </div>
+                </div>
+                <div
+                  class="bg-surface-container-lowest border-2 border-dashed border-outline-variant/20 rounded-xl flex flex-col items-center justify-center p-5 group hover:border-secondary/40 transition-all cursor-pointer"
+                >
+                  <span
+                    class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors mb-2"
+                    >post_add</span
+                  >
+                  <span
+                    class="font-headline uppercase tracking-widest text-[10px] text-outline-variant group-hover:text-on-surface"
+                    >Start New Tailor</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="col-span-12 lg:col-span-4">
+              <h3
+                class="font-headline text-lg font-bold uppercase tracking-widest text-on-surface mb-6"
+              >
+                Live Applications
+              </h3>
+              <div class="space-y-4">
+                <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
+                  <div
+                    class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant group-hover:text-secondary transition-colors"
+                  >
+                    <span class="material-symbols-outlined">corporate_fare</span>
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Airbnb</h5>
+                    <p class="text-[10px] text-on-surface-variant">
+                      Applied Oct 25 • Senior Frontend
+                    </p>
+                  </div>
+                  <span
+                    class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest"
+                    >Applied</span
+                  >
+                </div>
+                <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
+                  <div
+                    class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined">rocket_launch</span>
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="text-xs font-bold font-headline uppercase tracking-wide">SpaceX</h5>
+                    <p class="text-[10px] text-on-surface-variant">Form Filled • Oct 22</p>
+                  </div>
+                  <span
+                    class="inline-block px-2 py-1 rounded-full bg-surface-container-highest text-on-surface-variant text-[8px] font-bold uppercase tracking-widest"
+                    >In Progress</span
+                  >
+                </div>
+                <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
+                  <div
+                    class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined">monitoring</span>
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Datadog</h5>
+                    <p class="text-[10px] text-on-surface-variant">
+                      Applied Oct 15 • Staff Engineer
+                    </p>
+                  </div>
+                  <span
+                    class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest"
+                    >Applied</span
+                  >
+                </div>
+                <div class="bg-surface-container-low p-4 rounded-lg flex items-center gap-4 group">
+                  <div
+                    class="h-10 w-10 bg-surface-container-highest rounded flex items-center justify-center text-on-surface-variant"
+                  >
+                    <span class="material-symbols-outlined">work</span>
+                  </div>
+                  <div class="flex-1">
+                    <h5 class="text-xs font-bold font-headline uppercase tracking-wide">Figma</h5>
+                    <p class="text-[10px] text-on-surface-variant">Applied Oct 12 • Product Eng</p>
+                  </div>
+                  <span
+                    class="inline-block px-2 py-1 rounded-full bg-secondary/10 text-secondary text-[8px] font-bold uppercase tracking-widest"
+                    >Applied</span
+                  >
+                </div>
+              </div>
+              <!-- AI Insight -->
+              <div
+                class="mt-8 bg-tertiary-container/30 rounded-xl p-6 border border-tertiary/10 relative"
+              >
+                <span
+                  class="absolute -top-3 left-6 px-2 bg-surface text-[10px] font-headline font-bold text-tertiary uppercase tracking-widest"
+                  >AI Insight</span
+                >
+                <p class="text-xs text-on-surface-variant leading-relaxed">
+                  Your resume for <span class="text-secondary">Stripe</span> is missing keywords
+                  found in 85% of recent Fintech job descriptions.
+                </p>
+                <button
+                  class="mt-4 text-[10px] font-headline font-bold uppercase tracking-widest text-secondary flex items-center gap-2 group"
+                >
+                  Optimise Now<span
+                    class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform"
+                    >arrow_forward</span
+                  >
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Progress Bar -->
+          <div
+            class="fixed bottom-8 right-8 w-80 glass-card p-4 rounded-xl shadow-2xl border border-secondary/20 backdrop-blur-md"
+          >
+            <div class="flex justify-between items-center mb-2">
+              <span
+                class="text-[10px] font-headline font-bold uppercase tracking-widest text-on-surface"
+                >Tailoring Resume...</span
+              >
+              <span class="text-[10px] font-mono text-secondary">78%</span>
+            </div>
+            <div class="h-1 w-full bg-surface-variant rounded-full overflow-hidden">
+              <div
+                class="h-full bg-secondary shadow-[0_0_10px_#4ad7f3] transition-all duration-500"
+                style="width: 78%"
+              ></div>
+            </div>
+            <p class="text-[9px] text-on-surface-variant mt-2 italic">
+              Injecting Cloud Architecture keywords based on job description...
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+       SCREEN 4 · Resume Editor (Split-Pane with AI Sidebar)
+       ═══════════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-editor">
+      <!-- Sidebar (top-9 = 36px offset for ref nav) -->
+      <aside
+        class="w-64 fixed left-0 top-9 h-[calc(100vh-36px)] bg-[#13131b] flex flex-col py-8 px-4 z-50"
+      >
+        <div class="mb-10 px-2">
+          <h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter headline-font">
+            BypassHire
+          </h1>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-on-primary-container font-medium">
+            The Intelligent Architect
+          </p>
+        </div>
+        <nav class="flex-1 space-y-2">
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">dashboard</span>Dashboard
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3]"
+            href="#"
+          >
+            <span class="material-symbols-outlined">description</span>Resumes
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">assignment_turned_in</span>Applications
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">settings</span>Settings
+          </a>
+        </nav>
+        <div class="mt-auto pt-6 border-t border-outline-variant/10 space-y-2">
+          <button
+            class="w-full flex items-center justify-center gap-2 py-3 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-sm tracking-tight active:scale-95 transition-transform"
+          >
+            <span class="material-symbols-outlined text-sm">add</span>New Resume
+          </button>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">help_outline</span>Support
+          </a>
+          <a
+            class="flex items-center gap-3 px-4 py-3 rounded-xl font-['Space_Grotesk'] font-medium text-sm tracking-wide text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors"
+            href="#"
+          >
+            <span class="material-symbols-outlined">logout</span>Logout
+          </a>
+        </div>
+      </aside>
+
+      <!-- Top Bar (top-9 = 36px offset for ref nav) -->
+      <header
+        class="fixed top-9 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl flex justify-between items-center px-8 border-b border-[#47464c]/15"
+      >
+        <div class="flex items-center gap-4">
+          <div class="flex flex-col">
+            <span class="font-headline font-bold text-sm tracking-tight text-on-surface"
+              >Senior SWE at Google</span
+            >
+            <span class="font-headline uppercase tracking-widest text-[10px] text-secondary"
+              >AI Revision 3</span
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <div
+            class="flex items-center gap-2 bg-surface-container-high rounded-full px-4 py-1.5 border border-outline-variant/10"
+          >
+            <span class="w-2 h-2 rounded-full bg-secondary ai-glow"></span>
+            <span
+              class="font-headline uppercase tracking-widest text-[10px] text-on-surface-variant"
+              >AI Status: Ready</span
+            >
+          </div>
+          <div class="flex items-center gap-3">
+            <button
+              class="px-4 py-1.5 rounded-lg border border-outline-variant/30 text-xs font-headline font-bold uppercase tracking-wider text-on-surface hover:bg-surface-container-highest transition-all"
+            >
+              Master Profile
+            </button>
+            <button
+              class="px-4 py-1.5 rounded-lg bg-secondary text-on-secondary text-xs font-headline font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
+            >
+              Accept All Changes
+            </button>
+          </div>
+          <div class="h-6 w-[1px] bg-outline-variant/20"></div>
+          <div class="flex items-center gap-4">
+            <button class="text-on-surface-variant hover:text-secondary transition-colors">
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-secondary/30">
+              <img
+                class="w-full h-full object-cover"
+                alt="User"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdqdMc-TPj24DMvwhk4ATNL7mKf7knrfW56pYZmjGHtgUzKiBbgaStJ0TKKAxQYA_u-GhbJ0Z3kx79NvDMjrGB8iGYpVr9KXS_5JuKHBB3EfBT8RNK_wiYQv4K65Zl7kN79MYcFMVWkTq4UbkXj0-f4hSPuKGLPaMsr48gnoOpyKU-HRRzLVhEzJ4mjWi79jyH5QjRcJhaXZjeYfdkta8kYnUeYf7-1_kXSteNIRHt7dJXPx0CKe5A8KOqRSSKNrx4kXCY5xooJbc"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Split-Pane -->
+      <main class="ml-64 pt-16 h-[calc(100vh-36px)] flex overflow-hidden">
+        <!-- Left: Resume Document (60%) -->
+        <section
+          class="w-[60%] h-full overflow-y-auto no-scrollbar bg-surface-container-lowest p-12 flex justify-center"
+        >
+          <div
+            class="resume-page w-full max-w-[800px] min-h-[1050px] bg-white text-[#1a1b26] p-16 font-body leading-relaxed text-sm selection:bg-secondary/30"
+          >
+            <div class="mb-10 text-center">
+              <h2 class="text-3xl font-bold tracking-tight mb-2">Alex Rivera</h2>
+              <p class="text-slate-500 font-medium">
+                San Francisco, CA • alex.rivera@dev.io • github.com/arivera
+              </p>
+            </div>
+            <div class="mb-8">
+              <h3
+                class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4"
+              >
+                Professional Summary
+              </h3>
+              <p class="text-slate-700">
+                Highly analytical Software Engineer with 8+ years of experience building scalable
+                distributed systems.
+                <span
+                  class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400"
+                  >Expertise in Go, Kubernetes, and high-throughput microservices
+                  architecture.</span
+                >
+                Proven track record of optimizing latency in real-time bidding systems by
+                <del class="bg-red-50 text-red-600 line-through decoration-red-500">25%</del>
+                <span
+                  class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400"
+                  >40% using advanced caching strategies</span
+                >.
+              </p>
+            </div>
+            <div class="mb-8">
+              <h3
+                class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4"
+              >
+                Experience
+              </h3>
+              <div class="mb-6">
+                <div class="flex justify-between items-baseline mb-1">
+                  <h4 class="font-bold text-base text-slate-900">Senior Software Engineer</h4>
+                  <span class="text-xs font-medium text-slate-500 italic">2020 – Present</span>
+                </div>
+                <div class="text-xs font-bold text-slate-600 mb-3 italic">
+                  TechFlow Solutions, Remote
+                </div>
+                <ul class="list-disc ml-4 space-y-2 text-slate-700">
+                  <li>Architected and deployed a multi-region data pipeline processing 2TB/day.</li>
+                  <li>
+                    <span
+                      class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400"
+                      >Spearheaded transition to gRPC, reducing service-to-service communication
+                      overhead by 35%.</span
+                    >
+                  </li>
+                  <li>
+                    Led a team of 5 engineers in migrating legacy monolith to a service-oriented
+                    architecture.
+                  </li>
+                  <li>
+                    <del class="bg-red-50 text-red-600 line-through decoration-red-500"
+                      >Maintained existing CI/CD pipelines using Jenkins.</del
+                    >
+                  </li>
+                  <li>
+                    <span
+                      class="bg-green-100 text-green-800 px-1 rounded-sm border-b-2 border-green-400"
+                      >Designed automated CI/CD workflows using GitHub Actions and Terraform for
+                      seamless multi-cloud deployments.</span
+                    >
+                  </li>
+                </ul>
+              </div>
+              <div class="mb-6 opacity-60 grayscale-[0.5]">
+                <div class="flex justify-between items-baseline mb-1">
+                  <h4 class="font-bold text-base text-slate-900">Full Stack Developer</h4>
+                  <span class="text-xs font-medium text-slate-500 italic">2017 – 2020</span>
+                </div>
+                <div class="text-xs font-bold text-slate-600 mb-3 italic">
+                  Orbit Labs, Austin, TX
+                </div>
+                <ul class="list-disc ml-4 space-y-2 text-slate-700">
+                  <li>Developed responsive React-based dashboards for fintech monitoring.</li>
+                  <li>Implemented GraphQL layers to aggregate data from 12+ legacy APIs.</li>
+                </ul>
+              </div>
+            </div>
+            <div>
+              <h3
+                class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 pb-2 mb-4"
+              >
+                Skills
+              </h3>
+              <div class="grid grid-cols-2 gap-y-2 text-slate-700">
+                <p>
+                  <span class="font-bold text-slate-900">Languages:</span> Go, TypeScript, Python,
+                  Rust
+                </p>
+                <p>
+                  <span class="font-bold text-slate-900">Tools:</span> Docker, Kubernetes, Terraform
+                </p>
+                <p>
+                  <span class="font-bold text-slate-900">Databases:</span> PostgreSQL, Redis,
+                  Cassandra
+                </p>
+                <p><span class="font-bold text-slate-900">Cloud:</span> AWS, GCP, Azure</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: AI Tailoring Sidebar (40%) -->
+        <aside
+          class="w-[40%] h-full bg-surface-container-low border-l border-outline-variant/10 flex flex-col"
+        >
+          <!-- Job Description -->
+          <div
+            class="p-6 border-b border-outline-variant/10 max-h-[30%] overflow-y-auto no-scrollbar"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h4
+                class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant"
+              >
+                Target Job Description
+              </h4>
+              <button class="text-[10px] font-bold text-secondary uppercase tracking-tighter">
+                Edit Text
+              </button>
+            </div>
+            <div
+              class="bg-surface-container-lowest p-4 rounded-xl text-xs font-body leading-relaxed text-on-primary-container border border-outline-variant/5"
+            >
+              <p>
+                We are seeking a
+                <span class="text-secondary font-bold">Senior Software Engineer</span> to join our
+                <span class="text-secondary font-bold">Google Cloud</span> Infrastructure team. The
+                ideal candidate has deep expertise in
+                <span class="text-secondary font-bold">distributed systems</span> and
+                <span class="text-secondary font-bold">microservices</span>. You will focus on
+                <span class="text-secondary font-bold">latency optimization</span> and
+                <span class="text-secondary font-bold">high-throughput data processing</span> using
+                Go and <span class="text-secondary font-bold">Kubernetes</span>. Experience with
+                <span class="text-secondary font-bold">Infrastructure as Code (Terraform)</span> is
+                a must...
+              </p>
+            </div>
+          </div>
+          <!-- AI Reasoning + Chat -->
+          <div class="flex-1 flex flex-col p-6 overflow-hidden">
+            <h4
+              class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4"
+            >
+              AI Architect Reasoning
+            </h4>
+            <div class="flex-1 overflow-y-auto no-scrollbar space-y-6 mb-4">
+              <div
+                class="glass-panel p-5 rounded-xl border border-secondary/10 relative overflow-hidden"
+              >
+                <div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+                <div class="flex items-start gap-3 mb-3">
+                  <span class="material-symbols-outlined text-secondary">auto_awesome</span>
+                  <div>
+                    <p class="text-xs font-bold text-secondary-fixed mb-1">
+                      Tailoring Strategy Applied
+                    </p>
+                    <p class="text-xs text-on-surface-variant leading-relaxed">
+                      I've emphasized your experience with <strong>Go</strong> and
+                      <strong>Kubernetes</strong> in the professional summary and first role to
+                      align with Google's core stack requirements.
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <span
+                    class="px-2 py-1 rounded bg-tertiary-container text-[10px] text-tertiary font-bold uppercase tracking-tighter"
+                    >Latency Focus</span
+                  >
+                  <span
+                    class="px-2 py-1 rounded bg-tertiary-container text-[10px] text-tertiary font-bold uppercase tracking-tighter"
+                    >GCP Alignment</span
+                  >
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center border border-outline-variant/20"
+                >
+                  <span class="material-symbols-outlined text-sm text-on-surface-variant"
+                    >person</span
+                  >
+                </div>
+                <div
+                  class="bg-surface-container-high p-4 rounded-2xl rounded-tl-none border border-outline-variant/10 text-xs text-on-surface"
+                >
+                  Make the summary section more concise but keep the mention of real-time bidding
+                  systems.
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center ai-glow"
+                >
+                  <span class="material-symbols-outlined text-sm text-on-secondary">smart_toy</span>
+                </div>
+                <div
+                  class="bg-surface-container-high p-4 rounded-2xl rounded-tl-none border border-outline-variant/10 text-xs text-on-surface-variant italic"
+                >
+                  Analyzing... Refactoring Summary for high impact brevity...
+                </div>
+              </div>
+            </div>
+            <div class="relative group">
+              <input
+                class="w-full bg-surface-container-lowest border-0 border-b border-outline-variant/20 py-4 pl-4 pr-12 text-sm focus:ring-0 focus:border-secondary transition-all font-body placeholder:text-outline/40"
+                placeholder="Type AI commands (e.g. 'Strengthen my Skills section')..."
+                type="text"
+              />
+              <button
+                class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-secondary transition-colors"
+              >
+                <span class="material-symbols-outlined">send</span>
+              </button>
+            </div>
+          </div>
+          <!-- Action Tray -->
+          <div
+            class="p-6 bg-surface-container-highest/30 border-t border-outline-variant/10 grid grid-cols-2 gap-4"
+          >
+            <button
+              class="flex items-center justify-center gap-2 py-3 bg-surface-container-high border border-outline-variant/30 rounded-xl font-headline font-bold text-xs uppercase tracking-widest text-on-surface hover:bg-surface-container-highest transition-all active:scale-95"
+            >
+              <span class="material-symbols-outlined text-sm">refresh</span>Regenerate Section
+            </button>
+            <button
+              class="flex items-center justify-center gap-2 py-3 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all active:scale-95"
+            >
+              <span class="material-symbols-outlined text-sm">download</span>Export to .docx
+            </button>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Contextual Progress Bar -->
+      <div class="fixed bottom-0 right-0 w-[40%] h-1 bg-surface-variant">
+        <div
+          class="h-full bg-secondary ai-glow w-[75%] transition-all duration-1000 ease-out"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Screen switcher -->
+    <script>
+      const tabs = document.querySelectorAll('.ref-tab');
+      const screens = document.querySelectorAll('.screen');
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          screens.forEach((s) => s.classList.remove('active'));
+          tabs.forEach((t) => t.classList.remove('active'));
+          document.getElementById(tab.dataset.screen).classList.add('active');
+          tab.classList.add('active');
+          window.scrollTo(0, 0);
+        });
       });
-    });
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>

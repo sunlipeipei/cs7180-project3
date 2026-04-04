@@ -11,9 +11,10 @@
 
 ### 1.1 Initialize Repository and CLAUDE.md
 
-**Commit:** `134cd6e` — *Add CLAUDE.md and customize .claude/ workflow for BypassHire*
+**Commit:** `134cd6e` — _Add CLAUDE.md and customize .claude/ workflow for BypassHire_
 
 Started by running `/init` in Claude Code to generate a baseline `CLAUDE.md`. Iterated on the generated file to include:
+
 - Project overview and status
 - 3-phase architecture (Resume Tailoring → Interactive Editing → Auto-Fill)
 - Key technical decisions (Claude API, .docx format, Zod validation, Vitest)
@@ -26,6 +27,7 @@ Started by running `/init` in Claude Code to generate a baseline `CLAUDE.md`. It
 ### 1.2 Configure .claude/ Workflow Framework
 
 Installed 17 markdown files from [everything-claude-code](https://github.com/affaan-m/everything-claude-code) into `.claude/`:
+
 - **7 slash commands** (`commands/`): `/plan`, `/tdd`, `/build-fix`, `/code-review`, `/test-coverage`, `/e2e`, `/verify`
 - **5 agent definitions** (`agents/`): planner (opus), tdd-guide (sonnet), build-error-resolver, code-reviewer, e2e-runner
 - **5 skill documents** (`skills/`): tdd-workflow, verification-loop, backend-patterns, coding-standards, e2e-testing
@@ -37,9 +39,10 @@ Customized all generic examples (SmartGroceryAssistant, prediction markets) to B
 
 ### 1.3 PR Review and Iteration
 
-**Commits:** `8fe68c0`, `4391732` — *Address PR #1 review feedback*
+**Commits:** `8fe68c0`, `4391732` — _Address PR #1 review feedback_
 
 Opened PR #1 for the setup work. Claude Code helped address review feedback:
+
 - Removed undefined "ECC" references from command footers
 - Updated skill examples to use BypassHire domain (resumes instead of markets)
 - Added `.gitignore` with Node.js, Playwright, and env exclusions
@@ -114,7 +117,7 @@ The planner agent produced `docs/plan-master-profile.md` containing:
 
 ### 2.3 IMPLEMENT: TDD Cycles (RED → GREEN → REFACTOR)
 
-**Commit:** `8254659` — *feat: implement Master Profile Management module (FR-1.6)*
+**Commit:** `8254659` — _feat: implement Master Profile Management module (FR-1.6)_
 
 Invoked `/tdd` to spawn the tdd-guide agent:
 
@@ -125,11 +128,12 @@ Invoked `/tdd` to spawn the tdd-guide agent:
 #### TDD Cycle 1: Types & Validation (schema.ts)
 
 **RED** — Wrote 19 failing tests in `schema.test.ts`:
+
 ```typescript
 // Tests written FIRST — all fail because schema.ts doesn't exist yet
 describe('MasterProfile schema validation', () => {
-  it('accepts a complete valid profile');          // required + optional fields
-  it('accepts a minimal profile');                  // only required fields
+  it('accepts a complete valid profile'); // required + optional fields
+  it('accepts a minimal profile'); // only required fields
   it('accepts a profile with empty optional arrays');
   it('rejects profile missing required email');
   it('rejects profile missing required name');
@@ -141,6 +145,7 @@ describe('MasterProfile schema validation', () => {
 ```
 
 **GREEN** — Implemented `schema.ts` with Zod validation schemas:
+
 ```typescript
 export const MasterProfileSchema = z.object({
   schemaVersion: z.number(),
@@ -160,6 +165,7 @@ export const MasterProfileSchema = z.object({
 #### TDD Cycle 2: Load Profile (profileManager.ts — load)
 
 **RED** — 5 failing tests for `loadProfile()`:
+
 - Valid file returns parsed profile
 - Missing file throws `ProfileNotFoundError`
 - Malformed JSON throws `ProfileIOError`
@@ -173,6 +179,7 @@ export const MasterProfileSchema = z.object({
 #### TDD Cycle 3: Save Profile (profileManager.ts — save)
 
 **RED** — 5 failing tests for `saveProfile()`:
+
 - Writes valid JSON (pretty-printed, 2-space indent)
 - Creates parent directories if needed
 - Validates before writing (fail-fast)
@@ -186,6 +193,7 @@ export const MasterProfileSchema = z.object({
 #### TDD Cycle 4: Merge Profile (mergeProfile.ts)
 
 **RED** — 10 failing tests for `mergeProfile()`:
+
 - Scalar fields: last-write-wins
 - Skills deduplication by `name`
 - WorkExperience deduplication by `company|title|startDate`
@@ -194,6 +202,7 @@ export const MasterProfileSchema = z.object({
 - Don't mutate base object
 
 **GREEN** — Implemented deep merge with identity-based deduplication:
+
 ```typescript
 const ARRAY_IDENTITY_KEYS: Record<string, string[]> = {
   skills: ['name'],
@@ -216,7 +225,7 @@ Coverage: 94.59% statements (threshold: 90%)
 
 ### 2.4 Code Review and Iteration
 
-**Commit:** `20aa621` — *fix: address PR #3 review feedback*
+**Commit:** `20aa621` — _fix: address PR #3 review feedback_
 
 After opening PR #3, the code review identified improvements:
 
@@ -233,6 +242,7 @@ Added 10 new tests covering these improvements (49 total, all passing).
 ### 2.5 COMMIT: Clean History
 
 All commits follow a consistent pattern:
+
 - **Conventional commit messages** (`feat:`, `fix:`, `chore:`, `refactor:`, `test:`)
 - **Detailed bodies** explaining what changed and why
 - **Co-authorship tag**: `Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>`
@@ -255,15 +265,15 @@ fd986cd  Initial commit
 
 ## Context Management Strategy Summary
 
-| Strategy | When Used | Why |
-|----------|-----------|-----|
-| **CLAUDE.md** | Every session start | Persistent project context — Claude Code reads this automatically |
-| **`@import` PRD** | Planning phase | Full requirements available without copy-pasting into chat |
-| **`.claude/` framework** | Every session | Skills auto-load domain knowledge; commands invoke specialized agents |
-| **/clear** | Between phases | Reset context when switching from setup to implementation |
-| **/compact** | Mid-session | Compress verbose test output to free context for new work |
-| **--continue** | After PR review | Resume session with full prior context |
-| **Plan document** | Implementation | `docs/plan-master-profile.md` serves as durable reference across sessions |
+| Strategy                 | When Used           | Why                                                                       |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------- |
+| **CLAUDE.md**            | Every session start | Persistent project context — Claude Code reads this automatically         |
+| **`@import` PRD**        | Planning phase      | Full requirements available without copy-pasting into chat                |
+| **`.claude/` framework** | Every session       | Skills auto-load domain knowledge; commands invoke specialized agents     |
+| **/clear**               | Between phases      | Reset context when switching from setup to implementation                 |
+| **/compact**             | Mid-session         | Compress verbose test output to free context for new work                 |
+| **--continue**           | After PR review     | Resume session with full prior context                                    |
+| **Plan document**        | Implementation      | `docs/plan-master-profile.md` serves as durable reference across sessions |
 
 ---
 

@@ -52,19 +52,40 @@ describe('MasterProfileSchema', () => {
     });
 
     it('should reject profile missing name', () => {
-      const noName = { schemaVersion: 1, email: 'a@b.com', phone: '555', skills: [], workExperience: [], education: [] };
+      const noName = {
+        schemaVersion: 1,
+        email: 'a@b.com',
+        phone: '555',
+        skills: [],
+        workExperience: [],
+        education: [],
+      };
       const result = MasterProfileSchema.safeParse(noName);
       expect(result.success).toBe(false);
     });
 
     it('should reject profile missing schemaVersion', () => {
-      const noVersion = { name: 'J', email: 'a@b.com', phone: '555', skills: [], workExperience: [], education: [] };
+      const noVersion = {
+        name: 'J',
+        email: 'a@b.com',
+        phone: '555',
+        skills: [],
+        workExperience: [],
+        education: [],
+      };
       const result = MasterProfileSchema.safeParse(noVersion);
       expect(result.success).toBe(false);
     });
 
     it('should reject profile missing skills array', () => {
-      const noSkills = { schemaVersion: 1, name: 'J', email: 'a@b.com', phone: '555', workExperience: [], education: [] };
+      const noSkills = {
+        schemaVersion: 1,
+        name: 'J',
+        email: 'a@b.com',
+        phone: '555',
+        workExperience: [],
+        education: [],
+      };
       const result = MasterProfileSchema.safeParse(noSkills);
       expect(result.success).toBe(false);
     });

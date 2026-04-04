@@ -4,10 +4,10 @@ import { ProfileValidationError } from './errors.js';
 import type { MasterProfile } from './types.js';
 
 type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
+  [P in keyof T]?: NonNullable<T[P]> extends (infer U)[]
     ? Partial<U>[]
-    : T[P] extends object
-      ? DeepPartial<T[P]>
+    : NonNullable<T[P]> extends object
+      ? DeepPartial<NonNullable<T[P]>>
       : T[P] | null;
 };
 
@@ -24,7 +24,7 @@ const ARRAY_IDENTITY_KEYS: Record<string, IdentityKey> = {
 function mergeArrays(
   base: Record<string, unknown>[],
   partial: Record<string, unknown>[],
-  getKey: IdentityKey,
+  getKey: IdentityKey
 ): Record<string, unknown>[] {
   const result = base.map((item) => ({ ...item }));
   const baseKeyIndex = new Map<string, number>();
@@ -61,7 +61,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 
 function mergeObjects(
   base: Record<string, unknown>,
-  partial: Record<string, unknown>,
+  partial: Record<string, unknown>
 ): Record<string, unknown> {
   const result = { ...base };
   for (const [key, value] of Object.entries(partial)) {
@@ -77,7 +77,7 @@ function mergeObjects(
 
 export function mergeProfile(
   base: MasterProfile,
-  partial: DeepPartial<MasterProfile>,
+  partial: DeepPartial<MasterProfile>
 ): MasterProfile {
   const merged: Record<string, unknown> = JSON.parse(JSON.stringify(base));
 
@@ -93,7 +93,7 @@ export function mergeProfile(
       merged[key] = mergeArrays(
         (merged[key] as Record<string, unknown>[]) ?? [],
         value as Record<string, unknown>[],
-        ARRAY_IDENTITY_KEYS[key],
+        ARRAY_IDENTITY_KEYS[key]
       );
       continue;
     }
@@ -102,7 +102,7 @@ export function mergeProfile(
     if (isPlainObject(value) && isPlainObject(merged[key])) {
       merged[key] = mergeObjects(
         merged[key] as Record<string, unknown>,
-        value as Record<string, unknown>,
+        value as Record<string, unknown>
       );
       continue;
     }

@@ -29,11 +29,13 @@ Use this command order for every feature:
 Two Claude Code hooks are configured in `.claude/settings.json` and fire automatically during development sessions:
 
 ### Hook 1 — PostToolUse: lint-on-edit
+
 **Trigger:** After any `Edit` or `Write` tool call  
 **What it does:** Checks if the modified file ends in `.ts` or `.tsx`, then runs ESLint (using the local `eslint.config.js`) and reports violations inline in the transcript.  
 **Config:** `.claude/settings.json` → `hooks.PostToolUse` (matcher: `Edit|Write`)
 
 ### Hook 2 — Stop: test-runner guard
+
 **Trigger:** Before the Claude Code session ends (Stop event)  
 **What it does:** Runs `npm test` (vitest). If tests are failing, returns `continue: false` with a message blocking the session from closing until the agent fixes the failures.  
 **Config:** `.claude/settings.json` → `hooks.Stop`
@@ -45,21 +47,25 @@ To review or temporarily disable hooks, open `/hooks` in Claude Code.
 Two MCP servers are configured in `.mcp.json` at the repo root:
 
 ### GitHub MCP (`github`)
+
 - **Image:** `ghcr.io/github/github-mcp-server` (official Docker image)
 - **Auth:** `GITHUB_PERSONAL_ACCESS_TOKEN` — PAT with `repo` read scope
 - **Use:** Fetch README, repo metadata, file contents, and language stats during FR-1.3 context extraction
 
 ### Vercel MCP (`vercel`)
+
 - **Package:** `vercel-mcp-server` (via `npx`)
 - **Auth:** `VERCEL_API_TOKEN` — API token from vercel.com/account/tokens
 - **Use:** Check deployment status, inspect environment variables, and tail logs during development
 
 ### Google Stitch MCP (`stitch`)
+
 - **Transport:** HTTP — `https://stitch.googleapis.com/mcp`
 - **Auth:** `GOOG_API_KEY` — Google API key passed via `X-Goog-Api-Key` header
 - **Use:** Google Stitch services integration (HTTP-based MCP, no Docker/npx required)
 
 ### Playwright MCP (`playwright`)
+
 - **Package:** `@playwright/mcp` (official Microsoft package, via npx)
 - **Auth:** None required
 - **Use:** Browser automation for E2E testing — navigate pages, click, fill forms, take screenshots, and inspect the DOM directly from Claude Code sessions

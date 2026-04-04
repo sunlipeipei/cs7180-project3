@@ -17,6 +17,7 @@ This command invokes the **e2e-runner** agent to generate, maintain, and execute
 ## When to Use
 
 Use `/e2e` when:
+
 - Testing critical user journeys (resume generation, interactive editing, form auto-fill)
 - Verifying multi-step flows work end-to-end
 - Testing UI interactions and navigation
@@ -36,7 +37,7 @@ The e2e-runner agent will:
 
 ## Example Usage
 
-```
+````
 User: /e2e Test the resume tailoring flow from job description input to .docx download
 
 Agent (e2e-runner):
@@ -118,7 +119,7 @@ test.describe('Resume Tailoring Flow', () => {
     await expect(page.locator('[data-testid="error-message"]')).toContainText('job description')
   })
 })
-```
+````
 
 ## Running Tests
 
@@ -140,7 +141,8 @@ Artifacts generated:
 ```
 
 ✅ E2E test suite ready for CI/CD integration!
-```
+
+````
 
 ## Test Artifacts
 
@@ -168,7 +170,7 @@ npx playwright show-trace artifacts/trace-abc123.zip
 
 # Screenshots are saved in artifacts/ directory
 open artifacts/search-results.png
-```
+````
 
 ## Flaky Test Detection
 
@@ -194,6 +196,7 @@ Quarantine recommendation: Mark as test.fixme() until fixed
 ## Browser Configuration
 
 Tests run on multiple browsers by default:
+
 - ✅ Chromium (Desktop Chrome)
 - ✅ Firefox (Desktop)
 - ✅ WebKit (Desktop Safari)
@@ -226,6 +229,7 @@ Add to your CI pipeline:
 Prioritize these E2E tests for BypassHire:
 
 **🔴 CRITICAL (Must Always Pass):**
+
 1. User can paste a job description and generate a tailored resume
 2. User can upload a .docx resume template
 3. User can download the generated resume as .docx
@@ -234,6 +238,7 @@ Prioritize these E2E tests for BypassHire:
 6. No form submission occurs without explicit user confirmation (Phase 3)
 
 **🟡 IMPORTANT:**
+
 1. Interactive editing: user can select text and leave a comment for AI revision
 2. AI processes inline comments and revises only the targeted section
 3. Diff view shows changes between revision rounds
@@ -244,6 +249,7 @@ Prioritize these E2E tests for BypassHire:
 ## Best Practices
 
 **DO:**
+
 - ✅ Use Page Object Model for maintainability
 - ✅ Use data-testid attributes for selectors
 - ✅ Wait for API responses, not arbitrary timeouts
@@ -252,6 +258,7 @@ Prioritize these E2E tests for BypassHire:
 - ✅ Review artifacts when tests fail
 
 **DON'T:**
+
 - ❌ Use brittle selectors (CSS classes can change)
 - ❌ Test implementation details
 - ❌ Run tests against production
@@ -262,6 +269,7 @@ Prioritize these E2E tests for BypassHire:
 ## Important Notes
 
 **CRITICAL for BypassHire:**
+
 - E2E tests require the web app and backend API running (use `npm run dev` or equivalent)
 - Tests that call the Claude API should mock responses for speed and determinism in CI
 - Use fixture .docx files in `e2e/fixtures/` for resume template uploads
