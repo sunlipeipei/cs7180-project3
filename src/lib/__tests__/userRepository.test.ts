@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { PrismaClient } from '../../generated/prisma';
 
 // Mock the prisma singleton
 vi.mock('../prisma', () => ({
