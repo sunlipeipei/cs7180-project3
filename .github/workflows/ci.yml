@@ -248,13 +248,6 @@ jobs:
           NEXT_TELEMETRY_DISABLED: '1'
           DATABASE_URL: ${{ env.PLACEHOLDER_DATABASE_URL }}
 
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-build
-          path: .next/
-          retention-days: 1
-
   # ────────────────────────────────────────────────────────────────────────────
   # Stage 6: E2E tests — Playwright against a running Next.js server
   # --pass-with-no-tests allows the stage to succeed when e2e/ has no tests yet
@@ -298,14 +291,13 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Restore build output
-        uses: actions/download-artifact@v4
-        with:
-          name: next-build
-          path: .next/
-
       - name: Generate Prisma client and apply schema
         run: npx prisma generate && npx prisma migrate deploy
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
 
       - name: Start Next.js server
         run: npm run start &
