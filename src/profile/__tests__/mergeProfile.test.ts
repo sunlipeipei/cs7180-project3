@@ -177,7 +177,7 @@ describe('mergeProfile', () => {
         projects: [{ name: 'CLI Tool', description: 'Old desc', technologies: ['Node.js'] }],
       });
       const partial = {
-        projects: [{ name: 'CLI Tool', description: 'New desc' }],
+        projects: [{ name: 'CLI Tool', description: 'New desc', technologies: [] }],
       };
 
       const merged = mergeProfile(base, partial);
@@ -244,7 +244,7 @@ describe('mergeProfile', () => {
       const base = makeBaseProfile({
         address: { city: 'San Francisco', state: 'CA', country: 'US' },
       });
-      const partial = { address: { city: 'NYC' } };
+      const partial = { address: { city: 'NYC', country: 'US' } };
 
       const merged = mergeProfile(base, partial);
 
