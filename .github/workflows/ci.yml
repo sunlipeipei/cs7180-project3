@@ -6,7 +6,6 @@
 #   unit-test (+ coverage comment) ────────────────────────────┼─→ build ─→ e2e ─→ deploy-production (main)
 #   integration-test (postgres service) ───────────────────────┤       └──→ deploy-preview (PR)
 #   security (npm audit + CodeQL) ─────────────────────────────┘
-#   ai-review (PR only, runs in parallel) ──────────────────────────────────────────────────────────
 
 name: CI/CD
 
@@ -328,46 +327,7 @@ jobs:
           retention-days: 7
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Stage 7: AI PR Review — runs in parallel, does not block deploy
-  # Uses claude-code-action to post a C.L.E.A.R. security + quality review.
-  # ────────────────────────────────────────────────────────────────────────────
-  ai-review:
-    name: AI PR Review (Claude)
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Claude PR Review
-        uses: anthropics/claude-code-action@beta
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          direct_prompt: |
-            Review this pull request and post a comment using the C.L.E.A.R. framework:
-
-            **C — Context**: What does this PR do and why?
-            **L — Limitations**: What edge cases or scenarios are not handled?
-            **E — Errors**: Any bugs, logic errors, or type-safety issues?
-            **A — Alternatives**: Were better approaches missed?
-            **R — Risks**: What could break in production?
-
-            Also check for OWASP Top 10 issues specific to this codebase:
-            - All DB queries must be scoped to authenticated `userId` from Clerk session
-            - User input must be validated with Zod before reaching the DB or Claude API
-            - No `dangerouslySetInnerHTML` with user-controlled content
-            - GitHub/external URLs must be validated before fetch (SSRF risk)
-            - No secrets or API keys in code
-
-            Be concise and specific. Label CRITICAL issues clearly.
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Stage 8: Preview deploy — Vercel preview on every PR
+  # Stage 7: Preview deploy — Vercel preview on every PR
   # Posts preview URL as a PR comment (updates on re-push, never duplicates).
   # ────────────────────────────────────────────────────────────────────────────
   deploy-preview:
@@ -432,7 +392,7 @@ jobs:
           body-includes: 'Vercel Preview Deployment'
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Stage 9: Production deploy — only on merge to main, after E2E passes
+  # Stage 8: Production deploy — only on merge to main, after E2E passes
   # ────────────────────────────────────────────────────────────────────────────
   deploy-production:
     name: Deploy Production (Vercel)
