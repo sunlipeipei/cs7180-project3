@@ -10,6 +10,12 @@
             "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -z \"$f\" ] && exit 0; echo \"$f\" | grep -qE '\\.(ts|tsx)$' && node_modules/.bin/eslint \"$f\" 2>&1 || true; }",
             "statusMessage": "ESLint checking...",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r f; [ -z \"$f\" ] && exit 0; node_modules/.bin/prettier --check \"$f\" 2>&1 && true || echo \"Prettier: formatting issue in $f — run npm run format to fix\"; }",
+            "statusMessage": "Prettier checking...",
+            "timeout": 30
           }
         ]
       }

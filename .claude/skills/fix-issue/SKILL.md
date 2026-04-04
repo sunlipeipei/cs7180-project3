@@ -19,16 +19,19 @@ branch → plan → TDD → build-fix → code-review → PR.
 ## Steps (execute in order)
 
 ### 1. Read the issue
+
 - Fetch the issue from GitHub: owner `sunlipeipei`, repo `cs7180-project3`
 - Extract: title, acceptance criteria, labels, sprint milestone
 - Summarize requirements in 2–3 sentences before proceeding
 
 ### 2. Create a branch
+
 - Branch name format: `feat/issue-<number>-<short-slug>` (e.g. `feat/issue-5-jd-intake`)
 - Checkout from latest `main`: `git checkout main && git pull origin main && git checkout -b <branch>`
 - Confirm the branch is active before writing any code
 
 ### 3. Plan
+
 - Restate acceptance criteria as a checklist
 - Identify files to create/modify
 - Call out any security concerns (Zod validation, userId scoping, SSRF risks per `docs/security.md`)
@@ -36,26 +39,31 @@ branch → plan → TDD → build-fix → code-review → PR.
 - **STOP and present the plan. Wait for user confirmation before writing code.**
 
 ### 4. TDD — RED phase
+
 - Write ALL tests first (unit + integration stubs)
 - Commit with message: `test: failing tests for <feature> (#<issue>)`
 - Run tests and confirm they fail: `npm test`
 
 ### 5. TDD — GREEN phase
+
 - Write minimum code to make tests pass
 - Commit: `feat: implement <feature> (#<issue>)`
 - Run: `npm test` — all must pass
 
 ### 6. TDD — REFACTOR phase
+
 - Clean up without breaking tests
 - Run: `npm run lint && npm run format:check && npx tsc --noEmit`
 - Commit: `refactor: clean up <feature> (#<issue>)`
 
 ### 7. Coverage check
+
 - Run: `npm run test:coverage`
 - Confirm thresholds: 70% overall, 90% on `src/profile/`
 - If below threshold, add missing tests before proceeding
 
 ### 8. Open PR
+
 - Push branch: `git push -u origin <branch>`
 - Open PR to `main` with:
   - Title: `feat: <description> (#<issue>)`
@@ -75,6 +83,7 @@ branch → plan → TDD → build-fix → code-review → PR.
 ## Expected Output
 
 At the end of this skill, you will have:
+
 - [ ] A feature branch with commits showing RED → GREEN → REFACTOR
 - [ ] All tests passing with coverage thresholds met
 - [ ] `npm run build` passing with zero type errors
