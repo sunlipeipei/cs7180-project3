@@ -4,10 +4,10 @@ import { ProfileValidationError } from './errors.js';
 import type { MasterProfile } from './types.js';
 
 type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends (infer U)[]
+  [P in keyof T]?: NonNullable<T[P]> extends (infer U)[]
     ? Partial<U>[]
-    : T[P] extends object
-      ? DeepPartial<T[P]>
+    : NonNullable<T[P]> extends object
+      ? DeepPartial<NonNullable<T[P]>>
       : T[P] | null;
 };
 
