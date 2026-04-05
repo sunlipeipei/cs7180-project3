@@ -8,7 +8,7 @@
 
 We built a custom Claude Code skill called `/fix-issue` that automates the full development workflow for implementing a GitHub issue: fetch the issue, create a branch, plan the implementation, follow TDD (RED/GREEN/REFACTOR), and open a PR with a structured review template.
 
-**Skill file:** [`.claude/skills/fix-issue/SKILL.md`](../.claude/skills/fix-issue/SKILL.md)
+**Skill file:** [`.claude/skills/fix-issue/SKILL.md`](../../.claude/skills/fix-issue/SKILL.md)
 
 **Usage:**
 
@@ -246,7 +246,7 @@ These screenshots show GitHub MCP in action during the `/fix-issue` workflow, au
 
 This screenshot shows a complete Context7 MCP workflow: resolving the Prisma library ID, querying docs for the `driverAdapters` deprecation, then applying the fix to `prisma/schema.prisma`.
 
-![Context7 MCP session — resolving Prisma driverAdapters deprecation](context7-prisma-fix.png)
+![context7-prisma-fix](/Users/dako/LocalDocument/200-Project/cs7180-project3/docs/homework5/images/context7-prisma-fix.png)
 
 During this session, Claude also fixed integration tests in `schema.integration.test.ts` that were failing because `DATABASE_URL` was not set locally — adding `describe.skipIf(!hasDb)` guards so tests gracefully skip when no database is available.
 
