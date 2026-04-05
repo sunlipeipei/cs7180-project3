@@ -5,10 +5,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: ['src/test/setup.ts'],
-    exclude: ['node_modules', '.next', 'app/**'],
+    exclude: ['node_modules', '.next'],
     coverage: {
       provider: 'v8',
-      include: ['src/**/*.ts'],
+      include: ['src/**/*.ts', 'app/api/**/*.ts'],
       exclude: ['src/**/*.test.ts', 'src/**/__tests__/**', 'src/generated/**'],
       thresholds: {
         'src/profile/': {
