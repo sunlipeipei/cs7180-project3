@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(_request: Request) {
   const { userId } = await auth();
   if (!userId) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
