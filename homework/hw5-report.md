@@ -9,6 +9,7 @@ We built a custom Claude Code skill called `/fix-issue` that automates the full 
 **Skill file:** [`.claude/skills/fix-issue/SKILL.md`](../.claude/skills/fix-issue/SKILL.md)
 
 **Usage:**
+
 ```
 /fix-issue 5
 /fix-issue 18
@@ -36,14 +37,14 @@ We first tested v1 on **issue #18** (Clerk authentication integration). The skil
 
 **Changes in v2:**
 
-| Problem in v1 | Fix in v2 |
-|---|---|
-| CI secrets not checked | Added env var pre-flight checklist in the Plan step |
-| Prettier mismatches | Inserted `npx prettier --write .` before every commit |
-| Wrong branch commits | Added explicit `git branch --show-current` assertion before any commit |
-| `.env.example` forgotten | Made it an explicit GREEN-phase checklist item |
+| Problem in v1             | Fix in v2                                                                   |
+| ------------------------- | --------------------------------------------------------------------------- |
+| CI secrets not checked    | Added env var pre-flight checklist in the Plan step                         |
+| Prettier mismatches       | Inserted `npx prettier --write .` before every commit                       |
+| Wrong branch commits      | Added explicit `git branch --show-current` assertion before any commit      |
+| `.env.example` forgotten  | Made it an explicit GREEN-phase checklist item                              |
 | "Done" = local green only | Clarified that CI must pass on the PR before the issue is considered closed |
-| CI pipeline not updated | Added a new step 7 for updating `ci.yml` when new env vars are introduced |
+| CI pipeline not updated   | Added a new step 7 for updating `ci.yml` when new env vars are introduced   |
 
 We tested v2 on **issue #5** (job description intake), where the improved workflow ran smoothly without the CI surprises we hit in v1.
 
@@ -58,6 +59,7 @@ We connected two MCP servers to our Claude Code workflow: **GitHub MCP** and **C
 The GitHub MCP server provides direct access to our repository's issues, PRs, and file contents from within Claude Code sessions.
 
 **Setup:**
+
 ```bash
 claude mcp add github -s user \
   --transport docker -- \
@@ -72,6 +74,7 @@ claude mcp add github -s user \
 Context7 fetches up-to-date library documentation on demand, so Claude Code can query the latest API docs instead of relying on potentially outdated training data.
 
 **Setup:**
+
 ```bash
 claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
 ```
