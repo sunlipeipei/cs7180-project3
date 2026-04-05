@@ -92,11 +92,18 @@ describe('POST /api/job-descriptions', () => {
     expect(res.status).toBe(400);
   });
 
-  it('returns 422 when parseJobDescription throws a validation error', async () => {
+  it('returns 400 when input is whitespace only', async () => {
     mockAuth.mockResolvedValue(mockUser);
-    mockParse.mockRejectedValue(new Error('Job description cannot be empty'));
 
     const res = await POST(makeRequest({ input: '   ' }));
+    expect(res.status).toBe(400);
+  });
+
+  it('returns 422 when parseJobDescription throws a validation error', async () => {
+    mockAuth.mockResolvedValue(mockUser);
+    mockParse.mockRejectedValue(new Error('Job description is too long'));
+
+    const res = await POST(makeRequest({ input: 'a'.repeat(60000) }));
     expect(res.status).toBe(422);
   });
 
