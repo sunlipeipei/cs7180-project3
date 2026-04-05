@@ -3,15 +3,6 @@ import type { ParsedJobDescription } from './types';
 
 const MAX_LENGTH = 50000;
 
-function isUrl(input: string): boolean {
-  try {
-    const url = new URL(input);
-    return url.protocol === 'http:' || url.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
-
 function validateUrl(input: string): void {
   try {
     const url = new URL(input);
