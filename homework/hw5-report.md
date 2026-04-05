@@ -86,7 +86,7 @@ claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
 
 The screenshot below shows the skill running on issue #18. Claude fetched the issue via GitHub MCP, created branch `feat/issue-18-clerk-auth`, and produced a detailed plan including a files-to-modify table, security concerns, and risk assessment — then paused for user confirmation before writing code.
 
-![fix-issue v1 running on issue #18](HW5%20Report/image.png)
+![fix-issue v1 running on issue #18](images/image.png)
 
 <details>
 <summary>Session log: /fix-issue on issue #18 (v1) — click to expand</summary>
@@ -171,15 +171,15 @@ After the v1 iteration, we ran v2 on issue #5. Note the improvements: the branch
 
 These screenshots show GitHub MCP in action during the `/fix-issue` workflow, automatically fetching issue metadata from our repository.
 
-![GitHub MCP fetching issue details](HW5%20Report/image%201.png)
+![GitHub MCP fetching issue details](images/image%201.png)
 
-![GitHub MCP query result](HW5%20Report/image%202.png)
+![GitHub MCP query result](images/image%202.png)
 
 ### Context7 MCP — Fixing Prisma Deprecation
 
 This screenshot shows a complete Context7 MCP workflow: resolving the Prisma library ID, querying docs for the `driverAdapters` deprecation, then applying the fix to `prisma/schema.prisma`.
 
-![Context7 MCP session — resolving Prisma driverAdapters deprecation](CleanShot%202026-04-04%20at%2020.31.11@2x.png)
+![Context7 MCP session — resolving Prisma driverAdapters deprecation](context7-prisma-fix.png)
 
 During this session, Claude also fixed integration tests in `schema.integration.test.ts` that were failing because `DATABASE_URL` was not set locally — adding `describe.skipIf(!hasDb)` guards so tests gracefully skip when no database is available.
 
