@@ -58,13 +58,14 @@ We connected two MCP servers to our Claude Code workflow: **GitHub MCP** and **C
 
 The GitHub MCP server provides direct access to our repository's issues, PRs, and file contents from within Claude Code sessions.
 
-**Setup:**
+**Setup (`.mcp.json`):**
 
-```bash
-claude mcp add github -s user \
-  --transport docker -- \
-  ghcr.io/github/github-mcp-server \
-  --env GITHUB_PERSONAL_ACCESS_TOKEN=<your-token>
+```json
+"github": {
+  "command": "docker",
+  "args": ["run", "-i", "--rm", "-e", "GITHUB_PERSONAL_ACCESS_TOKEN", "ghcr.io/github/github-mcp-server"],
+  "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}" }
+}
 ```
 
 **What it enables:** The `/fix-issue` skill uses GitHub MCP to fetch issue details (title, acceptance criteria, labels) automatically. Instead of manually copying issue descriptions into the conversation, Claude reads them directly from the repository — ensuring it always works with the latest version of the requirements.
@@ -80,6 +81,67 @@ claude mcp add context7 -s user -- npx -y @upstash/context7-mcp@latest
 ```
 
 **What it enables:** We used Context7 to fix a Prisma deprecation warning. The `driverAdapters` preview feature had been promoted to GA (generally available) in Prisma 7.5.0, so keeping it in `previewFeatures` triggered a deprecation warning. Claude Code used Context7's `resolve-library-id` to find the Prisma docs, then `query-docs` to confirm the feature was now stable. The fix was to remove `previewFeatures = ["driverAdapters"]` from `prisma/schema.prisma` and regenerate the client. Without Context7, Claude would have relied on stale training data and might not have known about this change.
+
+### Vercel MCP
+
+The Vercel MCP server connects Claude Code directly to our Vercel deployment environment, enabling it to inspect deployment state, environment variables, and build logs without leaving the coding session.
+
+**Setup (`.mcp.json`):**
+
+```json
+"vercel": {
+  "command": "npx",
+  "args": ["-y", "@robinson_ai_systems/vercel-mcp"],
+  "env": { "VERCEL_TOKEN": "${VERCEL_API_TOKEN}" }
+}
+```
+
+**What it enables:**
+
+- **Deployment diagnostics** — Claude can check whether a preview deployment succeeded or failed and pull build logs directly, rather than the developer switching to the Vercel dashboard mid-session.
+- **Environment variable inspection** — during the CI/CD setup (issue #22), the Vercel MCP let Claude verify which env vars were already set on the project (`vercel_list_env_vars`) before deciding what to add, avoiding duplicate secrets.
+- **Preview URL retrieval** — after a PR deploy, Claude can fetch the preview URL and pass it to Playwright MCP for automated smoke testing, enabling a fully in-session deploy-and-verify loop.
+
+### Google Stitch MCP
+
+Stitch is Google's UI generation and design system MCP server. It provides access to design projects, screens, and component code directly from within Claude Code.
+
+**Setup (`.mcp.json`):**
+
+```json
+"stitch": {
+  "type": "http",
+  "url": "https://stitch.googleapis.com/mcp",
+  "headers": { "X-Goog-Api-Key": "${GOOG_API_KEY}" }
+}
+```
+
+**What it enables:**
+
+We used Stitch MCP while building the job description intake UI (issue #5). Instead of writing the UI from scratch or manually inspecting `docs/prototype.html`, Claude called `stitch_list_projects` to find the BypassHire design project, then `stitch_list_screens` to enumerate all screens (Dashboard, New Project Setup, Resume Tailoring, Auto-Fill Preview). It fetched the HTML code for the "New Project Setup" screen, which contained the full design token theme (colors, typography, spacing), component patterns (tab toggles, focus underlines, the tonal layering system), and layout structure. This gave Claude a precise, living reference for the exact color values, font families, and design rules to follow — rather than an approximation from a static file.
+
+The result: Tailwind v4 CSS variables, the sidebar layout, and the intake form were all built to match the prototype's "Digital Architect" design system without any manual design handoff.
+
+### Playwright MCP
+
+The Playwright MCP server provides a real browser automation layer inside Claude Code sessions — navigation, clicks, form fills, screenshots, and DOM snapshots.
+
+**Setup (`.mcp.json`):**
+
+```json
+"playwright": {
+  "command": "npx",
+  "args": ["@playwright/mcp@latest"]
+}
+```
+
+**What it enables:**
+
+- **Live UI verification** — after deploying locally, Claude can navigate to `http://localhost:3000/dashboard/new`, take a screenshot, and confirm the page renders correctly without the developer switching browser tabs.
+- **E2E test scaffolding** — Playwright MCP can interact with the running app and record the exact selectors and interaction sequences, which are then used to write stable Playwright E2E test files.
+- **Regression smoke testing** — on every significant UI change, Claude can run a quick browser check against the dev server to catch rendering errors before they reach CI.
+
+During the issue #5 session, we used Playwright MCP to verify the intake form after adding `ClerkProvider` to the root layout — confirming the `MIDDLEWARE_INVOCATION_FAILED` error was resolved and the sign-in page loaded correctly.
 
 ---
 
