@@ -1,5 +1,7 @@
 # HW5 Report: Custom Skill + MCP Integration
 
+**Repository:** [github.com/sunlipeipei/cs7180-project3](https://github.com/sunlipeipei/cs7180-project3)
+
 ## Part 1: Custom Skill (50%)
 
 ### The `/fix-issue` Skill
