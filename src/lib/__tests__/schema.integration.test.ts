@@ -5,11 +5,18 @@
  * Run with: vitest run src/lib/__tests__/schema.integration.test.ts
  */
 import { describe, it, expect, afterAll, afterEach } from 'vitest';
-import { PrismaClient } from '../../generated/prisma';
-import { PrismaPg } from '@prisma/adapter-pg';
+import type { PrismaClient as PrismaClientType } from '../../generated/prisma';
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
-const prisma = new PrismaClient({ adapter });
+const hasDb = !!process.env.DATABASE_URL;
+
+let prisma: PrismaClientType;
+
+if (hasDb) {
+  const { PrismaClient } = await import('../../generated/prisma');
+  const { PrismaPg } = await import('@prisma/adapter-pg');
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  prisma = new PrismaClient({ adapter });
+}
 
 // Unique prefix per test run to avoid cross-run collisions
 const RUN_ID = Date.now().toString(36);
@@ -21,6 +28,7 @@ const makeUser = (n: number) => ({
 });
 
 afterEach(async () => {
+  if (!hasDb) return;
   // Clean up all test users (cascades to Profile, Resume, JobDescription)
   await prisma.user.deleteMany({
     where: { email: { contains: `${RUN_ID}@test.com` } },
@@ -28,12 +36,13 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  if (!hasDb) return;
   await prisma.$disconnect();
 });
 
 // ─── User constraints ─────────────────────────────────────────────────────────
 
-describe('User model constraints', () => {
+describe.skipIf(!hasDb)('User model constraints', () => {
   it('enforces unique clerkId', async () => {
     const base = makeUser(1);
     await prisma.user.create({ data: base });
@@ -67,7 +76,7 @@ describe('User model constraints', () => {
 
 // ─── Profile constraints ──────────────────────────────────────────────────────
 
-describe('Profile model constraints', () => {
+describe.skipIf(!hasDb)('Profile model constraints', () => {
   it('enforces one profile per user (unique userId)', async () => {
     const user = await prisma.user.create({ data: makeUser(10) });
     const data = { schemaVersion: 1, name: 'Test' };
@@ -90,7 +99,7 @@ describe('Profile model constraints', () => {
 
 // ─── JobDescription constraints ───────────────────────────────────────────────
 
-describe('JobDescription model constraints', () => {
+describe.skipIf(!hasDb)('JobDescription model constraints', () => {
   it('creates a job description linked to a user', async () => {
     const user = await prisma.user.create({ data: makeUser(20) });
     const jd = await prisma.jobDescription.create({
@@ -116,7 +125,7 @@ describe('JobDescription model constraints', () => {
 
 // ─── Resume constraints ───────────────────────────────────────────────────────
 
-describe('Resume model constraints', () => {
+describe.skipIf(!hasDb)('Resume model constraints', () => {
   it('creates a resume linked to a user', async () => {
     const user = await prisma.user.create({ data: makeUser(30) });
     const resume = await prisma.resume.create({
