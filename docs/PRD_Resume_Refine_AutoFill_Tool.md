@@ -5,6 +5,13 @@
 **Authors:** sunlipeipei, iDako7
 **Status:** Draft
 
+> Implementation review updated: 2026-04-16
+>
+> Status legend used below:
+> - `Done` = implemented in the current codebase
+> - `Partial` = some foundation or UI/backend slice exists, but the feature is not complete end-to-end
+> - `Not Started` = no meaningful implementation found in the current codebase
+
 ---
 
 ## 1. Introduction / Overview
@@ -42,45 +49,67 @@ This tool solves both problems by combining AI-powered resume tailoring with int
 ### Phase 1: AI-Powered Resume Tailoring Engine
 
 **FR-1.1:** The system must accept a job description as input (pasted text or URL).
+Status: `Partial`
+Notes: The app has a protected dashboard flow and a `New Project` page where users can paste text or enter a URL. The backend parses pasted text or fetches and parses URL content, then stores the job description in PostgreSQL. The flow stops after intake; no downstream resume generation exists yet.
 
 **FR-1.2:** The system must accept a user's existing resume as a style template. Supported input format: Word (.docx).
+Status: `Not Started`
+Notes: The data model includes `resumeTemplatePath`, but there is no upload UI, file handling, parsing, or validation for `.docx` templates.
 
 **FR-1.3:** The system must retrieve and parse context from user-specified sources:
+Status: `Not Started`
+Notes: No implemented GitHub/document ingestion pipeline was found. The PRD, architecture docs, and MCP setup mention this capability, but there is no shipped feature path for extracting project context into resume generation.
 
 - Code repositories (e.g., GitHub repos) — extract project names, technologies, README content, and commit history summaries.
 - Project documents (e.g., PRDs, design docs, meeting notes) — extract responsibilities, accomplishments, and technical details.
 
 **FR-1.4:** The system must generate a tailored resume that:
+Status: `Not Started`
+Notes: No Claude/Anthropic integration, resume synthesis pipeline, or structured resume generation logic was found.
 
 - Highlights skills and experiences relevant to the target job description.
 - Uses concrete, quantifiable facts drawn from the retrieved context (not generic filler).
 - Preserves the formatting style, tone, and structure of the user's template resume.
 
 **FR-1.5:** The system must output the tailored resume in Word (.docx) format.
+Status: `Not Started`
+Notes: The Prisma schema reserves a `Resume` model and `docxPath`, but there is no `.docx` generation or download flow.
 
 **FR-1.6:** The system must support a "master profile" — a comprehensive document containing all of the user's experiences, skills, and projects — which serves as the primary data source for tailoring.
+Status: `Partial`
+Notes: This is the most mature Phase 1 backend feature. The project contains a full TypeScript/Zod master profile model, merge logic, file-based profile manager, Prisma-backed profile repository, schema tests, and integration tests. However, there is no user-facing profile creation/editing UI yet.
 
 ### Phase 2: Interactive Editing Interface
 
 **FR-2.1:** The system must provide a web-based editing interface where users can view and edit their generated resume.
+Status: `Not Started`
+Notes: No resume editor page or generated resume viewer exists.
 
 **FR-2.2:** The system must allow users to select a specific section or line of text and attach a comment or instruction (e.g., "make this more concise," "add metrics," "remove this bullet").
+Status: `Not Started`
 
 **FR-2.3:** The AI must process inline comments and revise only the targeted section, leaving the rest of the document unchanged.
+Status: `Not Started`
 
 **FR-2.4:** The system must support multiple rounds of revision. Users can continue providing feedback and the AI will iteratively improve the document.
+Status: `Not Started`
 
 **FR-2.5:** The system must display a diff view or change highlights so users can see what the AI modified after each revision round.
+Status: `Not Started`
 
 **FR-2.6:** The system must allow users to accept, reject, or further modify each AI-suggested change.
+Status: `Not Started`
 
 **FR-2.7:** The system must maintain a version history so users can revert to any previous version.
+Status: `Not Started`
 
 ### Phase 3: Auto-Fill Application Forms
 
 **FR-3.1:** The system must integrate with web browsers (via a browser extension or MCP-based automation) to interact with job application portals.
+Status: `Not Started`
 
 **FR-3.2:** The system must auto-detect and fill standard form fields on supported platforms, including:
+Status: `Not Started`
 
 - Personal information (name, email, phone, address)
 - Work history (company, title, dates, descriptions)
@@ -89,16 +118,20 @@ This tool solves both problems by combining AI-powered resume tailoring with int
 - Upload resume file
 
 **FR-3.3:** The system must support Workday-based portals as the primary target. Support for other form-heavy portals (e.g., Taleo, iCIMS, custom ATS) is a secondary goal.
+Status: `Not Started`
 
 **FR-3.4:** The system must generate draft answers to common screening questions based on the user's profile and the specific job description. Examples include:
+Status: `Not Started`
 
 - "Why do you want to work here?"
 - "Describe your experience with [technology]."
 - "What is your expected salary range?"
 
 **FR-3.5:** The system must present all auto-filled content and generated answers for user review before final submission. The system must NOT submit any application without explicit user confirmation.
+Status: `Not Started`
 
 **FR-3.6:** The system must allow users to edit any auto-filled field or generated answer before submission.
+Status: `Not Started`
 
 ---
 
@@ -227,6 +260,40 @@ This tool solves both problems by combining AI-powered resume tailoring with int
 - [ ] Screening question answers are generated and presented for review.
 - [ ] No form is submitted without explicit user confirmation.
 - [ ] Auto-fill works on at least 3 different Workday-based employer portals.
+
+## 11.1 Implementation Status Summary
+
+### Phase Summary
+
+| Phase   | Status                         | What is actually implemented today                                                                 |
+| ------- | ------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Phase 1 | `Partial`                      | Authenticated dashboard shell, job description intake UI/API, persistence layer, master profile backend |
+| Phase 2 | `Not Started`                  | No resume editor, inline comments, revision engine, diffing, or version history                    |
+| Phase 3 | `Not Started`                  | No browser automation, auto-fill adapters, screening-answer generation, or review-before-submit UI |
+
+### Feature Checklist by PRD Requirement
+
+| Requirement | Status      | Notes |
+| ----------- | ----------- | ----- |
+| FR-1.1      | `Partial`   | Job description paste/URL intake exists; tailoring does not follow |
+| FR-1.2      | `Not Started` | No resume upload/template handling |
+| FR-1.3      | `Not Started` | No context extraction implementation |
+| FR-1.4      | `Not Started` | No tailored resume generation |
+| FR-1.5      | `Not Started` | No `.docx` output |
+| FR-1.6      | `Partial`   | Strong backend data model; no user-facing profile workflow |
+| FR-2.1      | `Not Started` | No editing interface |
+| FR-2.2      | `Not Started` | No inline comment system |
+| FR-2.3      | `Not Started` | No targeted AI revision |
+| FR-2.4      | `Not Started` | No iterative editing loop |
+| FR-2.5      | `Not Started` | No diff/highlight UI |
+| FR-2.6      | `Not Started` | No accept/reject controls |
+| FR-2.7      | `Not Started` | No version history |
+| FR-3.1      | `Not Started` | No browser integration |
+| FR-3.2      | `Not Started` | No field auto-fill |
+| FR-3.3      | `Not Started` | No Workday adapter |
+| FR-3.4      | `Not Started` | No screening answer generation |
+| FR-3.5      | `Not Started` | No user-review submission flow |
+| FR-3.6      | `Not Started` | No editable auto-fill review UI |
 
 ---
 
