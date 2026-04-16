@@ -29,4 +29,7 @@ Thumbs.db
 # Claude Code local settings
 .claude/settings.local.json
 
+# Claude Code commit-signal hook state (recreated at runtime)
+.claude/state/
+
 /src/generated/prisma
