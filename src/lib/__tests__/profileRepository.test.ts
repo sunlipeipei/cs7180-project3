@@ -46,7 +46,8 @@ function makeDbUser(clerkId: string) {
 describe('getProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFindUser.mockImplementation(async ({ where: { clerkId } }: any) => makeDbUser(clerkId));
+    mockFindUser.mockImplementation(((args: { where: { clerkId: string } }) =>
+      Promise.resolve(makeDbUser(args.where.clerkId))) as never);
   });
 
   it('returns null when no profile record exists', async () => {
@@ -88,7 +89,8 @@ describe('getProfile', () => {
 describe('saveProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFindUser.mockImplementation(async ({ where: { clerkId } }: any) => makeDbUser(clerkId));
+    mockFindUser.mockImplementation(((args: { where: { clerkId: string } }) =>
+      Promise.resolve(makeDbUser(args.where.clerkId))) as never);
     mockUpsert.mockResolvedValue({} as never);
   });
 

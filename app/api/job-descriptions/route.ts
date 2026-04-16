@@ -8,13 +8,18 @@ import { upsertUser } from '../../../src/lib/userRepository';
 
 async function ensureCurrentUserRecord(clerkUserId: string): Promise<void> {
   const user = await currentUser();
-  const primaryEmail = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
+  const primaryEmail =
+    user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
 
   if (!primaryEmail) {
     throw new Error('Authenticated user is missing a primary email address');
   }
 
   await upsertUser(clerkUserId, primaryEmail);
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unexpected error';
 }
 
 export async function POST(request: Request) {
@@ -41,7 +46,7 @@ export async function POST(request: Request) {
     const saved = await saveJobDescription(userId, parsed);
     return Response.json(saved, { status: 201 });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 422 });
+    return Response.json({ error: getErrorMessage(err) }, { status: 422 });
   }
 }
 
@@ -51,7 +56,11 @@ export async function GET(_request: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  await ensureCurrentUserRecord(userId);
-  const jds = await getJobDescriptionsByUser(userId);
-  return Response.json(jds, { status: 200 });
+  try {
+    await ensureCurrentUserRecord(userId);
+    const jds = await getJobDescriptionsByUser(userId);
+    return Response.json(jds, { status: 200 });
+  } catch (err) {
+    return Response.json({ error: getErrorMessage(err) }, { status: 422 });
+  }
 }

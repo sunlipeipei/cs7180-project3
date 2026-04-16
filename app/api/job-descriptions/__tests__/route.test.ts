@@ -151,4 +151,21 @@ describe('GET /api/job-descriptions', () => {
     expect(body).toHaveLength(1);
     expect(body[0].id).toBe('jd-cuid-123');
   });
+
+  it('returns 422 when syncing the authenticated user fails', async () => {
+    mockAuth.mockResolvedValue(mockUser);
+    mockCurrentUser.mockResolvedValue({
+      primaryEmailAddress: null,
+      emailAddresses: [],
+    });
+
+    const res = await GET(new Request('http://localhost/api/job-descriptions'));
+    const body = await res.json();
+
+    expect(res.status).toBe(422);
+    expect(body).toEqual({
+      error: 'Authenticated user is missing a primary email address',
+    });
+    expect(mockGetAll).not.toHaveBeenCalled();
+  });
 });

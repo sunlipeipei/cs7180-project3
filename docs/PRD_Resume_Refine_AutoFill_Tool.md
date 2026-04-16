@@ -8,6 +8,7 @@
 > Implementation review updated: 2026-04-16
 >
 > Status legend used below:
+>
 > - `Done` = implemented in the current codebase
 > - `Partial` = some foundation or UI/backend slice exists, but the feature is not complete end-to-end
 > - `Not Started` = no meaningful implementation found in the current codebase
@@ -265,35 +266,35 @@ Status: `Not Started`
 
 ### Phase Summary
 
-| Phase   | Status                         | What is actually implemented today                                                                 |
-| ------- | ------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Phase 1 | `Partial`                      | Authenticated dashboard shell, job description intake UI/API, persistence layer, master profile backend |
-| Phase 2 | `Not Started`                  | No resume editor, inline comments, revision engine, diffing, or version history                    |
-| Phase 3 | `Not Started`                  | No browser automation, auto-fill adapters, screening-answer generation, or review-before-submit UI |
+| Phase   | Status        | What is actually implemented today                                                                      |
+| ------- | ------------- | ------------------------------------------------------------------------------------------------------- |
+| Phase 1 | `Partial`     | Authenticated dashboard shell, job description intake UI/API, persistence layer, master profile backend |
+| Phase 2 | `Not Started` | No resume editor, inline comments, revision engine, diffing, or version history                         |
+| Phase 3 | `Not Started` | No browser automation, auto-fill adapters, screening-answer generation, or review-before-submit UI      |
 
 ### Feature Checklist by PRD Requirement
 
-| Requirement | Status      | Notes |
-| ----------- | ----------- | ----- |
-| FR-1.1      | `Partial`   | Job description paste/URL intake exists; tailoring does not follow |
-| FR-1.2      | `Not Started` | No resume upload/template handling |
-| FR-1.3      | `Not Started` | No context extraction implementation |
-| FR-1.4      | `Not Started` | No tailored resume generation |
-| FR-1.5      | `Not Started` | No `.docx` output |
-| FR-1.6      | `Partial`   | Strong backend data model; no user-facing profile workflow |
-| FR-2.1      | `Not Started` | No editing interface |
-| FR-2.2      | `Not Started` | No inline comment system |
-| FR-2.3      | `Not Started` | No targeted AI revision |
-| FR-2.4      | `Not Started` | No iterative editing loop |
-| FR-2.5      | `Not Started` | No diff/highlight UI |
-| FR-2.6      | `Not Started` | No accept/reject controls |
-| FR-2.7      | `Not Started` | No version history |
-| FR-3.1      | `Not Started` | No browser integration |
-| FR-3.2      | `Not Started` | No field auto-fill |
-| FR-3.3      | `Not Started` | No Workday adapter |
-| FR-3.4      | `Not Started` | No screening answer generation |
-| FR-3.5      | `Not Started` | No user-review submission flow |
-| FR-3.6      | `Not Started` | No editable auto-fill review UI |
+| Requirement | Status        | Notes                                                              |
+| ----------- | ------------- | ------------------------------------------------------------------ |
+| FR-1.1      | `Partial`     | Job description paste/URL intake exists; tailoring does not follow |
+| FR-1.2      | `Not Started` | No resume upload/template handling                                 |
+| FR-1.3      | `Not Started` | No context extraction implementation                               |
+| FR-1.4      | `Not Started` | No tailored resume generation                                      |
+| FR-1.5      | `Not Started` | No `.docx` output                                                  |
+| FR-1.6      | `Partial`     | Strong backend data model; no user-facing profile workflow         |
+| FR-2.1      | `Not Started` | No editing interface                                               |
+| FR-2.2      | `Not Started` | No inline comment system                                           |
+| FR-2.3      | `Not Started` | No targeted AI revision                                            |
+| FR-2.4      | `Not Started` | No iterative editing loop                                          |
+| FR-2.5      | `Not Started` | No diff/highlight UI                                               |
+| FR-2.6      | `Not Started` | No accept/reject controls                                          |
+| FR-2.7      | `Not Started` | No version history                                                 |
+| FR-3.1      | `Not Started` | No browser integration                                             |
+| FR-3.2      | `Not Started` | No field auto-fill                                                 |
+| FR-3.3      | `Not Started` | No Workday adapter                                                 |
+| FR-3.4      | `Not Started` | No screening answer generation                                     |
+| FR-3.5      | `Not Started` | No user-review submission flow                                     |
+| FR-3.6      | `Not Started` | No editable auto-fill review UI                                    |
 
 ---
 
