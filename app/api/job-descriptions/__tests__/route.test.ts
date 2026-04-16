@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn(),
+  currentUser: vi.fn(),
 }));
 
 vi.mock('../../../../src/lib/jobDescription/parseJobDescription', () => ({
@@ -13,18 +14,25 @@ vi.mock('../../../../src/lib/jobDescription/jobDescriptionRepository', () => ({
   getJobDescriptionsByUser: vi.fn(),
 }));
 
-import { auth } from '@clerk/nextjs/server';
+vi.mock('../../../../src/lib/userRepository', () => ({
+  upsertUser: vi.fn(),
+}));
+
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { parseJobDescription } from '../../../../src/lib/jobDescription/parseJobDescription';
 import {
   saveJobDescription,
   getJobDescriptionsByUser,
 } from '../../../../src/lib/jobDescription/jobDescriptionRepository';
+import { upsertUser } from '../../../../src/lib/userRepository';
 import { POST, GET } from '../route';
 
 const mockAuth = auth as unknown as ReturnType<typeof vi.fn>;
+const mockCurrentUser = currentUser as unknown as ReturnType<typeof vi.fn>;
 const mockParse = parseJobDescription as unknown as ReturnType<typeof vi.fn>;
 const mockSave = saveJobDescription as unknown as ReturnType<typeof vi.fn>;
 const mockGetAll = getJobDescriptionsByUser as unknown as ReturnType<typeof vi.fn>;
+const mockUpsertUser = upsertUser as unknown as ReturnType<typeof vi.fn>;
 
 const mockUser = { userId: 'user_clerk_abc', user: { id: 'user-db-cuid' } };
 
@@ -46,6 +54,11 @@ const mockSaved = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockCurrentUser.mockResolvedValue({
+    primaryEmailAddress: { emailAddress: 'test@example.com' },
+    emailAddresses: [{ emailAddress: 'test@example.com' }],
+  });
+  mockUpsertUser.mockResolvedValue(undefined);
 });
 
 function makeRequest(body: unknown) {
@@ -73,6 +86,7 @@ describe('POST /api/job-descriptions', () => {
     const body = await res.json();
 
     expect(res.status).toBe(201);
+    expect(mockUpsertUser).toHaveBeenCalledWith('user_clerk_abc', 'test@example.com');
     expect(mockParse).toHaveBeenCalledWith('Senior Engineer role at Acme Corp.');
     expect(mockSave).toHaveBeenCalledWith('user_clerk_abc', mockParsed);
     expect(body.id).toBe('jd-cuid-123');
@@ -132,6 +146,7 @@ describe('GET /api/job-descriptions', () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
+    expect(mockUpsertUser).toHaveBeenCalledWith('user_clerk_abc', 'test@example.com');
     expect(mockGetAll).toHaveBeenCalledWith('user_clerk_abc');
     expect(body).toHaveLength(1);
     expect(body[0].id).toBe('jd-cuid-123');

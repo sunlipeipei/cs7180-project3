@@ -2,6 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('../../prisma', () => ({
   prisma: {
+    user: {
+      findUnique: vi.fn(),
+    },
     jobDescription: {
       create: vi.fn(),
       findMany: vi.fn(),
@@ -20,6 +23,9 @@ import {
 import { prisma } from '../../prisma';
 
 const mockPrisma = prisma as unknown as {
+  user: {
+    findUnique: ReturnType<typeof vi.fn>;
+  };
   jobDescription: {
     create: ReturnType<typeof vi.fn>;
     findMany: ReturnType<typeof vi.fn>;
@@ -41,6 +47,11 @@ const mockJd = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockPrisma.user.findUnique.mockResolvedValue({
+    id: 'user-cuid-abc',
+    clerkId: 'user-clerk-abc',
+    email: 'test@example.com',
+  });
 });
 
 describe('saveJobDescription', () => {
@@ -107,6 +118,12 @@ describe('getJobDescriptionsByUser', () => {
 
     const result = await getJobDescriptionsByUser('user-cuid-abc');
     expect(result).toEqual([]);
+  });
+
+  it('throws when no internal user matches the Clerk user id', async () => {
+    mockPrisma.user.findUnique.mockResolvedValue(null);
+
+    await expect(getJobDescriptionsByUser('missing-user')).rejects.toThrow('User record not found');
   });
 });
 

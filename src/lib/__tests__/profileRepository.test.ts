@@ -6,6 +6,9 @@ import type { MasterProfile } from '../../profile/types';
 // Mock the Prisma singleton so tests never hit a real DB
 vi.mock('../prisma', () => ({
   prisma: {
+    user: {
+      findUnique: vi.fn(),
+    },
     profile: {
       findUnique: vi.fn(),
       upsert: vi.fn(),
@@ -18,6 +21,7 @@ import { prisma } from '../prisma';
 
 const mockFindUnique = vi.mocked(prisma.profile.findUnique);
 const mockUpsert = vi.mocked(prisma.profile.upsert);
+const mockFindUser = vi.mocked(prisma.user.findUnique);
 
 const validProfile: MasterProfile = {
   schemaVersion: 1,
@@ -29,9 +33,20 @@ const validProfile: MasterProfile = {
   education: [],
 };
 
+function makeDbUser(clerkId: string) {
+  return {
+    id: `db-${clerkId}`,
+    clerkId,
+    email: 'jane@example.com',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } as never;
+}
+
 describe('getProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFindUser.mockImplementation(async ({ where: { clerkId } }: any) => makeDbUser(clerkId));
   });
 
   it('returns null when no profile record exists', async () => {
@@ -40,13 +55,13 @@ describe('getProfile', () => {
     const result = await getProfile('user-123');
 
     expect(result).toBeNull();
-    expect(mockFindUnique).toHaveBeenCalledWith({ where: { userId: 'user-123' } });
+    expect(mockFindUnique).toHaveBeenCalledWith({ where: { userId: 'db-user-123' } });
   });
 
   it('returns parsed MasterProfile when record exists', async () => {
     mockFindUnique.mockResolvedValue({
       id: 'profile-1',
-      userId: 'user-123',
+      userId: 'db-user-123',
       data: validProfile,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -60,7 +75,7 @@ describe('getProfile', () => {
   it('throws ProfileValidationError when stored data is invalid', async () => {
     mockFindUnique.mockResolvedValue({
       id: 'profile-1',
-      userId: 'user-123',
+      userId: 'db-user-123',
       data: { name: 'No Email' }, // missing required fields
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -73,6 +88,7 @@ describe('getProfile', () => {
 describe('saveProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFindUser.mockImplementation(async ({ where: { clerkId } }: any) => makeDbUser(clerkId));
     mockUpsert.mockResolvedValue({} as never);
   });
 
@@ -80,8 +96,8 @@ describe('saveProfile', () => {
     await saveProfile('user-123', validProfile);
 
     expect(mockUpsert).toHaveBeenCalledWith({
-      where: { userId: 'user-123' },
-      create: { userId: 'user-123', data: expect.objectContaining({ name: 'Jane Doe' }) },
+      where: { userId: 'db-user-123' },
+      create: { userId: 'db-user-123', data: expect.objectContaining({ name: 'Jane Doe' }) },
       update: { data: expect.objectContaining({ name: 'Jane Doe' }) },
     });
   });
@@ -107,9 +123,15 @@ describe('saveProfile', () => {
     expect(mockUpsert).toHaveBeenCalledTimes(2);
     expect(mockUpsert).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        where: { userId: 'user-456' },
+        where: { userId: 'db-user-456' },
         update: { data: expect.objectContaining({ name: 'Jane Updated' }) },
       })
     );
+  });
+
+  it('throws when the Clerk user does not exist in the app database', async () => {
+    mockFindUser.mockResolvedValue(null);
+
+    await expect(getProfile('missing-user')).rejects.toThrow('User record not found');
   });
 });

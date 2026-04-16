@@ -1,9 +1,21 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { parseJobDescription } from '../../../src/lib/jobDescription/parseJobDescription';
 import {
   saveJobDescription,
   getJobDescriptionsByUser,
 } from '../../../src/lib/jobDescription/jobDescriptionRepository';
+import { upsertUser } from '../../../src/lib/userRepository';
+
+async function ensureCurrentUserRecord(clerkUserId: string): Promise<void> {
+  const user = await currentUser();
+  const primaryEmail = user?.primaryEmailAddress?.emailAddress ?? user?.emailAddresses?.[0]?.emailAddress;
+
+  if (!primaryEmail) {
+    throw new Error('Authenticated user is missing a primary email address');
+  }
+
+  await upsertUser(clerkUserId, primaryEmail);
+}
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -24,6 +36,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await ensureCurrentUserRecord(userId);
     const parsed = await parseJobDescription(input);
     const saved = await saveJobDescription(userId, parsed);
     return Response.json(saved, { status: 201 });
@@ -38,6 +51,7 @@ export async function GET(_request: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  await ensureCurrentUserRecord(userId);
   const jds = await getJobDescriptionsByUser(userId);
   return Response.json(jds, { status: 200 });
 }
