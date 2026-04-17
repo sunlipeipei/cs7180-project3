@@ -33,3 +33,9 @@ Thumbs.db
 .claude/state/
 
 /src/generated/prisma
+
+# TypeScript incremental build cache
+tsconfig.tsbuildinfo
+
+# Clerk local dev state
+.clerk/

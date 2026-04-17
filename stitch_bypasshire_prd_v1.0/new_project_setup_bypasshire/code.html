@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BypassHire - Project Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#001a43",
+              "tertiary": "#aec6ff",
+              "primary-fixed-dim": "#c6c5d4",
+              "secondary-fixed": "#a6eeff",
+              "on-primary-fixed-variant": "#454652",
+              "surface-tint": "#c6c5d4",
+              "background": "#13131b",
+              "tertiary-fixed": "#d8e2ff",
+              "secondary-container": "#00b6d0",
+              "inverse-primary": "#5d5d6a",
+              "on-tertiary-container": "#5a82d5",
+              "primary-fixed": "#e2e1f1",
+              "surface-container": "#1f1f27",
+              "primary-container": "#1a1b26",
+              "surface-container-lowest": "#0d0d15",
+              "outline": "#919096",
+              "secondary-fixed-dim": "#4ad7f3",
+              "surface-container-high": "#292932",
+              "surface-dim": "#13131b",
+              "surface-container-highest": "#34343d",
+              "secondary": "#4ad7f3",
+              "on-secondary-fixed": "#001f25",
+              "on-primary-container": "#838391",
+              "outline-variant": "#47464c",
+              "on-secondary": "#00363f",
+              "on-background": "#e4e1ed",
+              "inverse-surface": "#e4e1ed",
+              "on-tertiary": "#002e6b",
+              "surface-variant": "#34343d",
+              "on-surface-variant": "#c8c5cc",
+              "on-secondary-fixed-variant": "#004e5b",
+              "error": "#ffb4ab",
+              "on-tertiary-fixed": "#001a43",
+              "primary": "#c6c5d4",
+              "error-container": "#93000a",
+              "on-primary-fixed": "#1a1b26",
+              "on-tertiary-fixed-variant": "#0c4393",
+              "surface": "#13131b",
+              "on-surface": "#e4e1ed",
+              "surface-bright": "#393841",
+              "on-error-container": "#ffdad6",
+              "on-error": "#690005",
+              "on-secondary-container": "#00424d",
+              "surface-container-low": "#1b1b23",
+              "on-primary": "#2f303b",
+              "inverse-on-surface": "#303038",
+              "tertiary-fixed-dim": "#aec6ff"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        background: rgba(0, 182, 208, 0.12);
+        backdrop-filter: blur(20px);
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-secondary selection:text-on-secondary">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 border-r-0 bg-[#13131b] dark:bg-[#13131b] flex flex-col h-full py-8 px-4 z-50 overflow-y-auto no-scrollbar">
+<div class="mb-10 px-4">
+<h1 class="text-xl font-bold text-[#c6c5d4] tracking-tighter font-headline">BypassHire</h1>
+<p class="font-['Space_Grotesk'] font-medium text-xs tracking-wide text-on-primary-container">The Intelligent Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors duration-200 scale-95 active:scale-90 transition-transform font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#4ad7f3] bg-[#1b1b23] border-l-4 border-[#4ad7f3] scale-95 active:scale-90 transition-transform font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                Resumes
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors duration-200 scale-95 active:scale-90 transition-transform font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+                Applications
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors duration-200 scale-95 active:scale-90 transition-transform font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="mt-auto space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors duration-200 font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                Support
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-[#c6c5d4]/60 hover:text-[#c6c5d4] hover:bg-[#292932] transition-colors duration-200 font-['Space_Grotesk'] font-medium text-sm tracking-wide" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+</div>
+</aside>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] h-16 z-40 bg-[#13131b]/80 backdrop-blur-xl dark:bg-[#13131b]/80 border-b border-[#47464c]/15 flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-xs text-secondary-fixed-dim">Project Setup</span>
+<span class="text-outline-variant/30">/</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-xs text-on-surface">New Tailoring Project</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/10">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-[10px] text-on-surface-variant">AI Status: Ready</span>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="material-symbols-outlined hover:text-secondary transition-colors" data-icon="notifications">notifications</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/20">
+<span class="text-xs font-medium font-headline">ARCHITECT_01</span>
+<img alt="User Profile" class="w-8 h-8 rounded-lg bg-surface-container-highest" data-alt="minimalist professional portrait of a tech professional in a dark studio setting with subtle blue rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzFEBuIS95Zu1z2q8oRdi51BCxD4vAa3yPJ075iYlixYk7CT3iXctKgKFzC2UBDfjyo8Q_DUw60t78_utT_XjwRBbQjgA17Qo42NH4h-CNvaE2iMsiiBQ6tBp2nc9b2eNnsZkyAB7icXGQTqI-ijvHYF3p3cmpkMjY3TnBXjiY3w26h5qqeMVuQWiTZ6ooQqkuU9rIbUVA6sI7QNYGp8KR89247NHmfWh_4jYsq2R7IC0fINssQslIlNC31bnA-6be1eMW4o5HdY0"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-64 pt-16 min-h-screen bg-surface">
+<div class="max-w-5xl mx-auto py-12 px-8">
+<!-- Header Section -->
+<section class="mb-12">
+<h2 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2">Initialize Architect Engine</h2>
+<p class="text-on-surface-variant max-w-2xl leading-relaxed">Provide the structural parameters for your next role. Our AI will analyze the requirements and align your professional narrative for maximum technical impact.</p>
+</section>
+<!-- Section 1: Project Details -->
+<section class="mb-10 bg-surface-container-low p-8 rounded-xl">
+<div class="flex items-center gap-3 mb-8">
+<span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">01</span>
+<h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Project Details</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Job Title</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="e.g. Senior Backend Engineer" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Company Name</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="e.g. Neuralink" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-widest font-label">Job URL (Optional)</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/20 py-2 focus:ring-0 focus:border-secondary transition-all text-on-surface placeholder:text-on-surface-variant/30" placeholder="https://careers.company.com/..." type="url"/>
+</div>
+</div>
+</section>
+<!-- Section 2: Tailoring Context -->
+<section class="mb-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+<!-- Card: Job Description -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">02</span>
+<h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Job Description</h3>
+</div>
+<button class="text-xs font-bold text-secondary hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="auto_fix_high">auto_fix_high</span>
+                            Fetch from URL
+                        </button>
+</div>
+<div class="flex-1 bg-surface-container-lowest rounded-lg border border-outline-variant/5 group focus-within:border-secondary/30 transition-all p-4">
+<textarea class="w-full h-full bg-transparent border-0 focus:ring-0 text-sm leading-relaxed text-on-surface-variant resize-none font-body placeholder:text-on-surface-variant/20" placeholder="Paste the full job description text here for deep analysis..."></textarea>
+</div>
+</div>
+<!-- Card: Your Context -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col h-[400px]">
+<div class="flex items-center gap-3 mb-6">
+<span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">03</span>
+<h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Your Context</h3>
+</div>
+<div class="flex-1 space-y-4">
+<div class="bg-surface-container-high border-2 border-dashed border-outline-variant/20 rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-secondary/40 transition-all group">
+<span class="material-symbols-outlined text-4xl text-outline-variant/40 group-hover:text-secondary mb-3 transition-colors" data-icon="upload_file">upload_file</span>
+<p class="text-sm font-medium text-on-surface mb-1">Upload Master Profile</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Supports PDF, DOCX, or JSON</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary" data-icon="code">code</span>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Link GitHub</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-4 bg-surface-container-high rounded-lg border border-outline-variant/10 hover:bg-surface-container-highest transition-all group">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary" data-icon="folder_special">folder_special</span>
+<span class="text-xs font-bold uppercase tracking-widest text-on-surface">Projects</span>
+</button>
+</div>
+</div>
+<div class="mt-6 flex items-center gap-4 px-2">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center border-2 border-surface-container-low">
+<span class="material-symbols-outlined text-xs text-tertiary" data-icon="description">description</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-[#1e2a1e] flex items-center justify-center border-2 border-surface-container-low">
+<span class="material-symbols-outlined text-xs text-[#4ade80]" data-icon="terminal">terminal</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-[#2a1e1e] flex items-center justify-center border-2 border-surface-container-low">
+<span class="material-symbols-outlined text-xs text-[#f87171]" data-icon="picture_as_pdf">picture_as_pdf</span>
+</div>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Sources Linked (0)</p>
+</div>
+</div>
+</section>
+<!-- Section 3: Tailoring Options -->
+<section class="mb-12 bg-surface-container-low p-8 rounded-xl">
+<div class="flex items-center gap-3 mb-8">
+<span class="bg-secondary/10 text-secondary w-8 h-8 flex items-center justify-center rounded text-sm font-bold font-headline">04</span>
+<h3 class="font-headline text-lg font-bold uppercase tracking-wider text-on-surface">Tailoring Options</h3>
+</div>
+<div class="flex flex-col md:flex-row gap-12">
+<!-- Toggle 1 -->
+<div class="flex items-start gap-4 flex-1">
+<div class="relative inline-flex items-center cursor-pointer mt-1">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface mb-1">Keep original style template</p>
+<p class="text-xs text-on-surface-variant">Maintains your current layout formatting while updating content.</p>
+</div>
+</div>
+<!-- Toggle 2 -->
+<div class="flex items-start gap-4 flex-1">
+<div class="relative inline-flex items-center cursor-pointer mt-1">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-container-highest rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-on-surface-variant after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface mb-1">Emphasize specific skills</p>
+<p class="text-xs text-on-surface-variant">Prioritizes technical keywords from the job description in the summary section.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<div class="flex flex-col items-center">
+<button class="w-full max-w-md bg-secondary text-on-secondary py-5 rounded-xl font-headline font-bold text-lg uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(74,215,243,0.3)] hover:shadow-[0_0_30px_rgba(74,215,243,0.5)] transition-all active:scale-[0.98]">
+                    Start Tailoring
+                </button>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span class="text-[10px] uppercase tracking-widest font-bold">Encrypted Architect Processing</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Background Elements -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 opacity-30">
+<div class="absolute top-[10%] right-[10%] w-[400px] h-[400px] bg-secondary-container/20 blur-[120px] rounded-full"></div>
+<div class="absolute bottom-[20%] left-[20%] w-[300px] h-[300px] bg-tertiary-container/30 blur-[100px] rounded-full"></div>
+</div>
+</body></html>
