@@ -1,20 +1,23 @@
 /**
  * Integration tests for Prisma schema constraints.
- * These tests hit the real Neon database — requires DATABASE_URL in .env
+ * These tests hit the real Neon database — requires DATABASE_URL_TEST in .env
  *
- * Run with: vitest run src/lib/__tests__/schema.integration.test.ts
+ * Run with: npm run test:integration
+ * Skipped automatically when DATABASE_URL_TEST is unset.
  */
 import { describe, it, expect, afterAll, afterEach } from 'vitest';
 import type { PrismaClient as PrismaClientType } from '../../generated/prisma';
 
-const hasDb = !!process.env.DATABASE_URL;
+const runIntegration = Boolean(process.env.DATABASE_URL_TEST);
+// Keep legacy hasDb alias so the rest of the file (prisma init, guards) still works.
+const hasDb = runIntegration;
 
 let prisma: PrismaClientType;
 
 if (hasDb) {
   const { PrismaClient } = await import('../../generated/prisma');
   const { PrismaPg } = await import('@prisma/adapter-pg');
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL_TEST! });
   prisma = new PrismaClient({ adapter });
 }
 
