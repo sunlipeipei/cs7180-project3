@@ -8,10 +8,11 @@ export async function upsertUser(clerkId: string, email: string) {
   if (!clerkId) throw new Error('clerkId is required');
   if (!email) throw new Error('email is required');
 
+  const now = new Date();
   return prisma.user.upsert({
     where: { id: clerkId },
-    update: { email },
-    create: { id: clerkId, email },
+    update: { email, updatedAt: now },
+    create: { id: clerkId, email, createdAt: now, updatedAt: now },
   });
 }
 

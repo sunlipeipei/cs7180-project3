@@ -2,6 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn(),
+  currentUser: vi.fn().mockResolvedValue({
+    emailAddresses: [{ emailAddress: 'test@example.com' }],
+  }),
+}));
+
+vi.mock('../../../../src/lib/userRepository', () => ({
+  upsertUser: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../../../../src/lib/jobDescription/parseJobDescription', () => ({

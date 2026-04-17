@@ -38,11 +38,13 @@ describe('upsertUser', () => {
     const result = await upsertUser('user_abc', 'a@b.c');
 
     // The key assertion: id must equal the clerk ID passed in, not a generated CUID
-    expect(mockPrisma.user.upsert).toHaveBeenCalledWith({
-      where: { id: 'user_abc' },
-      update: { email: 'a@b.c' },
-      create: { id: 'user_abc', email: 'a@b.c' },
-    });
+    expect(mockPrisma.user.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'user_abc' },
+        update: expect.objectContaining({ email: 'a@b.c' }),
+        create: expect.objectContaining({ id: 'user_abc', email: 'a@b.c' }),
+      })
+    );
     expect(result).toEqual(mockUser);
   });
 

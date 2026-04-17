@@ -1,10 +1,17 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { parseJobDescription } from '../../../src/lib/jobDescription/parseJobDescription';
 import {
   saveJobDescription,
   getJobDescriptionsByUser,
 } from '../../../src/lib/jobDescription/jobDescriptionRepository';
 import { CreateJdInput } from '../../../src/lib/jobDescription/schemas';
+import { upsertUser } from '../../../src/lib/userRepository';
+
+async function ensureUser(userId: string) {
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress ?? `${userId}@clerk.local`;
+  await upsertUser(userId, email);
+}
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -28,6 +35,7 @@ export async function POST(request: Request) {
   const { input } = parseResult.data;
 
   try {
+    await ensureUser(userId);
     const parsed = await parseJobDescription(input);
     const saved = await saveJobDescription(userId, parsed);
     return Response.json(saved, { status: 201 });
