@@ -230,23 +230,29 @@ describe('safeFetch — happy path', () => {
 describe('safeFetch — timeout', () => {
   it('throws when fetch does not resolve within timeoutMs', async () => {
     stubDns([{ address: '93.184.216.34', family: 4 }]);
-    // fetch hangs forever (only resolves after test ends)
+    // Simulate a slow server: respect the AbortSignal passed to fetch
     vi.stubGlobal(
       'fetch',
-      vi.fn(
-        () =>
-          new Promise<Response>((resolve) => {
-            // Never resolves during the test
-            setTimeout(() => {
-              resolve({
-                status: 200,
-                ok: true,
-                headers: new Headers(),
-                body: makeReadableStream('late'),
-              } as unknown as Response);
-            }, 60_000);
-          })
-      )
+      vi.fn((_url: string, opts?: RequestInit) => {
+        const signal = opts?.signal as AbortSignal | undefined;
+        return new Promise<Response>((_resolve, reject) => {
+          if (signal?.aborted) {
+            reject(new DOMException('The operation was aborted.', 'AbortError'));
+            return;
+          }
+          signal?.addEventListener('abort', () => {
+            reject(new DOMException('The operation was aborted.', 'AbortError'));
+          });
+          setTimeout(() => {
+            _resolve({
+              status: 200,
+              ok: true,
+              headers: new Headers(),
+              body: makeReadableStream('late'),
+            } as unknown as Response);
+          }, 60_000);
+        });
+      })
     );
 
     await expect(safeFetch('https://example.com/', { timeoutMs: 50 })).rejects.toThrow(
