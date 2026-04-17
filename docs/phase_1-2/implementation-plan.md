@@ -3,7 +3,7 @@
 **Owner:** Dako (solo on Phase 1)
 **Target:** 2026-04-21 submission
 **Parent design:** `docs/architecture/phase-1.md`
-**Status:** DRAFT — awaiting confirmation on Stitch component strategy (§6.2) and a few scope trims noted inline.
+**Status:** DRAFT — Stitch/HTML strategy resolved 2026-04-16 (§6.2); a few scope trims still noted inline.
 
 ---
 
@@ -74,7 +74,7 @@
 | # | Decision | Applies to |
 |---|---|---|
 | 1 | Add a Phase 0 for cleanup before feature work | This plan |
-| 2 | **Open:** Stitch MCP vs. manual port — verify MCP first, decide after | §6.2 spike |
+| 2 | **Resolved (2026-04-16):** hybrid — use committed HTML in `stitch_bypasshire_prd_v1.0/` for Dashboard, JD intake, Tailor (byte-identical to MCP-served versions); use Stitch MCP `generate_screen_from_text` to create a NEW design for the missing Profile page | §6.2, Milestones A/C/E |
 | 3 | No resume versioning for V1 — refine overwrites the row | Schema + refine route |
 | 4 | Rename `docxPath` → `pdfPath` via `prisma migrate` | Phase 0 |
 | 5 | Plan doc lives at `docs/phase_1-2/implementation-plan.md` | This file |
@@ -139,6 +139,7 @@ Goal: green codebase, no known bugs, all deps installed, one migration applied. 
 ### 2.5 Misc cleanup
 
 - [ ] Decide fate of `.clerk/`, `tsconfig.tsbuildinfo` (gitignore or commit)
+- [ ] Add `.stitch/` to `.gitignore` (local Stitch MCP download cache, not source of truth)
 - [ ] Commit the staged deletions (`.mcp.json`, PDF, old tdd-workflow-guide.md) with a clean message — or revert if we want to keep `.mcp.json` for the rubric (NOTE: MCP is already satisfied by `docs/archive/.mcp.json.bak` + the HW5 report; deletion is safe)
 - [ ] `/dashboard/new` redirect → route to `/profile` if user has no profile yet
 
@@ -167,6 +168,13 @@ Sequencing is **critical path first**. Each milestone ends with a working slice 
 - `app/api/profile/ingest/route.ts` — POST multipart, 10 MB cap, calls extractText → Claude structured output → Zod parse → return
 - `app/api/profile/route.ts` — GET/PUT passthrough to `profileRepository`
 - `app/profile/page.tsx` — file input, submit, JSON preview, "Looks good, save" button (PUT /api/profile)
+
+**Design source for Profile page — Stitch MCP (no existing mockup):**
+1. `mcp__stitch__list_projects` → grab the BypassHire project id
+2. `mcp__stitch__generate_screen_from_text` with prompt describing Profile page (PDF upload dropzone, parsed MasterProfile JSON preview, "Looks good, save" button; same palette as existing pages — Space Grotesk headline, Inter body, `#4ad7f3` accent, glass-morphism on AI moments)
+3. `mcp__stitch__get_screen` → retrieve `htmlCode.downloadUrl` + `screenshot.downloadUrl`
+4. `bash ~/.agents/skills/react-components/scripts/fetch-stitch.sh "<htmlUrl>" .stitch/designs/profile.html` (same for screenshot with `=w<width>` suffix)
+5. Port to `app/profile/page.tsx` using the CSS custom properties already in `app/globals.css` (inline `style={{ fontFamily: 'var(--font-headline)' }}` pattern matches `app/dashboard/new/page.tsx`)
 
 **TDD evidence (rubric hit #1):**
 - RED: `src/ingestion/__tests__/pdf.test.ts` — a fixture PDF (check in 1 small sample) → expect `extractText` returns non-empty string containing known words.
@@ -223,6 +231,8 @@ Sequencing is **critical path first**. Each milestone ends with a working slice 
 - `app/api/refine/[resumeId]/route.ts` — POST `{ markdown }`, auth + ownership check, call `refineSections`, UPDATE Resume (no new row — decision #3), return `{ resume }`.
 - `app/tailor/[resumeId]/page.tsx` — fetches resume, renders markdown in `<textarea>`, "Render PDF" button opens `/api/pdf/[resumeId]` in a new tab, "Refine" button POSTs markdown.
 
+**Design source:** port from `stitch_bypasshire_prd_v1.0/resume_tailoring_bypasshire/code.html` (committed mockup). Use tokens from `app/globals.css`; follow the inline-style pattern in `app/dashboard/new/page.tsx`.
+
 **TDD evidence (rubric hit #3):**
 - RED: `src/ai/__tests__/parseInlineComments.test.ts` — fixtures: bullet with single comment, bullet with multi-line comment, comment on non-bullet text (ignored), malformed comment (ignored), two comments on same bullet.
 - GREEN: implement parser.
@@ -264,7 +274,8 @@ Sequencing is **critical path first**. Each milestone ends with a working slice 
   - Click "Render PDF," assert download happens, content-type is `application/pdf`, body is non-empty
 
 **Polish:**
-- Dashboard (`/dashboard`) lists user's profile status, JDs, resumes
+- Dashboard (`/dashboard`) lists user's profile status, JDs, resumes — port from `stitch_bypasshire_prd_v1.0/dashboard_bypasshire/code.html`
+- JD intake (`/dashboard/new`) already ported from `stitch_bypasshire_prd_v1.0/new_project_setup_bypasshire/code.html` by Peipei — review for parity with committed mockup, fix any drift
 - Landing page gets real copy
 - Loading states on every async action
 - Empty states (no profile yet, no JDs yet)
@@ -306,9 +317,19 @@ Reviewed against `docs/security.md`:
 ### 6.1 Single-shot vs. tool-loop for tailor (decision D6)
 Default to single-shot structured-output. Revisit if output quality is poor. **Deferred to Milestone B start.**
 
-### 6.2 Stitch MCP verification
-**Action:** 30-min spike at the start of Milestone A. Enable Stitch MCP in Claude Code, ask it to generate the Profile page component from `stitch_bypasshire_prd_v1.0/new_project_setup_bypasshire/code.html`. If the output is usable (imports resolve, tokens correct, passes `npm run build`), use MCP for all remaining pages. If not, port HTML manually (decision becomes A from the original two options).
-**Time-box:** 30 min. If no usable output by then, manual port.
+### 6.2 Stitch MCP verification — RESOLVED 2026-04-16
+**Outcome:** hybrid approach.
+
+**Verification evidence:**
+- `mcp__stitch__list_projects` / `list_screens` / `get_screen` all return valid JSON
+- `fetch-stitch.sh` downloaded the Dashboard HTML (19533 bytes, 343 lines) and screenshot (248856 bytes) successfully
+- Committed HTML in `stitch_bypasshire_prd_v1.0/dashboard_bypasshire/code.html` is **byte-identical** to the MCP-served version — no drift, no need to re-download
+- 4 committed mockups cover 3 of 4 Phase 1 pages (Dashboard, New Project Setup = JD intake, Resume Tailoring); the 4th committed mockup is Auto-Fill Preview (Phase 3, out of scope)
+
+**Decision:**
+- **Dashboard, JD intake, Tailor** → port from `stitch_bypasshire_prd_v1.0/*/code.html` directly (faster, version-controlled, already aligned with `app/globals.css` tokens)
+- **Profile page (missing)** → generate a new Stitch screen via `mcp__stitch__generate_screen_from_text`, fetch with `fetch-stitch.sh`, port to `app/profile/page.tsx` (see Milestone A)
+- `.stitch/designs/` stays untracked (added to `.gitignore` during Phase 0); committed mockups in `stitch_bypasshire_prd_v1.0/` are the source of truth
 
 ### 6.3 Refine: one Claude call or per-bullet loop
 Start with one Claude call that sees all commented bullets. If quality suffers (e.g., agent collapses multiple bullets), switch to per-bullet. Mark as follow-up if needed.

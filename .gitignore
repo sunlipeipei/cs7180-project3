@@ -39,3 +39,6 @@ tsconfig.tsbuildinfo
 
 # Clerk local dev state
 .clerk/
+
+# Google Stitch generated design output (HTML mockups, PNG previews)
+.stitch/
