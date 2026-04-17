@@ -1,7 +1,6 @@
 import { headers } from 'next/headers';
 import { Webhook } from 'svix';
 import { upsertUser } from '../../../../src/lib/userRepository';
-// Note: getUserByClerkId removed — use getUserById(clerkId) instead (User.id === Clerk ID).
 
 type ClerkUserEvent = {
   type: string;

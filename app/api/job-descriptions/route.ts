@@ -41,6 +41,11 @@ export async function POST(request: Request) {
 
   try {
     await ensureUser(userId);
+  } catch {
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
+  }
+
+  try {
     const parsed = await parseJobDescription(input);
     const saved = await saveJobDescription(userId, parsed);
     return Response.json(saved, { status: 201 });
@@ -64,6 +69,6 @@ export async function GET(_request: Request) {
     const jds = await getJobDescriptionsByUser(userId);
     return Response.json(jds, { status: 200 });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

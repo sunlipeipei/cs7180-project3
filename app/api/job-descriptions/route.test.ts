@@ -134,6 +134,18 @@ describe('POST /api/job-descriptions', () => {
     expect(body.id).toBe('jd-1');
   });
 
+  it('returns 500 JSON when ensureUser/DB upsert fails', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockUpsertUser.mockRejectedValue(new Error('DB connection failed'));
+
+    const res = await POST(makePostRequest({ input: 'some jd text' }));
+
+    expect(res.status).toBe(500);
+    expect(res.headers.get('content-type')).toContain('application/json');
+    const body = await res.json();
+    expect(body.error).toBe('Internal server error');
+  });
+
   it('returns 422 JSON when parseJobDescription throws', async () => {
     mockAuth.mockResolvedValue({ userId: 'user-1' });
     mockParseJd.mockRejectedValue(new Error('Job description cannot be empty'));
@@ -183,7 +195,7 @@ describe('GET /api/job-descriptions', () => {
     expect(res.status).toBe(500);
     expect(res.headers.get('content-type')).toContain('application/json');
     const body = await res.json();
-    expect(body.error).toBe('DB connection lost');
+    expect(body.error).toBe('Internal server error');
   });
 
   it('returns 200 JSON with JDs on happy path', async () => {
