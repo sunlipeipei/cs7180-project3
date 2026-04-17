@@ -10,8 +10,7 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(cuid())
-  clerkId         String           @unique
+  id              String           @id   // Clerk user ID — no default; populated from Clerk webhook event.data.id
   email           String           @unique
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -51,7 +50,7 @@ model Resume {
   jobDescriptionId String?
   jobDescription   JobDescription? @relation(fields: [jobDescriptionId], references: [id])
   content          Json            // Tailored resume content as structured JSON
-  docxPath         String?         // Path to generated .docx file
+  pdfPath          String?         // Path to generated PDF file
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
 }
