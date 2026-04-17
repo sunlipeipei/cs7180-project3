@@ -1,19 +1,8 @@
 import * as cheerio from 'cheerio';
 import type { ParsedJobDescription } from './types';
+import { safeFetch } from './safeFetch';
 
 const MAX_LENGTH = 50000;
-
-function validateUrl(input: string): void {
-  try {
-    const url = new URL(input);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      throw new Error('Invalid URL: only http and https schemes are allowed');
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message.startsWith('Invalid URL')) throw e;
-    throw new Error('Invalid URL');
-  }
-}
 
 function extractTextFromHtml(html: string): string {
   const $ = cheerio.load(html);
@@ -26,22 +15,8 @@ export async function parseJobDescription(input: string): Promise<ParsedJobDescr
 
   // Detect URL vs plain text
   if (trimmed.includes('://')) {
-    validateUrl(trimmed);
+    const { body: html, finalUrl } = await safeFetch(trimmed);
 
-    let response: Response;
-    try {
-      response = await fetch(trimmed, {
-        headers: { 'User-Agent': 'BypassHire/1.0' },
-      });
-    } catch (e) {
-      throw new Error(`Failed to fetch job description: ${(e as Error).message}`);
-    }
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch job description: HTTP ${response.status}`);
-    }
-
-    const html = await response.text();
     const rawText = extractTextFromHtml(html);
 
     if (!rawText) {
@@ -52,7 +27,7 @@ export async function parseJobDescription(input: string): Promise<ParsedJobDescr
       throw new Error('Job description is too long (max 50,000 characters)');
     }
 
-    return { type: 'url', rawText, sourceUrl: trimmed };
+    return { type: 'url', rawText, sourceUrl: finalUrl };
   }
 
   // Plain text path

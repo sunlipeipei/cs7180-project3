@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: ['src/test/setup.ts'],
-    exclude: ['node_modules', '.next'],
+    exclude: ['node_modules', '.next', '.claude/worktrees/**', '**/*.integration.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts', 'app/api/**/*.ts'],

@@ -1,10 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock global fetch
-const mockFetch = vi.fn();
-vi.stubGlobal('fetch', mockFetch);
+// Mock safeFetch so parseJobDescription tests remain isolated from SSRF logic
+vi.mock('../safeFetch', () => ({
+  safeFetch: vi.fn(),
+}));
 
+import { safeFetch } from '../safeFetch';
 import { parseJobDescription } from '../parseJobDescription';
+
+const mockSafeFetch = safeFetch as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -64,16 +68,16 @@ describe('parseJobDescription — URL input', () => {
   `;
 
   beforeEach(() => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      text: () => Promise.resolve(mockHtml),
+    mockSafeFetch.mockResolvedValue({
+      body: mockHtml,
+      finalUrl: 'https://example.com/jobs/123',
     });
   });
 
   it('fetches and parses HTML from a URL', async () => {
     const result = await parseJobDescription('https://example.com/jobs/123');
 
-    expect(mockFetch).toHaveBeenCalledWith('https://example.com/jobs/123', expect.any(Object));
+    expect(mockSafeFetch).toHaveBeenCalledWith('https://example.com/jobs/123');
     expect(result.type).toBe('url');
     expect(result.sourceUrl).toBe('https://example.com/jobs/123');
     expect(result.rawText).toContain('Senior Software Engineer');
@@ -87,24 +91,18 @@ describe('parseJobDescription — URL input', () => {
     expect(result.rawText).not.toContain('Footer content');
   });
 
-  it('throws when fetch returns a non-ok response', async () => {
-    mockFetch.mockResolvedValue({ ok: false, status: 404 });
+  it('throws when safeFetch throws a network error', async () => {
+    mockSafeFetch.mockRejectedValue(new Error('Network error'));
 
-    await expect(parseJobDescription('https://example.com/jobs/404')).rejects.toThrow(
-      'Failed to fetch job description'
+    await expect(parseJobDescription('https://example.com/jobs/123')).rejects.toThrow(
+      'Network error'
     );
   });
 
-  it('throws when fetch throws a network error', async () => {
-    mockFetch.mockRejectedValue(new Error('Network error'));
-
-    await expect(parseJobDescription('https://example.com/jobs/123')).rejects.toThrow();
-  });
-
   it('throws when parsed URL content is empty', async () => {
-    mockFetch.mockResolvedValue({
-      ok: true,
-      text: () => Promise.resolve('<html><body></body></html>'),
+    mockSafeFetch.mockResolvedValue({
+      body: '<html><body></body></html>',
+      finalUrl: 'https://example.com/empty',
     });
 
     await expect(parseJobDescription('https://example.com/empty')).rejects.toThrow(
@@ -112,12 +110,32 @@ describe('parseJobDescription — URL input', () => {
     );
   });
 
-  it('rejects non-http/https URL schemes', async () => {
-    await expect(parseJobDescription('ftp://example.com/jobs/123')).rejects.toThrow('Invalid URL');
+  it('rejects non-http/https URL schemes (safeFetch propagates the error)', async () => {
+    mockSafeFetch.mockRejectedValue(
+      new Error('Invalid URL scheme: only http and https are allowed, got "ftp:"')
+    );
+
+    await expect(parseJobDescription('ftp://example.com/jobs/123')).rejects.toThrow(/scheme|Invalid URL/i);
   });
 
   it('accepts http:// URLs', async () => {
+    mockSafeFetch.mockResolvedValue({
+      body: mockHtml,
+      finalUrl: 'http://example.com/jobs/123',
+    });
+
     const result = await parseJobDescription('http://example.com/jobs/123');
     expect(result.type).toBe('url');
+  });
+
+  it('uses the finalUrl from safeFetch as sourceUrl', async () => {
+    // After a redirect, finalUrl may differ from the original
+    mockSafeFetch.mockResolvedValue({
+      body: mockHtml,
+      finalUrl: 'https://example.com/jobs/canonical',
+    });
+
+    const result = await parseJobDescription('https://example.com/jobs/redirect');
+    expect(result.sourceUrl).toBe('https://example.com/jobs/canonical');
   });
 });

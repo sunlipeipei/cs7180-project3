@@ -42,3 +42,6 @@ tsconfig.tsbuildinfo
 
 # Google Stitch generated design output (HTML mockups, PNG previews)
 .stitch/
+
+# clerk configuration (can include secrets)
+/.clerk/

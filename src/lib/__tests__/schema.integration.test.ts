@@ -1,20 +1,23 @@
 /**
  * Integration tests for Prisma schema constraints.
- * These tests hit the real Neon database — requires DATABASE_URL in .env
+ * These tests hit the real Neon database — requires DATABASE_URL_TEST in .env
  *
- * Run with: vitest run src/lib/__tests__/schema.integration.test.ts
+ * Run with: npm run test:integration
+ * Skipped automatically when DATABASE_URL_TEST is unset.
  */
 import { describe, it, expect, afterAll, afterEach } from 'vitest';
 import type { PrismaClient as PrismaClientType } from '../../generated/prisma';
 
-const hasDb = !!process.env.DATABASE_URL;
+const runIntegration = Boolean(process.env.DATABASE_URL_TEST);
+// Keep legacy hasDb alias so the rest of the file (prisma init, guards) still works.
+const hasDb = runIntegration;
 
 let prisma: PrismaClientType;
 
 if (hasDb) {
   const { PrismaClient } = await import('../../generated/prisma');
   const { PrismaPg } = await import('@prisma/adapter-pg');
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL_TEST! });
   prisma = new PrismaClient({ adapter });
 }
 
@@ -22,8 +25,9 @@ if (hasDb) {
 const RUN_ID = Date.now().toString(36);
 const uid = (n: number) => `test-${RUN_ID}-${n}`;
 
+// Post-collapse: User.id is the Clerk user ID (no clerkId column).
 const makeUser = (n: number) => ({
-  clerkId: `clerk-${uid(n)}`,
+  id: `user_${uid(n)}`,
   email: `user-${uid(n)}@test.com`,
 });
 
@@ -43,7 +47,7 @@ afterAll(async () => {
 // ─── User constraints ─────────────────────────────────────────────────────────
 
 describe.skipIf(!hasDb)('User model constraints', () => {
-  it('enforces unique clerkId', async () => {
+  it('enforces unique id (Clerk ID)', async () => {
     const base = makeUser(1);
     await prisma.user.create({ data: base });
 
@@ -57,7 +61,7 @@ describe.skipIf(!hasDb)('User model constraints', () => {
     await prisma.user.create({ data: base });
 
     await expect(
-      prisma.user.create({ data: { ...base, clerkId: `clerk-other-${uid(2)}` } })
+      prisma.user.create({ data: { id: `user_other-${uid(2)}`, email: base.email } })
     ).rejects.toThrow();
   });
 
@@ -67,9 +71,9 @@ describe.skipIf(!hasDb)('User model constraints', () => {
     ).rejects.toThrow();
   });
 
-  it('creates a user with all required fields', async () => {
+  it('creates a user with all required fields, id equals Clerk ID', async () => {
     const user = await prisma.user.create({ data: makeUser(4) });
-    expect(user.id).toBeTruthy();
+    expect(user.id).toBe(`user_${uid(4)}`);
     expect(user.createdAt).toBeInstanceOf(Date);
   });
 });
@@ -134,7 +138,7 @@ describe.skipIf(!hasDb)('Resume model constraints', () => {
 
     expect(resume.id).toBeTruthy();
     expect(resume.jobDescriptionId).toBeNull();
-    expect(resume.docxPath).toBeNull();
+    expect(resume.pdfPath).toBeNull();
   });
 
   it('links a resume to a job description', async () => {
@@ -161,12 +165,12 @@ describe.skipIf(!hasDb)('Resume model constraints', () => {
     expect(found).toBeNull();
   });
 
-  it('sets docxPath when provided', async () => {
+  it('sets pdfPath when provided', async () => {
     const user = await prisma.user.create({ data: makeUser(33) });
     const resume = await prisma.resume.create({
-      data: { userId: user.id, content: {}, docxPath: '/tmp/resume.docx' },
+      data: { userId: user.id, content: {}, pdfPath: '/tmp/resume.pdf' },
     });
 
-    expect(resume.docxPath).toBe('/tmp/resume.docx');
+    expect(resume.pdfPath).toBe('/tmp/resume.pdf');
   });
 });
