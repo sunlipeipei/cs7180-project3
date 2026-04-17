@@ -13,9 +13,10 @@ Full requirements: `docs/PRD_Resume_Refine_AutoFill_Tool.md`
 Use this command order for every feature:
 
 ```
-/plan → /tdd → /build-fix → /code-review → /test-coverage → /e2e → /verify
+[/architect →] /plan → /tdd → /build-fix → /code-review → /test-coverage → /e2e → /verify
 ```
 
+- `/architect` — *Optional, for system-shape decisions only.* System-level design and ADRs (architect agent, opus model)
 - `/plan` — Design before writing code (planner agent, opus model)
 - `/tdd` — RED → GREEN → REFACTOR (tests first, always)
 - `/build-fix` — Fix build/type errors with minimal diffs
@@ -26,7 +27,7 @@ Use this command order for every feature:
 
 ## Automated Quality Hooks
 
-Two Claude Code hooks are configured in `.claude/settings.json` and fire automatically during development sessions:
+Four Claude Code hooks are configured in `.claude/settings.json` and fire automatically during development sessions:
 
 ### Hook 1 — PostToolUse: lint-on-edit
 
@@ -39,6 +40,24 @@ Two Claude Code hooks are configured in `.claude/settings.json` and fire automat
 **Trigger:** Before the Claude Code session ends (Stop event)  
 **What it does:** Runs `npm test` (vitest). If tests are failing, returns `continue: false` with a message blocking the session from closing until the agent fixes the failures.  
 **Config:** `.claude/settings.json` → `hooks.Stop`
+
+### Hook 3 — PostToolUse: commit-signal (tests pass)
+
+**Trigger:** After any `Bash` tool call whose command matches a test runner (`vitest`, `npx vitest`, `npm test`, `playwright test`, `bun test`, `pytest`, `promptfoo eval`) AND exits 0.  
+**What it does:** Injects `additionalContext` nudging Claude to ask whether to commit a checkpoint. **It never runs `git commit` itself** — it only signals.  
+**Script:** `.claude/hooks/commit_signal_green.sh`  
+**Config:** `.claude/settings.json` → `hooks.PostToolUse` (matcher: `Bash`)
+
+### Hook 4 — PostToolUse: commit-signal (task completed)
+
+**Trigger:** After any `TodoWrite` tool call where at least one todo transitions to `completed` (diffed against `.claude/state/last-todos.json`).  
+**What it does:** Emits a `systemMessage` nudging Claude to ask whether to commit the completed slice. Snapshot-based, so the same completion does not re-fire.  
+**Script:** `.claude/hooks/commit_signal_task.sh`  
+**Config:** `.claude/settings.json` → `hooks.PostToolUse` (matcher: `TodoWrite`)
+
+**Kill switch for Hooks 3 & 4:** set `BYPASSHIRE_DISABLE_COMMIT_HOOKS=1` in the environment.
+
+**Testing Hooks 3 & 4:** `bash .claude/hooks/test.sh` runs 25 stdin-fixture tests. Design notes live in `.claude/hooks/README.md`.
 
 To review or temporarily disable hooks, open `/hooks` in Claude Code.
 
@@ -82,10 +101,10 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 
 ## Claude Code Features in Use
 
-- **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20)
+- **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20); PostToolUse commit-signal (tests) + commit-signal (tasks) in `.claude/hooks/`
 - **MCP:** GitHub, Vercel, Stitch, and Playwright MCP servers via `.mcp.json` (see Issue #21)
-- **Agents:** `.claude/agents/` — planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
-- **Skills:** `.claude/skills/` — coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop
+- **Agents:** `.claude/agents/` — architect, planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
+- **Skills:** `.claude/skills/` — architecture-decision-records, coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop, fix-issue
 
 ---
 

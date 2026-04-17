@@ -3,3 +3,16 @@ node_modules/
 src/generated/
 prisma/migrations/
 coverage/
+
+# Claude Code configuration, agents, and skills — authored as plain Markdown/JSON,
+# not application code. Format policing here fights the tooling that generates them.
+.claude/
+CLAUDE.md
+
+# Project documentation — prose, not code. Contributors write these by hand;
+# Prettier's opinionated line-wrapping mangles tables and bullet hierarchies.
+docs/
+
+# Google Stitch design mockups — generated HTML; we don't own the output style.
+stitch_bypasshire_prd_v1.0/
+.stitch/
