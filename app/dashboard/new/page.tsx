@@ -20,13 +20,17 @@ export default function NewProjectPage() {
     try {
       const res = await fetch('/api/job-descriptions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({ input }),
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? 'Something went wrong');
+        const ct = res.headers.get('content-type') ?? '';
+        const data = ct.includes('application/json') ? await res.json() : {};
+        throw new Error(data.error ?? `Server error (${res.status})`);
       }
 
       const jd = await res.json();
