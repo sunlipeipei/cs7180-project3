@@ -4,6 +4,7 @@ import {
   saveJobDescription,
   getJobDescriptionsByUser,
 } from '../../../src/lib/jobDescription/jobDescriptionRepository';
+import { CreateJdInput } from '../../../src/lib/jobDescription/schemas';
 
 export async function POST(request: Request) {
   const { userId } = await auth();
@@ -11,17 +12,20 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let body: { input?: unknown };
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const input = body.input;
-  if (!input || typeof input !== 'string' || input.trim() === '') {
-    return Response.json({ error: 'input is required' }, { status: 400 });
+  const parseResult = CreateJdInput.safeParse(body);
+  if (!parseResult.success) {
+    const message = parseResult.error.issues[0]?.message ?? 'Invalid input';
+    return Response.json({ error: message }, { status: 400 });
   }
+
+  const { input } = parseResult.data;
 
   try {
     const parsed = await parseJobDescription(input);
