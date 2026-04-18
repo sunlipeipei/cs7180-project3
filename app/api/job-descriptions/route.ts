@@ -68,7 +68,7 @@ export async function GET(_request: Request) {
   try {
     const jds = await getJobDescriptionsByUser(userId);
     return Response.json(jds, { status: 200 });
-  } catch (err) {
+  } catch {
     return Response.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

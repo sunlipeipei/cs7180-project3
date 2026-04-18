@@ -3,7 +3,7 @@
  * gets a freshly-seeded module-scoped Map. This prevents cross-test pollution
  * from createJD additions persisting between cases.
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { IngestJDResponseSchema } from '@/ai/schemas.js';
 
 async function freshService() {
@@ -105,6 +105,22 @@ describe('jobDescription.service', () => {
     const after = new Date().toISOString();
     expect(result.parsedAt >= before).toBe(true);
     expect(result.parsedAt <= after).toBe(true);
+  });
+
+  it('createJD parsedAt is captured AFTER the simulated delay (not before)', async () => {
+    vi.useFakeTimers();
+    const { createJD } = await freshService();
+    const callTime = new Date().toISOString();
+    const promise = createJD({ source: 'paste', content: 'Engineer\n\nDetails.' });
+    // Advance past the ~80ms delay
+    await vi.advanceTimersByTimeAsync(200);
+    const result = await promise;
+    expect(result.parsedAt >= callTime).toBe(true);
+    // parsedAt must be at least as late as the simulated delay tick
+    expect(new Date(result.parsedAt).getTime()).toBeGreaterThanOrEqual(
+      new Date(callTime).getTime() + 80
+    );
+    vi.useRealTimers();
   });
 
   it('createJD with empty content throws (Zod min(1) validation)', async () => {

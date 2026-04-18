@@ -101,7 +101,7 @@ export function ResumesList({ resumes, jds }: Props) {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {title}
+                  Open →
                 </Link>
               </div>
             );

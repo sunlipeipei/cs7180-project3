@@ -56,20 +56,25 @@ describe('ResumesList', () => {
     expect(links).toHaveLength(2);
   });
 
-  it('builds link to /tailor/[resumeId] for each resume', () => {
+  it('builds link to /tailor/[resumeId] for each resume using "Open →" link text', () => {
     render(<ResumesList resumes={resumes} jds={jds} />);
-    expect(
-      screen.getByRole('link', { name: /resume for senior software engineer/i })
-    ).toHaveAttribute('href', '/tailor/d4e5f6a7-b8c9-4012-8efa-123456789012');
+    const links = screen.getAllByRole('link', { name: 'Open →' });
+    expect(links[0]).toHaveAttribute('href', '/tailor/d4e5f6a7-b8c9-4012-8efa-123456789012');
+  });
+
+  it('renders title exactly once per card (not duplicated in the link text)', () => {
+    render(<ResumesList resumes={resumes} jds={jds} />);
+    const matches = screen.getAllByText(
+      'Resume for Senior Software Engineer, Google Cloud Platform'
+    );
+    expect(matches).toHaveLength(1);
   });
 
   it('shows derived title "Resume for {JD title}" when JD is found', () => {
     render(<ResumesList resumes={resumes} jds={jds} />);
-    // The title appears as a heading paragraph — use getAllByText since the link also uses the title
-    const matches = screen.getAllByText(
-      'Resume for Senior Software Engineer, Google Cloud Platform'
-    );
-    expect(matches.length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getByText('Resume for Senior Software Engineer, Google Cloud Platform')
+    ).toBeInTheDocument();
   });
 
   it('shows fallback title when no matching JD is found', () => {

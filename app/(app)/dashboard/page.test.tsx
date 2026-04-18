@@ -154,7 +154,7 @@ describe('DashboardPage', () => {
   it('resume links point to /tailor/[resumeId]', async () => {
     render(<DashboardPage />);
     await waitFor(() => {
-      const link = screen.getByRole('link', { name: /resume for senior software engineer/i });
+      const link = screen.getByRole('link', { name: 'Open →' });
       expect(link).toHaveAttribute('href', '/tailor/d4e5f6a7-b8c9-4012-8efa-123456789012');
     });
   });

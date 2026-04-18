@@ -143,6 +143,21 @@ describe('ProfilePage', () => {
     expect(screen.getByDisplayValue('AWS Certified')).toBeInTheDocument();
   });
 
+  it('does not render a Certification URL field (not in schema)', async () => {
+    const user = userEvent.setup();
+    await renderAndWait();
+    await user.click(screen.getByRole('tab', { name: /certifications/i }));
+    expect(screen.queryByLabelText(/certification url/i)).not.toBeInTheDocument();
+  });
+
+  it('sticky action bar uses --sidebar-width CSS variable for left and width', async () => {
+    const { container } = await renderAndWait();
+    const saveBtn = screen.getByRole('button', { name: /save profile/i });
+    const bar = saveBtn.closest('div') as HTMLElement;
+    const styleAttr = bar.getAttribute('style') ?? '';
+    expect(styleAttr).toContain('var(--sidebar-width)');
+  });
+
   it('renders Raw JSON tab with a <pre> element and Copy button', async () => {
     const user = userEvent.setup();
     const { container } = await renderAndWait();
