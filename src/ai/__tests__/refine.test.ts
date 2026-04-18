@@ -82,9 +82,7 @@ describe('refineResumeSection', () => {
       choices: [{ message: { parsed: null } }],
       usage: {},
     });
-    await expect(
-      refineResumeSection(BASE_RESUME, 'summary', 'Tighten')
-    ).rejects.toThrow(/parsed/i);
+    await expect(refineResumeSection(BASE_RESUME, 'summary', 'Tighten')).rejects.toThrow(/parsed/i);
   });
 
   it('retries once when the first response has an empty updatedMarkdown', async () => {
@@ -95,12 +93,16 @@ describe('refineResumeSection', () => {
     expect(parseMock).toHaveBeenCalledTimes(2);
   });
 
-  it.each(['header', 'summary', 'skills', 'experience', 'education', 'projects'] as ResumeSection[])(
-    'works for every enum section (%s)',
-    async (section) => {
-      parseMock.mockResolvedValueOnce(fakeCompletion(`${section} rewritten`));
-      const out = await refineResumeSection(BASE_RESUME, section, 'Rewrite');
-      expect(out).toBe(`${section} rewritten`);
-    }
-  );
+  it.each([
+    'header',
+    'summary',
+    'skills',
+    'experience',
+    'education',
+    'projects',
+  ] as ResumeSection[])('works for every enum section (%s)', async (section) => {
+    parseMock.mockResolvedValueOnce(fakeCompletion(`${section} rewritten`));
+    const out = await refineResumeSection(BASE_RESUME, section, 'Rewrite');
+    expect(out).toBe(`${section} rewritten`);
+  });
 });
