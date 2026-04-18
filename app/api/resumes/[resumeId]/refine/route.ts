@@ -40,7 +40,14 @@ export async function POST(
 
   const parsedBody = RefineBodySchema.safeParse(body);
   if (!parsedBody.success) {
-    const message = parsedBody.error.issues[0]?.message ?? 'Invalid request';
+    // Only forward length-based messages (which are user-visible guidance).
+    // Enum/invalid_type messages would otherwise echo our full section
+    // taxonomy back to the client, which is information disclosure.
+    const issue = parsedBody.error.issues[0];
+    const message =
+      issue?.code === 'too_small' || issue?.code === 'too_big'
+        ? issue.message
+        : 'Invalid request body';
     return Response.json({ error: message }, { status: 400 });
   }
 
