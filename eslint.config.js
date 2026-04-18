@@ -3,11 +3,10 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    ignores: ['src/generated/**'],
+    ignores: ['src/generated/**', '**/*.d.ts'],
   },
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx', 'app/api/**/*.ts'],
-    ignores: ['src/generated/**'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -20,9 +19,18 @@ export default [
     },
     rules: {
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'off',
       'no-console': 'warn',
+    },
+  },
+  {
+    files: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx'],
+    rules: {
+      'no-console': 'off',
     },
   },
   {

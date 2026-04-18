@@ -82,6 +82,22 @@ export function DialogTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Accessible description — rendered as Radix DialogDescription (sr-only when inside DialogHeader). */
+export function DialogDescription({ children }: { children: React.ReactNode }) {
+  return (
+    <RadixDialog.Description
+      style={{
+        fontFamily: 'var(--font-body)',
+        fontSize: '0.875rem',
+        color: 'var(--color-on-surface-variant)',
+        marginTop: '0.25rem',
+      }}
+    >
+      {children}
+    </RadixDialog.Description>
+  );
+}
+
 /** Footer slot — right-aligned action row. */
 export function DialogFooter({ children }: { children: React.ReactNode }) {
   return (

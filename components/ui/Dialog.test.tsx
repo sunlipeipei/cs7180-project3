@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from './Dialog';
@@ -99,5 +100,24 @@ describe('Dialog primitive', () => {
 
     // Footer close button renders
     expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+  });
+
+  it('renders DialogDescription text when provided', async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog>
+        <DialogTrigger asChild>
+          <button>Open</button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>T</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>Accessibility body description</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    );
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    expect(screen.getByText('Accessibility body description')).toBeInTheDocument();
   });
 });

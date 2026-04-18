@@ -714,15 +714,6 @@ function CertificationsTab({
                   onChange={(e) => updateEntry(i, { date: e.target.value || undefined })}
                 />
               </Field>
-              <Field label="URL">
-                <input
-                  className={inputCls}
-                  type="url"
-                  aria-label="Certification URL"
-                  value={''}
-                  onChange={() => {}}
-                />
-              </Field>
             </div>
           </div>
         ))}
@@ -896,8 +887,8 @@ export default function ProfilePage() {
         className="fixed bottom-0 right-0 z-40 flex w-full items-center justify-between px-10 py-4"
         style={{
           backgroundColor: 'var(--color-surface-container-low)',
-          left: '240px',
-          width: 'calc(100% - 240px)',
+          left: 'var(--sidebar-width)',
+          width: 'calc(100% - var(--sidebar-width))',
         }}
       >
         <div className="flex items-center gap-3">

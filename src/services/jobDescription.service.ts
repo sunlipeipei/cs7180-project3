@@ -43,14 +43,14 @@ export async function createJD(req: IngestJDRequest): Promise<IngestJDResponse> 
   const lines = validated.content.split('\n');
   const title = lines.find((l) => l.trim().length > 0) ?? 'Untitled';
 
+  const jobDescriptionId = crypto.randomUUID();
+  await delay();
   const jd: IngestJDResponse = {
-    jobDescriptionId: crypto.randomUUID(),
+    jobDescriptionId,
     title: title.trim(),
     company: 'Unknown',
     parsedAt: new Date().toISOString(),
   };
-
-  await delay();
   _store.set(jd.jobDescriptionId, clone(jd));
   return clone(jd);
 }
