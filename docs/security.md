@@ -60,6 +60,7 @@
 - Clerk handles all authentication — do not implement custom auth
 - Next.js middleware enforces auth on all `/dashboard` and `/api` routes
 - Never trust `userId` from client — always use `auth()` server-side
+- API routes must import `getAuth` / `getCurrentUser` from `src/lib/auth` — never directly from `@clerk/nextjs/server`. ESLint enforces this.
 - Session tokens managed by Clerk (HttpOnly cookies, short-lived JWTs)
 
 ### A08: Software and Data Integrity Failures
