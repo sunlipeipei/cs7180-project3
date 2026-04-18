@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createJD } from '@/services/jobDescription.service';
 
+// InputMode maps to the UI toggle labels.
+// NOTE: 'text' maps to IngestJDRequestSchema's 'paste' source value.
 type InputMode = 'text' | 'url';
 
 export default function NewProjectPage() {
@@ -14,27 +17,34 @@ export default function NewProjectPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!input.trim()) return;
+
     setError(null);
     setLoading(true);
 
     try {
-      const res = await fetch('/api/job-descriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ input }),
+      // Phase 1.A will reactivate the real /api/job-descriptions call:
+      // const res = await fetch('/api/job-descriptions', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Accept: 'application/json',
+      //   },
+      //   body: JSON.stringify({ input }),
+      // });
+      // if (!res.ok) {
+      //   const ct = res.headers.get('content-type') ?? '';
+      //   const data = ct.includes('application/json') ? await res.json() : {};
+      //   throw new Error(data.error ?? `Server error (${res.status})`);
+      // }
+      // const jd = await res.json();
+      // router.push(`/dashboard?jd=${jd.jobDescriptionId}`);
+
+      await createJD({
+        source: mode === 'url' ? 'url' : 'paste',
+        content: input,
       });
-
-      if (!res.ok) {
-        const ct = res.headers.get('content-type') ?? '';
-        const data = ct.includes('application/json') ? await res.json() : {};
-        throw new Error(data.error ?? `Server error (${res.status})`);
-      }
-
-      const jd = await res.json();
-      router.push(`/dashboard?jd=${jd.id}`);
+      router.push('/dashboard');
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -107,7 +117,6 @@ export default function NewProjectPage() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste the full job description here…"
               rows={12}
-              required
               className="w-full resize-none rounded-xl px-5 py-4 text-sm outline-none transition-all placeholder:opacity-40 focus:ring-1"
               style={{
                 backgroundColor: 'var(--color-surface-container-high)',
@@ -126,7 +135,6 @@ export default function NewProjectPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="https://jobs.example.com/senior-engineer"
-                required
                 className="w-full rounded-xl px-5 py-4 text-sm outline-none transition-all placeholder:opacity-40"
                 style={{
                   backgroundColor: 'var(--color-surface-container-high)',
@@ -146,7 +154,7 @@ export default function NewProjectPage() {
           )}
         </div>
 
-        {/* Error */}
+        {/* Inline validation / server error */}
         {error && (
           <div
             className="rounded-xl px-5 py-3 text-sm"
@@ -179,7 +187,7 @@ export default function NewProjectPage() {
               className="flex items-center gap-2 text-xs"
               style={{ color: 'var(--color-on-surface-variant)' }}
             >
-              {/* Progress bar */}
+              {/* The "Tailor" Progress Bar — DESIGN.md §5: 2px track, glowing secondary fill */}
               <div
                 className="h-0.5 w-32 overflow-hidden rounded-full"
                 style={{ backgroundColor: 'var(--color-surface-variant)' }}

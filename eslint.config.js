@@ -3,7 +3,10 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    ignores: ['src/generated/**'],
+  },
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'app/api/**/*.ts'],
     ignores: ['src/generated/**'],
     languageOptions: {
       parser: tsParser,
@@ -20,6 +23,25 @@ export default [
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'off',
       'no-console': 'warn',
+    },
+  },
+  {
+    files: ['app/api/**/*.ts', 'src/**/*.ts'],
+    ignores: ['src/lib/auth.ts', 'src/lib/auth.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@clerk/nextjs/server'],
+              importNames: ['auth', 'currentUser'],
+              message:
+                "Use 'src/lib/auth' (getAuth/getCurrentUser) instead of importing auth/currentUser directly from @clerk/nextjs/server.",
+            },
+          ],
+        },
+      ],
     },
   },
 ];

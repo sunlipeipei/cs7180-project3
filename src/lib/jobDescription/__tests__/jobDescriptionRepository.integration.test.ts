@@ -32,9 +32,8 @@ afterAll(async () => {
 
 describe.skipIf(!runIntegration)('jobDescriptionRepository — integration', () => {
   it('saves a JD and lists it back for the owning user', async () => {
-    const { saveJobDescription, getJobDescriptionsByUser } = await import(
-      '../jobDescriptionRepository'
-    );
+    const { saveJobDescription, getJobDescriptionsByUser } =
+      await import('../jobDescriptionRepository');
 
     const userId = `${FILE_PREFIX}_1`;
     const email = `${FILE_PREFIX}_1@integration.test`;
@@ -61,9 +60,8 @@ describe.skipIf(!runIntegration)('jobDescriptionRepository — integration', () 
   });
 
   it("another user's JD list does not include this user's JD (access scoping)", async () => {
-    const { saveJobDescription, getJobDescriptionsByUser } = await import(
-      '../jobDescriptionRepository'
-    );
+    const { saveJobDescription, getJobDescriptionsByUser } =
+      await import('../jobDescriptionRepository');
 
     const userId1 = `${FILE_PREFIX}_2`;
     const userId2 = `${FILE_PREFIX}_3`;

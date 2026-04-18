@@ -11,7 +11,7 @@ import {
   ContextSourcesSchema,
   PreferencesSchema,
   SalaryRangeSchema,
-} from './schema.js';
+} from './schema';
 
 export type MasterProfile = z.infer<typeof MasterProfileSchema>;
 export type Address = z.infer<typeof AddressSchema>;

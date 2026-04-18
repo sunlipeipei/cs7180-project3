@@ -109,12 +109,16 @@ describe('safeFetch — scheme validation', () => {
 describe('safeFetch — DNS SSRF blocklist (IPv4)', () => {
   it('rejects loopback 127.0.0.1', async () => {
     stubDns([{ address: '127.0.0.1', family: 4 }]);
-    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
+    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(
+      /private|blocked|SSRF/i
+    );
   });
 
   it('rejects private 10.0.0.1', async () => {
     stubDns([{ address: '10.0.0.1', family: 4 }]);
-    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
+    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(
+      /private|blocked|SSRF/i
+    );
   });
 
   it('rejects AWS metadata endpoint 169.254.169.254', async () => {
@@ -129,12 +133,16 @@ describe('safeFetch — DNS SSRF blocklist (IPv4)', () => {
 
   it('rejects 172.16.0.1 (172.16.0.0/12 range)', async () => {
     stubDns([{ address: '172.16.0.1', family: 4 }]);
-    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
+    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(
+      /private|blocked|SSRF/i
+    );
   });
 
   it('rejects 172.31.255.255 (still in 172.16.0.0/12)', async () => {
     stubDns([{ address: '172.31.255.255', family: 4 }]);
-    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
+    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(
+      /private|blocked|SSRF/i
+    );
   });
 
   it('allows 172.32.0.0 (just outside 172.16.0.0/12)', async () => {
@@ -146,7 +154,9 @@ describe('safeFetch — DNS SSRF blocklist (IPv4)', () => {
 
   it('rejects 100.64.0.1 (CGNAT 100.64.0.0/10)', async () => {
     stubDns([{ address: '100.64.0.1', family: 4 }]);
-    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
+    await expect(safeFetch('http://internal.example.com/')).rejects.toThrow(
+      /private|blocked|SSRF/i
+    );
   });
 
   it('rejects 0.0.0.1 (0.0.0.0/8)', async () => {
@@ -190,16 +200,12 @@ describe('safeFetch — DNS SSRF blocklist (IPv6)', () => {
 
   it('rejects IPv4-mapped ::ffff:192.168.1.1', async () => {
     stubDns([{ address: '::ffff:192.168.1.1', family: 6 }]);
-    await expect(safeFetch('http://mapped.example.com/')).rejects.toThrow(
-      /private|blocked|SSRF/i
-    );
+    await expect(safeFetch('http://mapped.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
   });
 
   it('rejects IPv4-mapped ::ffff:127.0.0.1', async () => {
     stubDns([{ address: '::ffff:127.0.0.1', family: 6 }]);
-    await expect(safeFetch('http://mapped2.example.com/')).rejects.toThrow(
-      /private|blocked|SSRF/i
-    );
+    await expect(safeFetch('http://mapped2.example.com/')).rejects.toThrow(/private|blocked|SSRF/i);
   });
 });
 
@@ -282,9 +288,9 @@ describe('safeFetch — size cap', () => {
       )
     );
 
-    await expect(
-      safeFetch('https://example.com/', { maxBytes: 1024 })
-    ).rejects.toThrow(/size|too large|exceeded/i);
+    await expect(safeFetch('https://example.com/', { maxBytes: 1024 })).rejects.toThrow(
+      /size|too large|exceeded/i
+    );
   });
 
   it('accepts response right at the maxBytes boundary', async () => {
@@ -382,9 +388,9 @@ describe('safeFetch — redirect handling', () => {
       )
     );
 
-    await expect(
-      safeFetch('https://example.com/', { maxRedirects: 2 })
-    ).rejects.toThrow(/redirect/i);
+    await expect(safeFetch('https://example.com/', { maxRedirects: 2 })).rejects.toThrow(
+      /redirect/i
+    );
   });
 
   it('rejects a relative Location header', async () => {
@@ -403,9 +409,7 @@ describe('safeFetch — redirect handling', () => {
       )
     );
 
-    await expect(safeFetch('https://example.com/')).rejects.toThrow(
-      /redirect|absolute|scheme/i
-    );
+    await expect(safeFetch('https://example.com/')).rejects.toThrow(/redirect|absolute|scheme/i);
   });
 
   it('rejects redirect to non-http scheme', async () => {

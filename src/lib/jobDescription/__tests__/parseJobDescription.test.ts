@@ -115,7 +115,9 @@ describe('parseJobDescription — URL input', () => {
       new Error('Invalid URL scheme: only http and https are allowed, got "ftp:"')
     );
 
-    await expect(parseJobDescription('ftp://example.com/jobs/123')).rejects.toThrow(/scheme|Invalid URL/i);
+    await expect(parseJobDescription('ftp://example.com/jobs/123')).rejects.toThrow(
+      /scheme|Invalid URL/i
+    );
   });
 
   it('accepts http:// URLs', async () => {
