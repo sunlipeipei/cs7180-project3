@@ -78,8 +78,8 @@ describe('tailorResume', () => {
     expect(callArg.response_format.type).toBe('json_schema');
   });
 
-  it('throws when the model returns a null/missing parsed payload', async () => {
-    parseMock.mockResolvedValueOnce(fakeCompletion(null));
+  it('throws when the model returns a null/missing parsed payload on both attempts', async () => {
+    parseMock.mockResolvedValue(fakeCompletion(null));
     await expect(tailorResume(profileFixture, jd)).rejects.toThrow(/parsed/i);
   });
 
