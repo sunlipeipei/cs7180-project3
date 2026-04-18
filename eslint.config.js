@@ -3,6 +3,9 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
+    ignores: ['src/generated/**'],
+  },
+  {
     files: ['src/**/*.ts', 'src/**/*.tsx', 'app/api/**/*.ts'],
     ignores: ['src/generated/**'],
     languageOptions: {
@@ -24,7 +27,7 @@ export default [
   },
   {
     files: ['app/api/**/*.ts', 'src/**/*.ts'],
-    ignores: ['src/lib/auth.ts'],
+    ignores: ['src/lib/auth.ts', 'src/lib/auth.test.ts'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
