@@ -169,7 +169,7 @@ describe('NewProjectPage — /dashboard/new', () => {
     mockCreateJD.mockReturnValueOnce(
       new Promise<ReturnType<typeof makeJDResponse>>((res) => {
         resolve = res;
-      }),
+      })
     );
 
     const user = userEvent.setup();
@@ -196,7 +196,7 @@ describe('NewProjectPage — /dashboard/new', () => {
     mockCreateJD.mockReturnValueOnce(
       new Promise<ReturnType<typeof makeJDResponse>>((res) => {
         resolve = res;
-      }),
+      })
     );
 
     const user = userEvent.setup();

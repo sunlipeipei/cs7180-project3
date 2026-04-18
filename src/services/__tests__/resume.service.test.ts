@@ -108,8 +108,14 @@ describe('resume.service', () => {
 
   it('each tailorResume call generates a unique resumeId', async () => {
     const { tailorResume } = await freshService();
-    const a = await tailorResume({ jobDescriptionId: KNOWN_JD_ID, profileSnapshot: FIXTURE_PROFILE_SNAPSHOT });
-    const b = await tailorResume({ jobDescriptionId: KNOWN_JD_ID, profileSnapshot: FIXTURE_PROFILE_SNAPSHOT });
+    const a = await tailorResume({
+      jobDescriptionId: KNOWN_JD_ID,
+      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
+    });
+    const b = await tailorResume({
+      jobDescriptionId: KNOWN_JD_ID,
+      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
+    });
     expect(a.resumeId).not.toBe(b.resumeId);
   });
 
@@ -131,7 +137,7 @@ describe('resume.service', () => {
   it('tailorResume with invalid jobDescriptionId (not uuid) throws', async () => {
     const { tailorResume } = await freshService();
     await expect(
-      tailorResume({ jobDescriptionId: 'not-a-uuid', profileSnapshot: FIXTURE_PROFILE_SNAPSHOT }),
+      tailorResume({ jobDescriptionId: 'not-a-uuid', profileSnapshot: FIXTURE_PROFILE_SNAPSHOT })
     ).rejects.toThrow();
   });
 
@@ -203,28 +209,32 @@ describe('resume.service', () => {
         resumeId: '00000000-0000-0000-0000-000000000000',
         section: 'summary',
         instruction: 'Fix it',
-      }),
+      })
     ).rejects.toThrow();
   });
 
   it('refineSection on non-uuid resumeId throws (Zod validation)', async () => {
     const { refineSection } = await freshService();
     await expect(
-      refineSection({ resumeId: 'not-a-uuid', section: 'summary', instruction: 'Fix it' }),
+      refineSection({ resumeId: 'not-a-uuid', section: 'summary', instruction: 'Fix it' })
     ).rejects.toThrow();
   });
 
   it('refineSection with empty instruction throws (Zod min(1) validation)', async () => {
     const { refineSection } = await freshService();
     await expect(
-      refineSection({ resumeId: KNOWN_RESUME_ID, section: 'summary', instruction: '' }),
+      refineSection({ resumeId: KNOWN_RESUME_ID, section: 'summary', instruction: '' })
     ).rejects.toThrow();
   });
 
   it('refineSection with instruction over 1000 chars throws (Zod max(1000))', async () => {
     const { refineSection } = await freshService();
     await expect(
-      refineSection({ resumeId: KNOWN_RESUME_ID, section: 'summary', instruction: 'x'.repeat(1001) }),
+      refineSection({
+        resumeId: KNOWN_RESUME_ID,
+        section: 'summary',
+        instruction: 'x'.repeat(1001),
+      })
     ).rejects.toThrow();
   });
 
@@ -235,7 +245,7 @@ describe('resume.service', () => {
         resumeId: KNOWN_RESUME_ID,
         section: 'invalid_section' as unknown as ResumeSection,
         instruction: 'Fix it',
-      }),
+      })
     ).rejects.toThrow();
   });
 });

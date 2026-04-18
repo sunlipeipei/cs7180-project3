@@ -167,9 +167,7 @@ export default function TailorPage({ params }: PageProps) {
           color: 'var(--color-on-surface-variant)',
         }}
       >
-        <p style={{ fontSize: '1.125rem', color: 'var(--color-on-surface)' }}>
-          Resume not found
-        </p>
+        <p style={{ fontSize: '1.125rem', color: 'var(--color-on-surface)' }}>Resume not found</p>
         <Link
           href="/dashboard"
           style={{
@@ -446,9 +444,7 @@ export default function TailorPage({ params }: PageProps) {
                 rows={6}
                 value={sections[sectionKey]}
                 onChange={(e) =>
-                  setSections((prev) =>
-                    prev ? { ...prev, [sectionKey]: e.target.value } : prev
-                  )
+                  setSections((prev) => (prev ? { ...prev, [sectionKey]: e.target.value } : prev))
                 }
                 style={{
                   width: '100%',

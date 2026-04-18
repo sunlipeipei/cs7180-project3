@@ -122,10 +122,7 @@ describe('getCurrentUser', () => {
       });
       const result = await getCurrentUser();
       expect(result).toEqual({
-        emailAddresses: [
-          { emailAddress: 'a@example.com' },
-          { emailAddress: 'b@example.com' },
-        ],
+        emailAddresses: [{ emailAddress: 'a@example.com' }, { emailAddress: 'b@example.com' }],
       });
     });
 

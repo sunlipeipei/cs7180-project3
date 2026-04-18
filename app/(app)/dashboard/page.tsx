@@ -74,7 +74,7 @@ export default function DashboardPage() {
     Promise.all([getProfile(), listJobDescriptions(), listResumes()]).then(
       ([profile, jds, resumes]) => {
         setData({ profile, jds, resumes });
-      },
+      }
     );
   }, []);
 

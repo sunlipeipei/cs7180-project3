@@ -29,15 +29,19 @@ export default [
     files: ['app/api/**/*.ts', 'src/**/*.ts'],
     ignores: ['src/lib/auth.ts', 'src/lib/auth.test.ts'],
     rules: {
-      'no-restricted-imports': ['error', {
-        patterns: [
-          {
-            group: ['@clerk/nextjs/server'],
-            importNames: ['auth', 'currentUser'],
-            message: "Use 'src/lib/auth' (getAuth/getCurrentUser) instead of importing auth/currentUser directly from @clerk/nextjs/server.",
-          },
-        ],
-      }],
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@clerk/nextjs/server'],
+              importNames: ['auth', 'currentUser'],
+              message:
+                "Use 'src/lib/auth' (getAuth/getCurrentUser) instead of importing auth/currentUser directly from @clerk/nextjs/server.",
+            },
+          ],
+        },
+      ],
     },
   },
 ];

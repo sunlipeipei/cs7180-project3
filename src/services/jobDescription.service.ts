@@ -5,7 +5,7 @@ import { delay, clone } from './_helpers';
 
 // Module-scoped mutable state — seeded from fixture at import time.
 const _store = new Map<string, IngestJDResponse>(
-  jobDescriptionsFixture.map((jd) => [jd.jobDescriptionId, clone(jd)]),
+  jobDescriptionsFixture.map((jd) => [jd.jobDescriptionId, clone(jd)])
 );
 
 /**

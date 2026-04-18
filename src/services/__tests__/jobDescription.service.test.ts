@@ -54,7 +54,10 @@ describe('jobDescription.service', () => {
 
   it('createJD returns a valid IngestJDResponse with a fresh UUID', async () => {
     const { createJD } = await freshService();
-    const result = await createJD({ source: 'paste', content: 'Senior SWE at Google\n\nFull role description here.' });
+    const result = await createJD({
+      source: 'paste',
+      content: 'Senior SWE at Google\n\nFull role description here.',
+    });
     const parsed = IngestJDResponseSchema.safeParse(result);
     expect(parsed.success).toBe(true);
     expect(result.jobDescriptionId).toBeTruthy();
@@ -62,7 +65,10 @@ describe('jobDescription.service', () => {
 
   it('createJD adds to the list — length becomes 3', async () => {
     const { listJobDescriptions, createJD } = await freshService();
-    await createJD({ source: 'paste', content: 'Senior SWE at Google\n\nFull role description here.' });
+    await createJD({
+      source: 'paste',
+      content: 'Senior SWE at Google\n\nFull role description here.',
+    });
     const list = await listJobDescriptions();
     expect(list).toHaveLength(3);
   });
@@ -76,13 +82,19 @@ describe('jobDescription.service', () => {
 
   it('createJD extracts title from first non-empty line', async () => {
     const { createJD } = await freshService();
-    const result = await createJD({ source: 'paste', content: 'Staff Engineer – Platform\n\nMore details.' });
+    const result = await createJD({
+      source: 'paste',
+      content: 'Staff Engineer – Platform\n\nMore details.',
+    });
     expect(result.title).toBe('Staff Engineer – Platform');
   });
 
   it('createJD sets company to "Unknown" (Phase 0.5 heuristic)', async () => {
     const { createJD } = await freshService();
-    const result = await createJD({ source: 'paste', content: 'Some Job Title\n\nJob details here.' });
+    const result = await createJD({
+      source: 'paste',
+      content: 'Some Job Title\n\nJob details here.',
+    });
     expect(result.company).toBe('Unknown');
   });
 

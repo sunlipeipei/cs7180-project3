@@ -7,10 +7,7 @@ export type CurrentUserResult = {
 } | null;
 
 export function isDevBypass(): boolean {
-  return (
-    process.env.NODE_ENV !== 'production' &&
-    process.env.DEV_AUTH_BYPASS === '1'
-  );
+  return process.env.NODE_ENV !== 'production' && process.env.DEV_AUTH_BYPASS === '1';
 }
 
 export async function getAuth(): Promise<AuthResult> {

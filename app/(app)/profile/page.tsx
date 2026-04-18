@@ -39,8 +39,7 @@ const inputCls =
   'focus:ring-1 focus:ring-[color:var(--color-secondary)] transition-all';
 
 const sectionCls =
-  'rounded-[var(--radius-xl)] p-6 ' +
-  'bg-[color:var(--color-surface-container-low)]';
+  'rounded-[var(--radius-xl)] p-6 ' + 'bg-[color:var(--color-surface-container-low)]';
 
 // ---------------------------------------------------------------------------
 // Section-level sub-components
@@ -96,7 +95,9 @@ function PersonalInfoTab({
             aria-label="Location"
             value={profile.address?.city ?? ''}
             onChange={(e) =>
-              onChange({ address: { ...(profile.address ?? { country: 'US' }), city: e.target.value } })
+              onChange({
+                address: { ...(profile.address ?? { country: 'US' }), city: e.target.value },
+              })
             }
           />
         </Field>
@@ -245,10 +246,7 @@ function ExperienceTab({
   profile: MasterProfile;
   onChange: (patch: Partial<MasterProfile>) => void;
 }) {
-  const updateEntry = (
-    index: number,
-    patch: Partial<MasterProfile['workExperience'][number]>,
-  ) => {
+  const updateEntry = (index: number, patch: Partial<MasterProfile['workExperience'][number]>) => {
     const updated = profile.workExperience.map((e, i) => (i === index ? { ...e, ...patch } : e));
     onChange({ workExperience: updated });
   };
@@ -273,15 +271,13 @@ function ExperienceTab({
 
   const updateDescription = (entryIndex: number, descIndex: number, value: string) => {
     const descs = profile.workExperience[entryIndex].descriptions.map((d, i) =>
-      i === descIndex ? value : d,
+      i === descIndex ? value : d
     );
     updateEntry(entryIndex, { descriptions: descs });
   };
 
   const removeDescription = (entryIndex: number, descIndex: number) => {
-    const descs = profile.workExperience[entryIndex].descriptions.filter(
-      (_, i) => i !== descIndex,
-    );
+    const descs = profile.workExperience[entryIndex].descriptions.filter((_, i) => i !== descIndex);
     updateEntry(entryIndex, { descriptions: descs });
   };
 
@@ -534,7 +530,10 @@ function ProjectsTab({
 }) {
   const projects = profile.projects ?? [];
 
-  const updateEntry = (index: number, patch: Partial<NonNullable<MasterProfile['projects']>[number]>) => {
+  const updateEntry = (
+    index: number,
+    patch: Partial<NonNullable<MasterProfile['projects']>[number]>
+  ) => {
     const updated = projects.map((p, i) => (i === index ? { ...p, ...patch } : p));
     onChange({ projects: updated });
   };
@@ -641,7 +640,7 @@ function CertificationsTab({
 
   const updateEntry = (
     index: number,
-    patch: Partial<NonNullable<MasterProfile['certifications']>[number]>,
+    patch: Partial<NonNullable<MasterProfile['certifications']>[number]>
   ) => {
     const updated = certs.map((c, i) => (i === index ? { ...c, ...patch } : c));
     onChange({ certifications: updated });

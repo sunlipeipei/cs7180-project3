@@ -60,9 +60,7 @@ describe('profile.service', () => {
   it('saveProfile(invalid) throws — invalid email format', async () => {
     const { getProfile, saveProfile } = await freshService();
     const original = await getProfile();
-    await expect(
-      saveProfile({ ...original, email: 'not-an-email' }),
-    ).rejects.toThrow();
+    await expect(saveProfile({ ...original, email: 'not-an-email' })).rejects.toThrow();
   });
 
   it('mutating the returned profile does NOT affect the next getProfile() (defensive copy)', async () => {

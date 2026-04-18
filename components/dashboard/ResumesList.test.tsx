@@ -50,23 +50,25 @@ describe('ResumesList', () => {
   it('renders a card for each resume', () => {
     render(<ResumesList resumes={resumes} jds={jds} />);
     // Two cards should be rendered
-    const links = screen.getAllByRole('link').filter((el) =>
-      el.getAttribute('href')?.startsWith('/tailor/'),
-    );
+    const links = screen
+      .getAllByRole('link')
+      .filter((el) => el.getAttribute('href')?.startsWith('/tailor/'));
     expect(links).toHaveLength(2);
   });
 
   it('builds link to /tailor/[resumeId] for each resume', () => {
     render(<ResumesList resumes={resumes} jds={jds} />);
     expect(
-      screen.getByRole('link', { name: /resume for senior software engineer/i }),
+      screen.getByRole('link', { name: /resume for senior software engineer/i })
     ).toHaveAttribute('href', '/tailor/d4e5f6a7-b8c9-4012-8efa-123456789012');
   });
 
   it('shows derived title "Resume for {JD title}" when JD is found', () => {
     render(<ResumesList resumes={resumes} jds={jds} />);
     // The title appears as a heading paragraph — use getAllByText since the link also uses the title
-    const matches = screen.getAllByText('Resume for Senior Software Engineer, Google Cloud Platform');
+    const matches = screen.getAllByText(
+      'Resume for Senior Software Engineer, Google Cloud Platform'
+    );
     expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 

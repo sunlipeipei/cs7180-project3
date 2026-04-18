@@ -63,9 +63,7 @@ export function Sidebar() {
                 textDecoration: 'none',
                 transition: 'background-color 0.15s',
                 backgroundColor: isActive ? 'var(--color-surface-container-high)' : 'transparent',
-                color: isActive
-                  ? 'var(--color-on-surface)'
-                  : 'var(--color-on-surface-variant)',
+                color: isActive ? 'var(--color-on-surface)' : 'var(--color-on-surface-variant)',
               }}
             >
               {label}

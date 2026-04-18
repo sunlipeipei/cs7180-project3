@@ -13,7 +13,7 @@ describe('Tabs compound component', () => {
         </TabsList>
         <TabsContent value="tab1">Content One</TabsContent>
         <TabsContent value="tab2">Content Two</TabsContent>
-      </Tabs>,
+      </Tabs>
     );
   }
 

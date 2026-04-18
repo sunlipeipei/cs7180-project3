@@ -59,7 +59,7 @@ describe('profileFixture', () => {
 
   it('has at least one work experience entry with null endDate (current role)', () => {
     const currentRole = profileFixture.workExperience.find(
-      (e) => e.endDate === null || e.endDate === undefined,
+      (e) => e.endDate === null || e.endDate === undefined
     );
     expect(currentRole).toBeDefined();
   });
@@ -81,8 +81,7 @@ describe('jobDescriptionsFixture', () => {
   });
 
   it('all jobDescriptionIds are valid UUIDs', () => {
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     for (const jd of jobDescriptionsFixture) {
       expect(jd.jobDescriptionId).toMatch(uuidRegex);
     }
@@ -113,14 +112,11 @@ describe('resumesFixture', () => {
 
   it('the tailored resume jobDescriptionId matches jobDescriptionsFixture[0]', () => {
     // resumesFixture[1] is the "tailored" one per spec
-    expect(resumesFixture[1].jobDescriptionId).toBe(
-      jobDescriptionsFixture[0].jobDescriptionId,
-    );
+    expect(resumesFixture[1].jobDescriptionId).toBe(jobDescriptionsFixture[0].jobDescriptionId);
   });
 
   it('all resumeIds and jobDescriptionIds are valid UUIDs', () => {
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     for (const resume of resumesFixture) {
       expect(resume.resumeId).toMatch(uuidRegex);
       expect(resume.jobDescriptionId).toMatch(uuidRegex);

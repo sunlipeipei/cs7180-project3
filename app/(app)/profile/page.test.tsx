@@ -85,7 +85,7 @@ describe('ProfilePage', () => {
     vi.mocked(getProfile).mockReturnValueOnce(
       new Promise((r) => {
         resolve = r;
-      }),
+      })
     );
     render(<ProfilePage />);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();

@@ -59,9 +59,7 @@ const mockProfile: MasterProfile = {
   email: 'jordan.lee@example.com',
   phone: '+14155550192',
   skills: [{ name: 'TypeScript' }],
-  workExperience: [
-    { company: 'Stripe', title: 'SWE', startDate: '2022-01-01', descriptions: [] },
-  ],
+  workExperience: [{ company: 'Stripe', title: 'SWE', startDate: '2022-01-01', descriptions: [] }],
   education: [{ school: 'Waterloo', degree: 'BS' }],
 };
 
@@ -137,7 +135,7 @@ describe('DashboardPage', () => {
     render(<DashboardPage />);
     await waitFor(() => {
       expect(
-        screen.getByText('Senior Software Engineer, Google Cloud Platform'),
+        screen.getByText('Senior Software Engineer, Google Cloud Platform')
       ).toBeInTheDocument();
       expect(screen.getByText('Staff Engineer – Platform')).toBeInTheDocument();
     });

@@ -4,9 +4,7 @@ import { resumesFixture } from '@/fixtures/index';
 import { delay, clone } from './_helpers';
 
 // Module-scoped mutable state — seeded from fixture at import time.
-const _store = new Map<string, TailoredResume>(
-  resumesFixture.map((r) => [r.resumeId, clone(r)]),
-);
+const _store = new Map<string, TailoredResume>(resumesFixture.map((r) => [r.resumeId, clone(r)]));
 
 /**
  * Returns all resumes as a defensive copy array.

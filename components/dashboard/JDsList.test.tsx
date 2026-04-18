@@ -42,12 +42,12 @@ describe('JDsList', () => {
 
   it('renders the company name for each card', () => {
     render(<JDsList jds={jds} />);
-    expect(
-      screen.getByTestId('jd-company-a1b2c3d4-e5f6-4789-abcd-ef0123456789'),
-    ).toHaveTextContent('Google');
-    expect(
-      screen.getByTestId('jd-company-b2c3d4e5-f6a7-4890-bcde-f01234567890'),
-    ).toHaveTextContent('Meridian Financial Technologies');
+    expect(screen.getByTestId('jd-company-a1b2c3d4-e5f6-4789-abcd-ef0123456789')).toHaveTextContent(
+      'Google'
+    );
+    expect(screen.getByTestId('jd-company-b2c3d4e5-f6a7-4890-bcde-f01234567890')).toHaveTextContent(
+      'Meridian Financial Technologies'
+    );
   });
 
   it('renders empty state when jds is an empty array', () => {
@@ -63,10 +63,7 @@ describe('JDsList', () => {
   it('renders alternating surface backgrounds for cards', () => {
     render(<JDsList jds={jds} />);
     // Each card should be present — just verify count via titles
-    const titles = [
-      'Senior Software Engineer, Google Cloud Platform',
-      'Staff Engineer – Platform',
-    ];
+    const titles = ['Senior Software Engineer, Google Cloud Platform', 'Staff Engineer – Platform'];
     titles.forEach((t) => expect(screen.getByText(t)).toBeInTheDocument());
   });
 });
