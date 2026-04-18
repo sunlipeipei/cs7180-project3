@@ -1,4 +1,4 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { getAuth, getCurrentUser } from '../../../src/lib/auth';
 import { parseJobDescription } from '../../../src/lib/jobDescription/parseJobDescription';
 import {
   saveJobDescription,
@@ -8,7 +8,7 @@ import { CreateJdInput } from '../../../src/lib/jobDescription/schemas';
 import { upsertUser } from '../../../src/lib/userRepository';
 
 async function ensureUser(userId: string) {
-  const user = await currentUser();
+  const user = await getCurrentUser();
   const email = user?.emailAddresses[0]?.emailAddress ?? `${userId}@clerk.local`;
   await upsertUser(userId, email);
 }
@@ -16,7 +16,7 @@ async function ensureUser(userId: string) {
 export async function POST(request: Request) {
   let userId: string | null;
   try {
-    ({ userId } = await auth());
+    ({ userId } = await getAuth());
   } catch {
     return Response.json({ error: 'Authentication error' }, { status: 500 });
   }
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
 export async function GET(_request: Request) {
   let userId: string | null;
   try {
-    ({ userId } = await auth());
+    ({ userId } = await getAuth());
   } catch {
     return Response.json({ error: 'Authentication error' }, { status: 500 });
   }

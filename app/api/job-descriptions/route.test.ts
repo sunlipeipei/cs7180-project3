@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@clerk/nextjs/server', () => ({
-  auth: vi.fn(),
-  currentUser: vi.fn(),
+vi.mock('../../../src/lib/auth', () => ({
+  getAuth: vi.fn(),
+  getCurrentUser: vi.fn(),
 }));
 
 vi.mock('../../../src/lib/jobDescription/parseJobDescription', () => ({
@@ -18,7 +18,7 @@ vi.mock('../../../src/lib/userRepository', () => ({
   upsertUser: vi.fn(),
 }));
 
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { getAuth, getCurrentUser } from '../../../src/lib/auth';
 import { parseJobDescription } from '../../../src/lib/jobDescription/parseJobDescription';
 import {
   saveJobDescription,
@@ -27,8 +27,8 @@ import {
 import { upsertUser } from '../../../src/lib/userRepository';
 import { POST, GET } from './route';
 
-const mockAuth = auth as unknown as ReturnType<typeof vi.fn>;
-const mockCurrentUser = currentUser as unknown as ReturnType<typeof vi.fn>;
+const mockAuth = getAuth as unknown as ReturnType<typeof vi.fn>;
+const mockCurrentUser = getCurrentUser as unknown as ReturnType<typeof vi.fn>;
 const mockParseJd = parseJobDescription as unknown as ReturnType<typeof vi.fn>;
 const mockSaveJd = saveJobDescription as unknown as ReturnType<typeof vi.fn>;
 const mockGetJds = getJobDescriptionsByUser as unknown as ReturnType<typeof vi.fn>;
