@@ -164,37 +164,38 @@ describe('TailorPage', () => {
 
   // ── PDF render stub ──────────────────────────────────────────────────────────
 
-  it('PDF Render button logs and shows transient status on click', async () => {
+  it('PDF Render button opens /api/resumes/[id]/pdf in a new tab and shows status', async () => {
     const user = userEvent.setup();
-    const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
     setupMocksWithResume();
     await renderAndWaitForEditor();
 
     await user.click(screen.getByRole('button', { name: /render pdf/i }));
 
-    expect(consoleSpy).toHaveBeenCalledWith('[B2] PDF render requested', { resumeId: RESUME_ID });
-    expect(screen.getByText(/pdf render requested/i)).toBeInTheDocument();
+    expect(openSpy).toHaveBeenCalledWith(
+      `/api/resumes/${RESUME_ID}/pdf`,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    expect(screen.getByText(/pdf download started/i)).toBeInTheDocument();
 
-    consoleSpy.mockRestore();
+    openSpy.mockRestore();
   });
 
   it('transient PDF status disappears after 2s', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime.bind(vi) });
-    const consoleSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
 
     setupMocksWithResume();
 
-    // With fake timers, use real timers for the initial render only
     render(<TailorPage params={Promise.resolve({ resumeId: RESUME_ID })} />);
 
-    // Wait for editor by advancing real microtasks
     await vi.runAllTimersAsync();
-
     await screen.findByLabelText(/summary/i, {}, { timeout: 3000 });
 
     await user.click(screen.getByRole('button', { name: /render pdf/i }));
-    expect(screen.getByText(/pdf render requested/i)).toBeInTheDocument();
+    expect(screen.getByText(/pdf download started/i)).toBeInTheDocument();
 
     // Advance 2s to clear the transient status
     act(() => {
@@ -202,10 +203,10 @@ describe('TailorPage', () => {
     });
 
     await waitFor(() => {
-      expect(screen.queryByText(/pdf render requested/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/pdf download started/i)).not.toBeInTheDocument();
     });
 
-    consoleSpy.mockRestore();
+    openSpy.mockRestore();
     vi.useRealTimers();
   });
 

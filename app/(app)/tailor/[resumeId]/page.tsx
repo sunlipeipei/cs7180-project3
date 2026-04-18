@@ -109,8 +109,13 @@ export default function TailorPage({ params }: PageProps) {
   // ── Handlers ───────────────────────────────────────────────────────────────
 
   function handlePdfRender() {
-    console.info('[B2] PDF render requested', { resumeId: resumeId ?? '' });
-    showStatus('PDF render requested');
+    if (!resumeId) return;
+    const url = `/api/resumes/${encodeURIComponent(resumeId)}/pdf`;
+    // Open in a new tab so the browser triggers the download prompt without
+    // navigating away from the editor. The route sends Content-Disposition:
+    // attachment so most browsers will save rather than preview inline.
+    window.open(url, '_blank', 'noopener,noreferrer');
+    showStatus('PDF download started');
   }
 
   async function handleRefineSubmit() {
