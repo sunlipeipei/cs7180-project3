@@ -61,9 +61,7 @@ describe('tailorResume', () => {
     await tailorResume(profileFixture, jd);
 
     const callArg = parseMock.mock.calls[0][0];
-    const allMessageText = callArg.messages
-      .map((m: { content: string }) => m.content)
-      .join('\n');
+    const allMessageText = callArg.messages.map((m: { content: string }) => m.content).join('\n');
     expect(allMessageText).toContain('<job_description>');
     expect(allMessageText).toContain(jd.content);
     expect(allMessageText).toContain('</job_description>');
@@ -86,9 +84,7 @@ describe('tailorResume', () => {
   it('retries once when the first response fails Zod validation, appending the error', async () => {
     // First call returns a payload that will fail the schema (missing required
     // markdown sections); second call returns the valid resume.
-    parseMock.mockResolvedValueOnce(
-      fakeCompletion({ ...FAKE_RESUME, summary: undefined })
-    );
+    parseMock.mockResolvedValueOnce(fakeCompletion({ ...FAKE_RESUME, summary: undefined }));
     parseMock.mockResolvedValueOnce(fakeCompletion(FAKE_RESUME));
 
     const out = await tailorResume(profileFixture, jd);
