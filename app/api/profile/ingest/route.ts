@@ -42,7 +42,10 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'File exceeds 10 MB limit' }, { status: 413 });
   }
 
-  if (file.type && file.type !== 'application/pdf') {
+  // Reject anything the browser did not explicitly tag as application/pdf,
+  // including uploads with an empty Content-Type which would otherwise slip
+  // through to the parser.
+  if (file.type !== 'application/pdf') {
     return Response.json({ error: 'Only application/pdf is accepted' }, { status: 415 });
   }
 
@@ -52,8 +55,12 @@ export async function POST(request: Request): Promise<Response> {
   try {
     resumeText = await extractText(bytes);
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Invalid PDF';
-    return Response.json({ error: message }, { status: 400 });
+    // Keep the real parser message in server logs for debugging, but return
+    // a fixed string so we do not leak internal paths/memory addresses to
+    // the client (A09).
+    const detail = err instanceof Error ? err.message : String(err);
+    console.warn('[api.profile.ingest] pdf parse failed:', detail);
+    return Response.json({ error: 'Could not parse PDF' }, { status: 400 });
   }
 
   if (resumeText.trim().length === 0) {

@@ -110,13 +110,24 @@ describe('POST /api/profile/ingest', () => {
     expect(res.status).toBe(415);
   });
 
-  it('returns 400 when PDF parse fails (no stack leak)', async () => {
+  it('returns 415 when file has an empty Content-Type (no bypass)', async () => {
     mockAuth.mockResolvedValue({ userId: 'user-1' });
-    mockExtractText.mockRejectedValue(new Error('Invalid PDF: corrupt xref'));
+    const f = new File([new Uint8Array(10)], 'resume.pdf', { type: '' });
+    const res = await POST(makeMultipartRequest(f));
+    expect(res.status).toBe(415);
+  });
+
+  it('returns 400 with a generic message when PDF parse fails (no parser internals leaked)', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockExtractText.mockRejectedValue(
+      new Error('Invalid PDF: /node_modules/unpdf/dist/chunk.js:1234 corrupt xref at 0x7ff')
+    );
     const res = await POST(makeMultipartRequest(makePdfFile(10)));
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toMatch(/Invalid PDF/);
+    expect(body.error).toBe('Could not parse PDF');
+    // No file paths, line numbers, or addresses leak to the client.
+    expect(body.error).not.toMatch(/node_modules|0x|unpdf/);
     expect(body.stack).toBeUndefined();
   });
 
