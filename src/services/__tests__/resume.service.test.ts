@@ -1,242 +1,113 @@
-/**
- * Isolation strategy: each test uses vi.resetModules() + dynamic import so it
- * gets a freshly-seeded module-scoped Map. This prevents cross-test pollution
- * from tailorResume/refineSection mutations persisting between cases.
- */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { TailoredResumeSchema, RefineResponseSchema, type ResumeSection } from '@/ai/schemas.js';
+import { resumesFixture } from '@/fixtures/index';
+import { listResumes, getResume, tailorResume, refineSection } from '../resume.service';
 
-async function freshService() {
-  vi.resetModules();
-  return import('../resume.service.js');
+const mockFetch = vi.fn();
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.stubGlobal('fetch', mockFetch);
+});
+
+function jsonResponse(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
-const KNOWN_RESUME_ID = 'c3d4e5f6-a7b8-4901-8def-012345678901';
-const KNOWN_JD_ID = 'a1b2c3d4-e5f6-4789-abcd-ef0123456789';
-const FIXTURE_PROFILE_SNAPSHOT = {
-  schemaVersion: 1,
-  name: 'Jordan Lee',
-  email: 'jordan.lee@example.com',
-  phone: '+1-415-555-0192',
-  skills: [],
-  workExperience: [],
-  education: [],
-};
+const FAKE_RESUME = resumesFixture[0];
+const JD_ID = FAKE_RESUME.jobDescriptionId;
 
-describe('resume.service', () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  // --- listResumes ---
-
-  it('listResumes() returns 2 on cold start (seeded from fixture)', async () => {
-    const { listResumes } = await freshService();
+describe('listResumes', () => {
+  it('returns the parsed array on 200', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { resumes: resumesFixture }));
     const list = await listResumes();
-    expect(list).toHaveLength(2);
+    expect(list).toHaveLength(resumesFixture.length);
   });
 
-  it('listResumes() items all pass TailoredResumeSchema', async () => {
-    const { listResumes } = await freshService();
+  it('returns [] on 404', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(404, { error: 'none' }));
     const list = await listResumes();
-    for (const resume of list) {
-      expect(TailoredResumeSchema.safeParse(resume).success).toBe(true);
-    }
+    expect(list).toEqual([]);
   });
 
-  // --- getResume ---
+  it('throws on 500', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(500, { error: 'boom' }));
+    await expect(listResumes()).rejects.toThrow(/500/);
+  });
+});
 
-  it('getResume(knownId) returns the matching resume', async () => {
-    const { getResume } = await freshService();
-    const resume = await getResume(KNOWN_RESUME_ID);
-    expect(resume).not.toBeNull();
-    expect(resume?.resumeId).toBe(KNOWN_RESUME_ID);
+describe('getResume', () => {
+  it('returns null on 404', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(404, { error: 'none' }));
+    const r = await getResume(FAKE_RESUME.resumeId);
+    expect(r).toBeNull();
   });
 
-  it('getResume("nope") returns null', async () => {
-    const { getResume } = await freshService();
-    const result = await getResume('nope');
-    expect(result).toBeNull();
+  it('URL-encodes the id', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(404, {}));
+    await getResume('a/b c');
+    const [url] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/resumes/a%2Fb%20c');
   });
 
-  it('getResume(unknown-uuid) returns null', async () => {
-    const { getResume } = await freshService();
-    const result = await getResume('00000000-0000-0000-0000-000000000000');
-    expect(result).toBeNull();
+  it('returns the parsed resume on 200', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { resume: FAKE_RESUME }));
+    const r = await getResume(FAKE_RESUME.resumeId);
+    expect(r?.resumeId).toBe(FAKE_RESUME.resumeId);
   });
+});
 
-  // --- tailorResume ---
-
-  it('tailorResume returns a valid TailoredResume schema', async () => {
-    const { tailorResume } = await freshService();
-    const result = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    expect(TailoredResumeSchema.safeParse(result).success).toBe(true);
-  });
-
-  it('tailorResume links to the provided jobDescriptionId', async () => {
-    const { tailorResume } = await freshService();
-    const result = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    expect(result.jobDescriptionId).toBe(KNOWN_JD_ID);
-  });
-
-  it('tailorResume adds a new entry — list length becomes 3', async () => {
-    const { listResumes, tailorResume } = await freshService();
-    await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    const list = await listResumes();
-    expect(list).toHaveLength(3);
-  });
-
-  it('tailored resume is retrievable via getResume', async () => {
-    const { getResume, tailorResume } = await freshService();
-    const created = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    const fetched = await getResume(created.resumeId);
-    expect(fetched).not.toBeNull();
-    expect(fetched?.resumeId).toBe(created.resumeId);
-  });
-
-  it('each tailorResume call generates a unique resumeId', async () => {
-    const { tailorResume } = await freshService();
-    const a = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    const b = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    expect(a.resumeId).not.toBe(b.resumeId);
-  });
-
-  it('tailorResume produces placeholder content in all sections', async () => {
-    const { tailorResume } = await freshService();
-    const result = await tailorResume({
-      jobDescriptionId: KNOWN_JD_ID,
-    });
-    // All sections should be non-empty strings (Phase 0.5 placeholder)
-    expect(result.header.length).toBeGreaterThan(0);
-    expect(result.summary.length).toBeGreaterThan(0);
-    expect(result.skills.length).toBeGreaterThan(0);
-    expect(result.experience.length).toBeGreaterThan(0);
-    expect(result.education.length).toBeGreaterThan(0);
-    expect(result.projects.length).toBeGreaterThan(0);
-  });
-
-  it('tailorResume with empty jobDescriptionId throws', async () => {
-    const { tailorResume } = await freshService();
+describe('tailorResume', () => {
+  it('throws locally when jobDescriptionId is empty (no request)', async () => {
     await expect(tailorResume({ jobDescriptionId: '' })).rejects.toThrow();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  // --- refineSection ---
+  it('POSTs JSON to /api/tailor and returns the parsed resume', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { resumeId: 'r1', resume: FAKE_RESUME }));
+    const r = await tailorResume({ jobDescriptionId: JD_ID });
+    expect(r.resumeId).toBe(FAKE_RESUME.resumeId);
 
-  it('refineSection on a known resume returns a valid RefineResponse', async () => {
-    const { refineSection } = await freshService();
-    const result = await refineSection({
-      resumeId: KNOWN_RESUME_ID,
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/tailor');
+    expect(init.method).toBe('POST');
+    expect(init.headers['Content-Type']).toBe('application/json');
+    expect(JSON.parse(init.body as string)).toEqual({ jobDescriptionId: JD_ID });
+  });
+
+  it('surfaces server error on non-ok', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse(409, { error: 'Profile required before tailoring' })
+    );
+    await expect(tailorResume({ jobDescriptionId: JD_ID })).rejects.toThrow(/Profile required/);
+  });
+});
+
+describe('refineSection', () => {
+  it('POSTs to /api/resumes/:id/refine and parses the response', async () => {
+    const response = {
+      resumeId: FAKE_RESUME.resumeId,
+      section: 'summary' as const,
+      updatedMarkdown: '## Summary\nNew text.',
+      updatedAt: '2026-04-18T00:00:00.000Z',
+    };
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, response));
+
+    const out = await refineSection({
+      resumeId: FAKE_RESUME.resumeId,
       section: 'summary',
-      instruction: 'Make it more concise',
+      instruction: 'Make it shorter.',
     });
-    expect(RefineResponseSchema.safeParse(result).success).toBe(true);
-  });
+    expect(out.updatedMarkdown).toBe(response.updatedMarkdown);
 
-  it('refineSection returns resumeId and section matching the request', async () => {
-    const { refineSection } = await freshService();
-    const result = await refineSection({
-      resumeId: KNOWN_RESUME_ID,
-      section: 'skills',
-      instruction: 'Emphasize cloud skills',
-    });
-    expect(result.resumeId).toBe(KNOWN_RESUME_ID);
-    expect(result.section).toBe('skills');
-  });
-
-  it('refineSection appends the instruction to the section markdown', async () => {
-    const { refineSection } = await freshService();
-    const result = await refineSection({
-      resumeId: KNOWN_RESUME_ID,
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe(`/api/resumes/${FAKE_RESUME.resumeId}/refine`);
+    expect(init.method).toBe('POST');
+    expect(JSON.parse(init.body as string)).toEqual({
       section: 'summary',
-      instruction: 'Be more impactful',
+      instruction: 'Make it shorter.',
     });
-    expect(result.updatedMarkdown).toContain('Refined: Be more impactful');
-  });
-
-  it('refineSection persists — getResume returns updated section', async () => {
-    const { refineSection, getResume } = await freshService();
-    await refineSection({
-      resumeId: KNOWN_RESUME_ID,
-      section: 'summary',
-      instruction: 'Use stronger verbs',
-    });
-    const resume = await getResume(KNOWN_RESUME_ID);
-    expect(resume?.summary).toContain('Refined: Use stronger verbs');
-  });
-
-  it('refineSection updates updatedAt to a more recent timestamp', async () => {
-    const { getResume, refineSection } = await freshService();
-    const before = await getResume(KNOWN_RESUME_ID);
-    const originalUpdatedAt = before!.updatedAt;
-
-    // Ensure some time passes
-    await new Promise((r) => setTimeout(r, 10));
-
-    const result = await refineSection({
-      resumeId: KNOWN_RESUME_ID,
-      section: 'experience',
-      instruction: 'Add metrics',
-    });
-
-    expect(result.updatedAt > originalUpdatedAt).toBe(true);
-  });
-
-  it('refineSection on unknown resumeId throws', async () => {
-    const { refineSection } = await freshService();
-    await expect(
-      refineSection({
-        resumeId: '00000000-0000-0000-0000-000000000000',
-        section: 'summary',
-        instruction: 'Fix it',
-      })
-    ).rejects.toThrow();
-  });
-
-  it('refineSection on empty resumeId throws (Zod validation)', async () => {
-    const { refineSection } = await freshService();
-    await expect(
-      refineSection({ resumeId: '', section: 'summary', instruction: 'Fix it' })
-    ).rejects.toThrow();
-  });
-
-  it('refineSection with empty instruction throws (Zod min(1) validation)', async () => {
-    const { refineSection } = await freshService();
-    await expect(
-      refineSection({ resumeId: KNOWN_RESUME_ID, section: 'summary', instruction: '' })
-    ).rejects.toThrow();
-  });
-
-  it('refineSection with instruction over 1000 chars throws (Zod max(1000))', async () => {
-    const { refineSection } = await freshService();
-    await expect(
-      refineSection({
-        resumeId: KNOWN_RESUME_ID,
-        section: 'summary',
-        instruction: 'x'.repeat(1001),
-      })
-    ).rejects.toThrow();
-  });
-
-  it('refineSection on invalid section name throws', async () => {
-    const { refineSection } = await freshService();
-    await expect(
-      refineSection({
-        resumeId: KNOWN_RESUME_ID,
-        section: 'invalid_section' as unknown as ResumeSection,
-        instruction: 'Fix it',
-      })
-    ).rejects.toThrow();
   });
 });

@@ -1,56 +1,69 @@
 import { IngestJDRequestSchema } from '@/ai/schemas';
 import type { IngestJDRequest, IngestJDResponse } from '@/ai/schemas';
-import { jobDescriptionsFixture } from '@/fixtures/index';
-import { delay, clone } from './_helpers';
 
-// Module-scoped mutable state — seeded from fixture at import time.
-const _store = new Map<string, IngestJDResponse>(
-  jobDescriptionsFixture.map((jd) => [jd.jobDescriptionId, clone(jd)])
-);
+// Shape the API actually returns — the raw Prisma row. We map it into the
+// Phase-0.5 IngestJDResponse so the UI does not have to care.
+interface RawJdRow {
+  id: string;
+  content: string;
+  title: string | null;
+  company: string | null;
+  createdAt: string | Date;
+}
 
-/**
- * Returns all job descriptions as a defensive copy array.
- * Simulates ~80ms async latency.
- */
+function deriveTitle(row: RawJdRow): string {
+  if (row.title && row.title.trim()) return row.title.trim();
+  const firstLine = row.content.split('\n').find((l) => l.trim().length > 0);
+  return firstLine?.trim() ?? 'Untitled';
+}
+
+function mapRowToResponse(row: RawJdRow): IngestJDResponse {
+  return {
+    jobDescriptionId: row.id,
+    title: deriveTitle(row),
+    company: row.company?.trim() || 'Unknown',
+    parsedAt: new Date(row.createdAt).toISOString(),
+  };
+}
+
+/** List the signed-in user's saved job descriptions, newest first. */
 export async function listJobDescriptions(): Promise<IngestJDResponse[]> {
-  await delay();
-  return Array.from(_store.values()).map(clone);
+  const res = await fetch('/api/job-descriptions', { method: 'GET' });
+  if (!res.ok) {
+    throw new Error(`Failed to list job descriptions (${res.status})`);
+  }
+  const body = (await res.json()) as RawJdRow[] | { jds?: RawJdRow[] };
+  const rows = Array.isArray(body) ? body : (body.jds ?? []);
+  return rows.map(mapRowToResponse);
 }
 
-/**
- * Returns a single job description by ID, or null if not found.
- * Simulates ~80ms async latency.
- */
+/** Fetch one JD by id. Returns null on 404 (missing or cross-user). */
 export async function getJobDescription(id: string): Promise<IngestJDResponse | null> {
-  await delay();
-  const entry = _store.get(id);
-  return entry ? clone(entry) : null;
+  const res = await fetch(`/api/job-descriptions/${encodeURIComponent(id)}`, { method: 'GET' });
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(`Failed to load job description (${res.status})`);
+  }
+  const body = (await res.json()) as RawJdRow | { jd?: RawJdRow };
+  const row = 'jd' in body && body.jd ? body.jd : (body as RawJdRow);
+  return mapRowToResponse(row);
 }
 
 /**
- * Validates the request (throws ZodError on invalid input), creates a new JD
- * with a fresh UUID and Phase 0.5 title/company heuristics, stores it, and
- * returns a defensive copy.
- *
- * Heuristics (Phase 0.5):
- *  - title: first non-empty line of content
- *  - company: hardcoded "Unknown" — real parsing lands in Phase 1
+ * Create a new JD by posting content to the real API. Validates the body
+ * client-side first for a faster error path.
  */
 export async function createJD(req: IngestJDRequest): Promise<IngestJDResponse> {
-  // .parse() throws ZodError on invalid input — intentional service-boundary guard.
   const validated = IngestJDRequestSchema.parse(req);
-
-  const lines = validated.content.split('\n');
-  const title = lines.find((l) => l.trim().length > 0) ?? 'Untitled';
-
-  const jobDescriptionId = crypto.randomUUID();
-  await delay();
-  const jd: IngestJDResponse = {
-    jobDescriptionId,
-    title: title.trim(),
-    company: 'Unknown',
-    parsedAt: new Date().toISOString(),
-  };
-  _store.set(jd.jobDescriptionId, clone(jd));
-  return clone(jd);
+  const res = await fetch('/api/job-descriptions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ input: validated.content }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `Failed to save job description (${res.status})`);
+  }
+  const row = (await res.json()) as RawJdRow;
+  return mapRowToResponse(row);
 }

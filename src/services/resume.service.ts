@@ -1,93 +1,73 @@
-import { TailorRequestSchema, RefineRequestSchema } from '@/ai/schemas';
-import type { TailoredResume, TailorRequest, RefineRequest, RefineResponse } from '@/ai/schemas';
-import { resumesFixture } from '@/fixtures/index';
-import { delay, clone } from './_helpers';
-
-// Module-scoped mutable state — seeded from fixture at import time.
-const _store = new Map<string, TailoredResume>(resumesFixture.map((r) => [r.resumeId, clone(r)]));
+import {
+  TailoredResumeSchema,
+  RefineResponseSchema,
+  type TailoredResume,
+  type TailorRequest,
+  type RefineRequest,
+  type RefineResponse,
+} from '@/ai/schemas';
 
 /**
- * Returns all resumes as a defensive copy array.
- * Simulates ~80ms async latency.
+ * Fetch all resumes the signed-in user has ever tailored, newest first.
+ * Returns an empty array when the user has none yet.
  */
 export async function listResumes(): Promise<TailoredResume[]> {
-  await delay();
-  return Array.from(_store.values()).map(clone);
+  const res = await fetch('/api/resumes', { method: 'GET' });
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`Failed to list resumes (${res.status})`);
+  const body = await res.json();
+  return (body.resumes ?? []).map((r: unknown) => TailoredResumeSchema.parse(r));
 }
 
 /**
- * Returns a single resume by ID, or null if not found.
- * Simulates ~80ms async latency.
+ * Fetch a single resume by id. Returns null if the user does not own one
+ * with that id (the API returns 404 — we do not distinguish "not found"
+ * from "not yours" to avoid information disclosure).
  */
 export async function getResume(id: string): Promise<TailoredResume | null> {
-  await delay();
-  const entry = _store.get(id);
-  return entry ? clone(entry) : null;
+  const res = await fetch(`/api/resumes/${encodeURIComponent(id)}`, { method: 'GET' });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to load resume (${res.status})`);
+  const body = await res.json();
+  return TailoredResumeSchema.parse(body.resume);
 }
 
 /**
- * Validates the request (throws ZodError on invalid input), builds a stub
- * TailoredResume with placeholder markdown, stores it, and returns a
- * defensive copy.
- *
- * Phase 0.5 note: sections are placeholder text only. Real tailoring via
- * Claude API lands in Phase 1.D.
+ * Create a tailored resume by asking the backend to run the AI pipeline
+ * against the session user's profile and the named job description.
  */
 export async function tailorResume(req: TailorRequest): Promise<TailoredResume> {
-  // .parse() throws ZodError on invalid input — intentional service-boundary guard.
-  const validated = TailorRequestSchema.parse(req);
-
-  const now = new Date().toISOString();
-  const resume: TailoredResume = {
-    resumeId: crypto.randomUUID(),
-    jobDescriptionId: validated.jobDescriptionId,
-    header: '# [Tailored header placeholder]',
-    summary: '## Summary\n\n[Tailored summary placeholder]',
-    skills: '## Skills\n\n[Tailored skills placeholder]',
-    experience: '## Experience\n\n[Tailored experience placeholder]',
-    education: '## Education\n\n[Tailored education placeholder]',
-    projects: '## Projects\n\n[Tailored projects placeholder]',
-    updatedAt: now,
-  };
-
-  await delay();
-  _store.set(resume.resumeId, clone(resume));
-  return clone(resume);
+  if (!req.jobDescriptionId) {
+    throw new Error('jobDescriptionId is required');
+  }
+  const res = await fetch('/api/tailor', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jobDescriptionId: req.jobDescriptionId }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `Failed to tailor resume (${res.status})`);
+  }
+  const body = await res.json();
+  return TailoredResumeSchema.parse(body.resume);
 }
 
 /**
- * Validates the request (throws ZodError on invalid input), looks up the
- * resume (throws if not found), appends the refinement instruction to the
- * section's existing markdown, updates the store, and returns a RefineResponse.
- *
- * Append format: `${existing}\n\n> Refined: ${instruction}`
+ * Rewrite a single section of an existing resume via a natural-language
+ * instruction. Landed in Phase 1.C — Phase 1.B imports the stub so the
+ * types line up.
  */
 export async function refineSection(req: RefineRequest): Promise<RefineResponse> {
-  // .parse() throws ZodError on invalid input — intentional service-boundary guard.
-  const validated = RefineRequestSchema.parse(req);
-
-  const stored = _store.get(validated.resumeId);
-  if (!stored) {
-    throw new Error(`Resume not found: ${validated.resumeId}`);
+  const res = await fetch(`/api/resumes/${encodeURIComponent(req.resumeId)}/refine`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ section: req.section, instruction: req.instruction }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `Failed to refine section (${res.status})`);
   }
-
-  const existing = stored[validated.section];
-  const updatedMarkdown = `${existing}\n\n> Refined: ${validated.instruction}`;
-  const updatedAt = new Date().toISOString();
-
-  const updated: TailoredResume = {
-    ...stored,
-    [validated.section]: updatedMarkdown,
-    updatedAt,
-  };
-
-  await delay();
-  _store.set(validated.resumeId, clone(updated));
-
-  return {
-    resumeId: validated.resumeId,
-    section: validated.section,
-    updatedMarkdown,
-    updatedAt,
-  };
+  const body = await res.json();
+  return RefineResponseSchema.parse(body);
 }
