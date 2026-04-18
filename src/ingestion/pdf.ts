@@ -1,3 +1,4 @@
+import '../lib/polyfills/promiseTry';
 import { extractText as unpdfExtractText } from 'unpdf';
 
 /**
