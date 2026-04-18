@@ -3,10 +3,60 @@ import type { MasterProfile } from '@/ai/schemas';
 import { computeProfileCompleteness } from './_helpers';
 
 interface Props {
-  profile: MasterProfile;
+  profile: MasterProfile | null;
 }
 
 export function ProfileStatusCard({ profile }: Props) {
+  if (!profile) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'var(--color-surface-container-low)',
+          borderRadius: 'var(--radius-xl)',
+          padding: '1.25rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem',
+        }}
+      >
+        <h2
+          style={{
+            fontFamily: 'var(--font-headline)',
+            color: 'var(--color-on-surface)',
+            fontSize: '1.125rem',
+            fontWeight: 600,
+            margin: 0,
+          }}
+        >
+          No profile yet
+        </h2>
+        <p
+          style={{
+            color: 'var(--color-on-surface-variant)',
+            fontSize: '0.875rem',
+            margin: '0.25rem 0 0.75rem',
+            fontFamily: 'var(--font-body)',
+          }}
+        >
+          Import a resume PDF or fill out your master profile to get started.
+        </p>
+        <Link
+          href="/profile"
+          style={{
+            fontFamily: 'var(--font-label)',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            color: 'var(--color-secondary)',
+            textDecoration: 'none',
+            letterSpacing: '0.05em',
+          }}
+        >
+          Create profile
+        </Link>
+      </div>
+    );
+  }
+
   const completeness = computeProfileCompleteness(profile);
 
   return (

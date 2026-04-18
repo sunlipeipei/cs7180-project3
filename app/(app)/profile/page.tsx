@@ -1,9 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { getProfile, saveProfile } from '@/services/profile.service';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getProfile, saveProfile, ingestProfilePdf } from '@/services/profile.service';
 import type { MasterProfile } from '@/ai/schemas';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
+
+// Seed used when the signed-in user has no profile yet; the tabbed editor
+// renders against it so the user can type/import without a separate empty
+// state. Fields are deliberately minimal — Import-from-PDF overwrites them.
+const EMPTY_PROFILE: MasterProfile = {
+  schemaVersion: 1,
+  name: '',
+  email: '',
+  phone: '',
+  skills: [],
+  workExperience: [],
+  education: [],
+};
 
 // ---------------------------------------------------------------------------
 // Tiny helpers
@@ -776,14 +789,30 @@ function RawJsonTab({ profile }: { profile: MasterProfile }) {
 export default function ProfilePage() {
   const [profile, setProfile] = useState<MasterProfile | null>(null);
   const [savedProfile, setSavedProfile] = useState<MasterProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isDirty, setIsDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [importStatus, setImportStatus] = useState<'idle' | 'importing' | 'error'>('idle');
+  const [importError, setImportError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    getProfile().then((p) => {
-      setProfile(p);
-      setSavedProfile(p);
-    });
+    getProfile()
+      .then((p) => {
+        if (p) {
+          setProfile(p);
+          setSavedProfile(p);
+        } else {
+          setProfile(EMPTY_PROFILE);
+          setSavedProfile(null);
+          setIsDirty(true);
+        }
+      })
+      .catch(() => {
+        setProfile(EMPTY_PROFILE);
+        setSavedProfile(null);
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   const handleChange = useCallback((patch: Partial<MasterProfile>) => {
@@ -797,21 +826,48 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!profile) return;
     setSaveStatus('saving');
-    const saved = await saveProfile(profile);
-    setSavedProfile(saved);
-    setIsDirty(false);
-    setSaveStatus('saved');
-    setTimeout(() => setSaveStatus('idle'), 2000);
+    try {
+      const saved = await saveProfile(profile);
+      setSavedProfile(saved);
+      setIsDirty(false);
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus('idle'), 2000);
+    } catch {
+      setSaveStatus('idle');
+    }
   };
 
   const handleDiscard = async () => {
     const fresh = await getProfile();
-    setProfile(fresh);
+    setProfile(fresh ?? EMPTY_PROFILE);
     setSavedProfile(fresh);
-    setIsDirty(false);
+    setIsDirty(!fresh);
   };
 
-  if (!profile) {
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+
+    setImportStatus('importing');
+    setImportError(null);
+    try {
+      const parsed = await ingestProfilePdf(file);
+      setProfile(parsed);
+      setSavedProfile(parsed);
+      setIsDirty(false);
+      setImportStatus('idle');
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Import failed');
+      setImportStatus('error');
+    }
+  };
+
+  if (isLoading || !profile) {
     return (
       <div
         className="flex min-h-[40vh] items-center justify-center text-sm"
@@ -832,15 +888,53 @@ export default function ProfilePage() {
         >
           Master Profile / Source of Truth
         </span>
-        <h1
-          className="text-4xl font-bold"
-          style={{ fontFamily: 'var(--font-headline)', color: 'var(--color-on-surface)' }}
-        >
-          Your master profile
-        </h1>
-        <p className="mt-1 max-w-2xl text-sm" style={{ color: 'var(--color-on-surface-variant)' }}>
-          Edit your structured profile. Changes are local until you hit Save.
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1
+              className="text-4xl font-bold"
+              style={{ fontFamily: 'var(--font-headline)', color: 'var(--color-on-surface)' }}
+            >
+              Your master profile
+            </h1>
+            <p
+              className="mt-1 max-w-2xl text-sm"
+              style={{ color: 'var(--color-on-surface-variant)' }}
+            >
+              Edit your structured profile. Changes are local until you hit Save.
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <button
+              type="button"
+              onClick={handleImportClick}
+              disabled={importStatus === 'importing'}
+              className="rounded-[var(--radius-xl)] px-4 py-2 text-sm font-medium disabled:opacity-60"
+              style={{
+                backgroundColor: 'var(--color-surface-container-high)',
+                color: 'var(--color-on-surface)',
+              }}
+            >
+              {importStatus === 'importing' ? 'Parsing PDF…' : 'Import from PDF'}
+            </button>
+            {importError && (
+              <span
+                className="text-xs"
+                role="alert"
+                style={{ color: 'var(--color-error, #ef4444)' }}
+              >
+                {importError}
+              </span>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="application/pdf"
+              aria-label="Import resume PDF"
+              onChange={handleImportFile}
+              className="hidden"
+            />
+          </div>
+        </div>
       </section>
 
       {/* Tabbed editor */}
