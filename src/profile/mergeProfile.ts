@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
-import { MasterProfileSchema } from './schema.js';
-import { ProfileValidationError } from './errors.js';
-import type { MasterProfile } from './types.js';
+import { MasterProfileSchema } from './schema';
+import { ProfileValidationError } from './errors';
+import type { MasterProfile } from './types';
 
 type DeepPartial<T> = {
   [P in keyof T]?: NonNullable<T[P]> extends (infer U)[]

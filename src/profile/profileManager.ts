@@ -1,9 +1,9 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { ZodError } from 'zod';
-import { MasterProfileSchema } from './schema.js';
-import { ProfileNotFoundError, ProfileIOError, ProfileValidationError } from './errors.js';
-import type { MasterProfile } from './types.js';
+import { MasterProfileSchema } from './schema';
+import { ProfileNotFoundError, ProfileIOError, ProfileValidationError } from './errors';
+import type { MasterProfile } from './types';
 
 export async function loadProfile(path: string): Promise<MasterProfile> {
   let raw: string;

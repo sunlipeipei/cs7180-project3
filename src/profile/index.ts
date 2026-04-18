@@ -11,7 +11,7 @@ export type {
   ContextSources,
   Preferences,
   SalaryRange,
-} from './types.js';
+} from './types';
 
 export {
   MasterProfileSchema,
@@ -25,8 +25,8 @@ export {
   ContextSourcesSchema,
   PreferencesSchema,
   SalaryRangeSchema,
-} from './schema.js';
+} from './schema';
 
-export { loadProfile, saveProfile } from './profileManager.js';
-export { mergeProfile } from './mergeProfile.js';
-export { ProfileValidationError, ProfileNotFoundError, ProfileIOError } from './errors.js';
+export { loadProfile, saveProfile } from './profileManager';
+export { mergeProfile } from './mergeProfile';
+export { ProfileValidationError, ProfileNotFoundError, ProfileIOError } from './errors';
