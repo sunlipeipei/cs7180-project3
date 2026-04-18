@@ -29,7 +29,11 @@ export async function getResume(id: string): Promise<TailoredResume | null> {
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Failed to load resume (${res.status})`);
   const body = await res.json();
-  return TailoredResumeSchema.parse(body.resume);
+  const parsed = TailoredResumeSchema.safeParse(body.resume);
+  if (!parsed.success) {
+    throw new Error('Server returned an invalid resume payload');
+  }
+  return parsed.data;
 }
 
 /**
@@ -50,7 +54,11 @@ export async function tailorResume(req: TailorRequest): Promise<TailoredResume> 
     throw new Error(body.error ?? `Failed to tailor resume (${res.status})`);
   }
   const body = await res.json();
-  return TailoredResumeSchema.parse(body.resume);
+  const parsed = TailoredResumeSchema.safeParse(body.resume);
+  if (!parsed.success) {
+    throw new Error('Server returned an invalid resume payload');
+  }
+  return parsed.data;
 }
 
 /**

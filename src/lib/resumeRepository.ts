@@ -64,26 +64,27 @@ export async function updateResume(
   userId: string,
   resume: TailoredResume
 ): Promise<TailoredResume> {
-  const existing = await prisma.resume.findFirst({ where: { id, userId } });
-  if (!existing) {
+  // Use updateMany so the WHERE clause is both id AND userId. Prisma
+  // update() requires a unique predicate (id alone) and silently ignores
+  // extra fields — updateMany actually scopes the write, which means a
+  // resume id discovered through another channel cannot be overwritten
+  // by a different session user.
+  const prepared: TailoredResume = { ...resume, resumeId: id };
+  const { count } = await prisma.resume.updateMany({
+    where: { id, userId },
+    data: { content: prepared as unknown as object },
+  });
+  if (count === 0) {
     throw new Error(`Resume ${id} not found for user`);
   }
 
-  const updated = await prisma.resume.update({
-    where: { id },
-    data: { content: resume as unknown as object },
-  });
+  const fresh = await prisma.resume.findFirst({ where: { id, userId } });
+  if (!fresh) {
+    throw new Error(`Resume ${id} vanished mid-update`);
+  }
 
-  const canonical: TailoredResume = {
-    ...resume,
-    resumeId: id,
-    updatedAt: updated.updatedAt.toISOString(),
+  return {
+    ...prepared,
+    updatedAt: fresh.updatedAt.toISOString(),
   };
-
-  await prisma.resume.update({
-    where: { id },
-    data: { content: canonical as unknown as object },
-  });
-
-  return canonical;
 }
