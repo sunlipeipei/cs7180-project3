@@ -21,7 +21,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  NODE_VERSION: '20'
+  # Bumped to 22 for Phase 1.A: unpdf's pdfjs bundle calls Promise.try(),
+  # which first landed in Node 22. Node 20 throws TypeError on import.
+  NODE_VERSION: '22'
   # Used by integration-test and e2e jobs (postgres service on localhost).
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bypasshire_test
   # Used by unit-test and build jobs — satisfies Prisma's URL parser without
