@@ -71,7 +71,6 @@ describe('resume.service', () => {
     const { tailorResume } = await freshService();
     const result = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     expect(TailoredResumeSchema.safeParse(result).success).toBe(true);
   });
@@ -80,7 +79,6 @@ describe('resume.service', () => {
     const { tailorResume } = await freshService();
     const result = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     expect(result.jobDescriptionId).toBe(KNOWN_JD_ID);
   });
@@ -89,7 +87,6 @@ describe('resume.service', () => {
     const { listResumes, tailorResume } = await freshService();
     await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     const list = await listResumes();
     expect(list).toHaveLength(3);
@@ -99,7 +96,6 @@ describe('resume.service', () => {
     const { getResume, tailorResume } = await freshService();
     const created = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     const fetched = await getResume(created.resumeId);
     expect(fetched).not.toBeNull();
@@ -110,11 +106,9 @@ describe('resume.service', () => {
     const { tailorResume } = await freshService();
     const a = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     const b = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     expect(a.resumeId).not.toBe(b.resumeId);
   });
@@ -123,7 +117,6 @@ describe('resume.service', () => {
     const { tailorResume } = await freshService();
     const result = await tailorResume({
       jobDescriptionId: KNOWN_JD_ID,
-      profileSnapshot: FIXTURE_PROFILE_SNAPSHOT,
     });
     // All sections should be non-empty strings (Phase 0.5 placeholder)
     expect(result.header.length).toBeGreaterThan(0);
@@ -134,11 +127,9 @@ describe('resume.service', () => {
     expect(result.projects.length).toBeGreaterThan(0);
   });
 
-  it('tailorResume with invalid jobDescriptionId (not uuid) throws', async () => {
+  it('tailorResume with empty jobDescriptionId throws', async () => {
     const { tailorResume } = await freshService();
-    await expect(
-      tailorResume({ jobDescriptionId: 'not-a-uuid', profileSnapshot: FIXTURE_PROFILE_SNAPSHOT })
-    ).rejects.toThrow();
+    await expect(tailorResume({ jobDescriptionId: '' })).rejects.toThrow();
   });
 
   // --- refineSection ---
@@ -213,10 +204,10 @@ describe('resume.service', () => {
     ).rejects.toThrow();
   });
 
-  it('refineSection on non-uuid resumeId throws (Zod validation)', async () => {
+  it('refineSection on empty resumeId throws (Zod validation)', async () => {
     const { refineSection } = await freshService();
     await expect(
-      refineSection({ resumeId: 'not-a-uuid', section: 'summary', instruction: 'Fix it' })
+      refineSection({ resumeId: '', section: 'summary', instruction: 'Fix it' })
     ).rejects.toThrow();
   });
 
