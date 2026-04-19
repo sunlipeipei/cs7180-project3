@@ -25,5 +25,9 @@ export default defineConfig({
         command: 'npm run dev',
         url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
+        env: {
+          DEV_AUTH_BYPASS: '1',
+          DEV_USER_ID: 'e2e_user',
+        },
       },
 });

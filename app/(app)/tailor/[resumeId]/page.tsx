@@ -62,6 +62,7 @@ export default function TailorPage({ params }: PageProps) {
   const [refineOpen, setRefineOpen] = useState(false);
   const [refineSection_, setRefineSection_] = useState<ResumeSection>('summary');
   const [refineInstruction, setRefineInstruction] = useState('');
+  const [refineSubmitting, setRefineSubmitting] = useState(false);
 
   const statusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -120,6 +121,7 @@ export default function TailorPage({ params }: PageProps) {
 
   async function handleRefineSubmit() {
     if (!refineInstruction.trim() || !resumeId) return;
+    setRefineSubmitting(true);
     try {
       const response = await refineSection({
         resumeId,
@@ -134,6 +136,8 @@ export default function TailorPage({ params }: PageProps) {
       showStatus('Section refined');
     } catch {
       // Error handling — Phase 1 will add proper error UI
+    } finally {
+      setRefineSubmitting(false);
     }
   }
 
@@ -386,6 +390,7 @@ export default function TailorPage({ params }: PageProps) {
                 </DialogClose>
                 <button
                   onClick={handleRefineSubmit}
+                  disabled={refineSubmitting}
                   style={{
                     padding: '0.5rem 1rem',
                     borderRadius: 'var(--radius-xl)',
@@ -394,11 +399,12 @@ export default function TailorPage({ params }: PageProps) {
                     fontFamily: 'var(--font-headline)',
                     fontWeight: 700,
                     fontSize: '0.75rem',
-                    cursor: 'pointer',
+                    cursor: refineSubmitting ? 'not-allowed' : 'pointer',
                     border: 'none',
+                    opacity: refineSubmitting ? 0.6 : 1,
                   }}
                 >
-                  Submit
+                  {refineSubmitting ? 'Refining…' : 'Submit'}
                 </button>
               </DialogFooter>
             </DialogContent>
