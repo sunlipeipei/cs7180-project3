@@ -92,14 +92,27 @@ describe('createJD', () => {
     expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('POSTs { input } to /api/job-descriptions and maps the raw response', async () => {
+  it('POSTs { input, source } to /api/job-descriptions and maps the raw response', async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(201, rawRow()));
     const r = await createJD({ source: 'paste', content: 'Senior SWE\n\nDetails.' });
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe('/api/job-descriptions');
     expect(init.method).toBe('POST');
-    expect(JSON.parse(init.body as string)).toEqual({ input: 'Senior SWE\n\nDetails.' });
+    expect(JSON.parse(init.body as string)).toEqual({
+      input: 'Senior SWE\n\nDetails.',
+      source: 'paste',
+    });
     expect(r.jobDescriptionId).toBe('ckjd1234567890abc');
+  });
+
+  it('forwards source="url" in the POST body', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(201, rawRow()));
+    await createJD({ source: 'url', content: 'https://example.com/jobs/1' });
+    const [, init] = mockFetch.mock.calls[0];
+    expect(JSON.parse(init.body as string)).toEqual({
+      input: 'https://example.com/jobs/1',
+      source: 'url',
+    });
   });
 
   it('surfaces the server error message on failure', async () => {

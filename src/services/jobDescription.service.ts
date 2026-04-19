@@ -55,10 +55,14 @@ export async function getJobDescription(id: string): Promise<IngestJDResponse | 
  */
 export async function createJD(req: IngestJDRequest): Promise<IngestJDResponse> {
   const validated = IngestJDRequestSchema.parse(req);
+  // Always send an explicit `source` — the server's URL routing depends on it.
+  // Falling back to 'paste' is the safe default if the schema ever widens to
+  // make source optional (pasted content never triggers safeFetch).
+  const source = validated.source ?? 'paste';
   const res = await fetch('/api/job-descriptions', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ input: validated.content }),
+    body: JSON.stringify({ input: validated.content, source }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
