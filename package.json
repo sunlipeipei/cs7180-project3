@@ -4,6 +4,7 @@
   "description": "AI-powered job application automation tool",
   "scripts": {
     "dev": "next dev",
+    "dev:up": "echo '⚠  dev:up runs prisma migrate deploy against your DATABASE_URL (set in .env.local). Ensure it points to a dev branch, not prod.' && prisma generate && prisma migrate deploy && next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",

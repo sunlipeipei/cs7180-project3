@@ -157,6 +157,52 @@ describe('POST /api/job-descriptions', () => {
     const body = await res.json();
     expect(body.error).toBe('Job description cannot be empty');
   });
+
+  // ---- source hint forwarding (PR #60 bug fix regression) -----------------
+
+  it('forwards source="paste" to parseJobDescription', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockParseJd.mockResolvedValue({ type: 'text', rawText: 'Engineer role' });
+    mockSaveJd.mockResolvedValue(mockJd);
+
+    const res = await POST(
+      makePostRequest({ input: 'Engineer role. Apply at https://x.example.com.', source: 'paste' })
+    );
+
+    expect(res.status).toBe(201);
+    expect(mockParseJd).toHaveBeenCalledWith(
+      'Engineer role. Apply at https://x.example.com.',
+      'paste'
+    );
+  });
+
+  it('forwards source="url" to parseJobDescription', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockParseJd.mockResolvedValue({
+      type: 'url',
+      rawText: 'Engineer role',
+      sourceUrl: 'https://x.example.com/jobs/1',
+    });
+    mockSaveJd.mockResolvedValue(mockJd);
+
+    const res = await POST(
+      makePostRequest({ input: 'https://x.example.com/jobs/1', source: 'url' })
+    );
+
+    expect(res.status).toBe(201);
+    expect(mockParseJd).toHaveBeenCalledWith('https://x.example.com/jobs/1', 'url');
+  });
+
+  it('passes undefined source for legacy callers (no source field)', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockParseJd.mockResolvedValue({ type: 'text', rawText: 'Engineer role' });
+    mockSaveJd.mockResolvedValue(mockJd);
+
+    const res = await POST(makePostRequest({ input: 'Engineer role' }));
+
+    expect(res.status).toBe(201);
+    expect(mockParseJd).toHaveBeenCalledWith('Engineer role', undefined);
+  });
 });
 
 // ---------------------------------------------------------------------------

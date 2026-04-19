@@ -1,145 +1,124 @@
-/**
- * Isolation strategy: each test uses vi.resetModules() + dynamic import so it
- * gets a freshly-seeded module-scoped Map. This prevents cross-test pollution
- * from createJD additions persisting between cases.
- */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { IngestJDResponseSchema } from '@/ai/schemas.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { IngestJDResponseSchema } from '@/ai/schemas';
+import { listJobDescriptions, getJobDescription, createJD } from '../jobDescription.service';
 
-async function freshService() {
-  vi.resetModules();
-  return import('../jobDescription.service.js');
+const mockFetch = vi.fn();
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.stubGlobal('fetch', mockFetch);
+});
+
+function jsonResponse(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
-describe('jobDescription.service', () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
+function rawRow(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: 'ckjd1234567890abc',
+    userId: 'user-1',
+    content: 'Senior SWE at Acme Corp\n\nFull details...',
+    sourceUrl: null,
+    title: null,
+    company: null,
+    createdAt: '2026-04-18T00:00:00.000Z',
+    updatedAt: '2026-04-18T00:00:00.000Z',
+    ...overrides,
+  };
+}
 
-  it('listJobDescriptions() returns 2 items on cold start (seeded from fixture)', async () => {
-    const { listJobDescriptions } = await freshService();
+describe('listJobDescriptions', () => {
+  it('maps raw rows (direct array response) into IngestJDResponse[]', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, [rawRow()]));
     const list = await listJobDescriptions();
-    expect(list).toHaveLength(2);
+    expect(list).toHaveLength(1);
+    expect(IngestJDResponseSchema.safeParse(list[0]).success).toBe(true);
   });
 
-  it('listJobDescriptions() items all pass Zod IngestJDResponseSchema', async () => {
-    const { listJobDescriptions } = await freshService();
+  it('also accepts { jds: [...] } envelope shape', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { jds: [rawRow()] }));
     const list = await listJobDescriptions();
-    for (const jd of list) {
-      expect(IngestJDResponseSchema.safeParse(jd).success).toBe(true);
-    }
+    expect(list).toHaveLength(1);
   });
 
-  it('getJobDescription(knownId) returns the matching JD', async () => {
-    const { listJobDescriptions, getJobDescription } = await freshService();
-    const list = await listJobDescriptions();
-    const known = list[0];
-    const result = await getJobDescription(known.jobDescriptionId);
-    expect(result).not.toBeNull();
-    expect(result?.jobDescriptionId).toBe(known.jobDescriptionId);
-    expect(result?.company).toBe(known.company);
-  });
-
-  it('getJobDescription("nope") returns null', async () => {
-    const { getJobDescription } = await freshService();
-    const result = await getJobDescription('nope');
-    expect(result).toBeNull();
-  });
-
-  it('getJobDescription(unknown-uuid) returns null', async () => {
-    const { getJobDescription } = await freshService();
-    const result = await getJobDescription('00000000-0000-0000-0000-000000000000');
-    expect(result).toBeNull();
-  });
-
-  it('createJD returns a valid IngestJDResponse with a fresh UUID', async () => {
-    const { createJD } = await freshService();
-    const result = await createJD({
-      source: 'paste',
-      content: 'Senior SWE at Google\n\nFull role description here.',
-    });
-    const parsed = IngestJDResponseSchema.safeParse(result);
-    expect(parsed.success).toBe(true);
-    expect(result.jobDescriptionId).toBeTruthy();
-  });
-
-  it('createJD adds to the list — length becomes 3', async () => {
-    const { listJobDescriptions, createJD } = await freshService();
-    await createJD({
-      source: 'paste',
-      content: 'Senior SWE at Google\n\nFull role description here.',
-    });
-    const list = await listJobDescriptions();
-    expect(list).toHaveLength(3);
-  });
-
-  it('createJD with "url" source also works', async () => {
-    const { listJobDescriptions, createJD } = await freshService();
-    await createJD({ source: 'url', content: 'https://example.com/job/1234' });
-    const list = await listJobDescriptions();
-    expect(list).toHaveLength(3);
-  });
-
-  it('createJD extracts title from first non-empty line', async () => {
-    const { createJD } = await freshService();
-    const result = await createJD({
-      source: 'paste',
-      content: 'Staff Engineer – Platform\n\nMore details.',
-    });
-    expect(result.title).toBe('Staff Engineer – Platform');
-  });
-
-  it('createJD sets company to "Unknown" (Phase 0.5 heuristic)', async () => {
-    const { createJD } = await freshService();
-    const result = await createJD({
-      source: 'paste',
-      content: 'Some Job Title\n\nJob details here.',
-    });
-    expect(result.company).toBe('Unknown');
-  });
-
-  it('createJD sets parsedAt to current ISO datetime', async () => {
-    const { createJD } = await freshService();
-    const before = new Date().toISOString();
-    const result = await createJD({ source: 'paste', content: 'Some Job Title\n\nJob details.' });
-    const after = new Date().toISOString();
-    expect(result.parsedAt >= before).toBe(true);
-    expect(result.parsedAt <= after).toBe(true);
-  });
-
-  it('createJD parsedAt is captured AFTER the simulated delay (not before)', async () => {
-    vi.useFakeTimers();
-    const { createJD } = await freshService();
-    const callTime = new Date().toISOString();
-    const promise = createJD({ source: 'paste', content: 'Engineer\n\nDetails.' });
-    // Advance past the ~80ms delay
-    await vi.advanceTimersByTimeAsync(200);
-    const result = await promise;
-    expect(result.parsedAt >= callTime).toBe(true);
-    // parsedAt must be at least as late as the simulated delay tick
-    expect(new Date(result.parsedAt).getTime()).toBeGreaterThanOrEqual(
-      new Date(callTime).getTime() + 80
+  it('derives title from the first non-empty line when DB title is null', async () => {
+    mockFetch.mockResolvedValueOnce(
+      jsonResponse(200, [rawRow({ content: '\n\nStaff Platform Engineer\n\nBody…', title: null })])
     );
-    vi.useRealTimers();
+    const [jd] = await listJobDescriptions();
+    expect(jd.title).toBe('Staff Platform Engineer');
   });
 
-  it('createJD with empty content throws (Zod min(1) validation)', async () => {
-    const { createJD } = await freshService();
+  it('falls back to "Unknown" for company when DB value is null', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, [rawRow({ company: null })]));
+    const [jd] = await listJobDescriptions();
+    expect(jd.company).toBe('Unknown');
+  });
+
+  it('throws on non-ok response', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(500, { error: 'boom' }));
+    await expect(listJobDescriptions()).rejects.toThrow(/500/);
+  });
+});
+
+describe('getJobDescription', () => {
+  it('returns null on 404', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(404, { error: 'missing' }));
+    const r = await getJobDescription('ck1');
+    expect(r).toBeNull();
+  });
+
+  it('URL-encodes the id and returns the mapped row on 200', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, rawRow()));
+    const r = await getJobDescription('a b/c');
+    const [url] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/job-descriptions/a%20b%2Fc');
+    expect(r?.jobDescriptionId).toBe('ckjd1234567890abc');
+  });
+
+  it('handles the { jd } envelope shape', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { jd: rawRow() }));
+    const r = await getJobDescription('ckjd1234567890abc');
+    expect(r?.jobDescriptionId).toBe('ckjd1234567890abc');
+  });
+});
+
+describe('createJD', () => {
+  it('Zod-validates the body before sending (empty content throws, no fetch)', async () => {
     await expect(createJD({ source: 'paste', content: '' })).rejects.toThrow();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('each createJD call generates a unique UUID', async () => {
-    const { createJD } = await freshService();
-    const a = await createJD({ source: 'paste', content: 'Job A title' });
-    const b = await createJD({ source: 'paste', content: 'Job B title' });
-    expect(a.jobDescriptionId).not.toBe(b.jobDescriptionId);
+  it('POSTs { input, source } to /api/job-descriptions and maps the raw response', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(201, rawRow()));
+    const r = await createJD({ source: 'paste', content: 'Senior SWE\n\nDetails.' });
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/job-descriptions');
+    expect(init.method).toBe('POST');
+    expect(JSON.parse(init.body as string)).toEqual({
+      input: 'Senior SWE\n\nDetails.',
+      source: 'paste',
+    });
+    expect(r.jobDescriptionId).toBe('ckjd1234567890abc');
   });
 
-  it('newly created JD is retrievable via getJobDescription', async () => {
-    const { createJD, getJobDescription } = await freshService();
-    const created = await createJD({ source: 'paste', content: 'QA Engineer\n\nDetails here.' });
-    const fetched = await getJobDescription(created.jobDescriptionId);
-    expect(fetched).not.toBeNull();
-    expect(fetched?.title).toBe('QA Engineer');
+  it('forwards source="url" in the POST body', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(201, rawRow()));
+    await createJD({ source: 'url', content: 'https://example.com/jobs/1' });
+    const [, init] = mockFetch.mock.calls[0];
+    expect(JSON.parse(init.body as string)).toEqual({
+      input: 'https://example.com/jobs/1',
+      source: 'url',
+    });
+  });
+
+  it('surfaces the server error message on failure', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(422, { error: 'parse failed' }));
+    await expect(createJD({ source: 'paste', content: 'some content' })).rejects.toThrow(
+      /parse failed/
+    );
   });
 });

@@ -231,20 +231,28 @@ describe('TailoredResumeSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects a non-UUID resumeId', () => {
+  it('rejects an empty resumeId', () => {
     const result = TailoredResumeSchema.safeParse({
       ...validTailoredResume,
-      resumeId: 'not-a-uuid',
+      resumeId: '',
     });
     expect(result.success).toBe(false);
   });
 
-  it('rejects a non-UUID jobDescriptionId', () => {
+  it('rejects an empty jobDescriptionId', () => {
     const result = TailoredResumeSchema.safeParse({
       ...validTailoredResume,
-      jobDescriptionId: '12345',
+      jobDescriptionId: '',
     });
     expect(result.success).toBe(false);
+  });
+
+  it('accepts CUID-shaped resumeId (Prisma @default(cuid()))', () => {
+    const result = TailoredResumeSchema.safeParse({
+      ...validTailoredResume,
+      resumeId: 'clxyz0000abc1234567890def',
+    });
+    expect(result.success).toBe(true);
   });
 
   it('rejects an invalid datetime in updatedAt', () => {
@@ -356,10 +364,10 @@ describe('IngestJDResponseSchema', () => {
     expect(IngestJDResponseSchema.safeParse(validResponse).success).toBe(true);
   });
 
-  it('rejects a non-UUID jobDescriptionId', () => {
+  it('rejects an empty jobDescriptionId', () => {
     const result = IngestJDResponseSchema.safeParse({
       ...validResponse,
-      jobDescriptionId: 'bad-id',
+      jobDescriptionId: '',
     });
     expect(result.success).toBe(false);
   });
@@ -391,33 +399,19 @@ describe('IngestJDResponseSchema', () => {
 describe('TailorRequestSchema', () => {
   const validRequest: TailorRequest = {
     jobDescriptionId: '00000000-0000-4000-a000-000000000002',
-    profileSnapshot: validMasterProfile,
   };
 
   it('parses a valid tailor request', () => {
     expect(TailorRequestSchema.safeParse(validRequest).success).toBe(true);
   });
 
-  it('rejects a non-UUID jobDescriptionId', () => {
-    const result = TailorRequestSchema.safeParse({
-      ...validRequest,
-      jobDescriptionId: 'not-a-uuid',
-    });
+  it('rejects an empty jobDescriptionId', () => {
+    const result = TailorRequestSchema.safeParse({ jobDescriptionId: '' });
     expect(result.success).toBe(false);
   });
 
-  it('rejects an invalid profileSnapshot (bad email)', () => {
-    const result = TailorRequestSchema.safeParse({
-      ...validRequest,
-      profileSnapshot: { ...validMasterProfile, email: 'bad' },
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects a missing profileSnapshot', () => {
-    const result = TailorRequestSchema.safeParse({
-      jobDescriptionId: '00000000-0000-4000-a000-000000000002',
-    });
+  it('rejects a missing jobDescriptionId', () => {
+    const result = TailorRequestSchema.safeParse({});
     expect(result.success).toBe(false);
   });
 
@@ -430,10 +424,10 @@ describe('TailorResponseSchema', () => {
     expect(TailorResponseSchema.safeParse(validTailoredResume).success).toBe(true);
   });
 
-  it('rejects a non-UUID resumeId in response', () => {
+  it('rejects an empty resumeId in response', () => {
     const result = TailorResponseSchema.safeParse({
       ...validTailoredResume,
-      resumeId: 'bad',
+      resumeId: '',
     });
     expect(result.success).toBe(false);
   });
@@ -456,9 +450,9 @@ describe('RefineRequestSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects a non-UUID resumeId', () => {
+  it('rejects an empty resumeId', () => {
     const result = RefineRequestSchema.safeParse({
-      resumeId: 'bad-id',
+      resumeId: '',
       section: 'summary',
       instruction: 'Make it more concise.',
     });
@@ -527,10 +521,10 @@ describe('RefineResponseSchema', () => {
     expect(RefineResponseSchema.safeParse(validRefineResponse).success).toBe(true);
   });
 
-  it('rejects a non-UUID resumeId', () => {
+  it('rejects an empty resumeId', () => {
     const result = RefineResponseSchema.safeParse({
       ...validRefineResponse,
-      resumeId: 'bad',
+      resumeId: '',
     });
     expect(result.success).toBe(false);
   });

@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return Response.json({ error: message }, { status: 400 });
   }
 
-  const { input } = parseResult.data;
+  const { input, source } = parseResult.data;
 
   try {
     await ensureUser(userId);
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const parsed = await parseJobDescription(input);
+    const parsed = await parseJobDescription(input, source);
     const saved = await saveJobDescription(userId, parsed);
     return Response.json(saved, { status: 201 });
   } catch (err) {

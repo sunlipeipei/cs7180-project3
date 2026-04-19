@@ -110,12 +110,16 @@ describe('parseJobDescription — URL input', () => {
     );
   });
 
-  it('rejects non-http/https URL schemes (safeFetch propagates the error)', async () => {
+  it('rejects non-http/https URL schemes via source="url" (safeFetch propagates the error)', async () => {
+    // With an explicit source="url" hint, the request reaches safeFetch which
+    // rejects the non-http scheme. Without the hint, the stricter legacy
+    // detector now keeps ftp:// out of the URL path entirely — see the
+    // separate "legacy heuristic" suite below.
     mockSafeFetch.mockRejectedValue(
       new Error('Invalid URL scheme: only http and https are allowed, got "ftp:"')
     );
 
-    await expect(parseJobDescription('ftp://example.com/jobs/123')).rejects.toThrow(
+    await expect(parseJobDescription('ftp://example.com/jobs/123', 'url')).rejects.toThrow(
       /scheme|Invalid URL/i
     );
   });
@@ -139,5 +143,89 @@ describe('parseJobDescription — URL input', () => {
 
     const result = await parseJobDescription('https://example.com/jobs/redirect');
     expect(result.sourceUrl).toBe('https://example.com/jobs/canonical');
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Regression — PR #60 comment 4274999164
+// A pasted JD that mentions `https://apply.example.com` in the body must not
+// be routed to safeFetch. The UI already tells us intent via the `source`
+// parameter; when `source` is omitted, only *whole-string* URLs route to
+// fetch.
+// -----------------------------------------------------------------------------
+
+describe('parseJobDescription — source hint (explicit intent)', () => {
+  it('source="paste" treats input as text even when it contains a URL substring', async () => {
+    const pastedJd =
+      'Senior Engineer. By applying to this position please submit your resume at https://apply.example.com/careers. We value...';
+
+    const result = await parseJobDescription(pastedJd, 'paste');
+
+    expect(mockSafeFetch).not.toHaveBeenCalled();
+    expect(result.type).toBe('text');
+    expect(result.rawText).toBe(pastedJd);
+    expect(result.sourceUrl).toBeUndefined();
+  });
+
+  it('source="paste" treats input as text even when input IS a URL', async () => {
+    // User deliberately pasted a URL as text (maybe wants it saved verbatim).
+    // Respect the explicit intent.
+    const result = await parseJobDescription('https://only-url.example.com/jobs/1', 'paste');
+
+    expect(mockSafeFetch).not.toHaveBeenCalled();
+    expect(result.type).toBe('text');
+    expect(result.rawText).toBe('https://only-url.example.com/jobs/1');
+  });
+
+  it('source="url" routes to safeFetch', async () => {
+    mockSafeFetch.mockResolvedValue({
+      body: '<html><body><main>Engineer role</main></body></html>',
+      finalUrl: 'https://example.com/jobs/1',
+    });
+
+    const result = await parseJobDescription('https://example.com/jobs/1', 'url');
+
+    expect(mockSafeFetch).toHaveBeenCalledWith('https://example.com/jobs/1');
+    expect(result.type).toBe('url');
+  });
+});
+
+describe('parseJobDescription — legacy heuristic (no source hint) is strict', () => {
+  it('routes to safeFetch when the ENTIRE input is an http(s) URL', async () => {
+    mockSafeFetch.mockResolvedValue({
+      body: '<html><body><main>Engineer</main></body></html>',
+      finalUrl: 'https://example.com/jobs/1',
+    });
+
+    const result = await parseJobDescription('https://example.com/jobs/1');
+    expect(mockSafeFetch).toHaveBeenCalled();
+    expect(result.type).toBe('url');
+  });
+
+  it('treats JD body containing a URL as text (no whitespace detection was the bug)', async () => {
+    // This is the PR #60 smoke-test failure: an "apply at https://..." paragraph
+    // was routed to safeFetch, which then called `new URL(entireText)` → 422.
+    const pastedJd = 'Senior Engineer. Apply at https://apply.example.com/careers. Remote OK.';
+
+    const result = await parseJobDescription(pastedJd);
+
+    expect(mockSafeFetch).not.toHaveBeenCalled();
+    expect(result.type).toBe('text');
+    expect(result.rawText).toBe(pastedJd);
+  });
+
+  it('treats URL with surrounding whitespace as text (strict match)', async () => {
+    // A URL with trailing noise is not a whole-string URL.
+    const result = await parseJobDescription('https://example.com/jobs/1 — exciting opportunity');
+    expect(mockSafeFetch).not.toHaveBeenCalled();
+    expect(result.type).toBe('text');
+  });
+
+  it('treats non-http protocols as text even without source', async () => {
+    // No source hint + contains `://` but not http/https → text path. Previous
+    // code would have tried to fetch and thrown.
+    const result = await parseJobDescription('mailto:hiring@example.com');
+    expect(mockSafeFetch).not.toHaveBeenCalled();
+    expect(result.type).toBe('text');
   });
 });

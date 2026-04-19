@@ -29,11 +29,7 @@ Thumbs.db
 # Claude Code
 .claude/
 
-# E2E tests
-e2e/
-tests/e2e/
-*.spec.ts
-*.e2e.ts
+# Playwright caches (reports + results are already ignored above)
 .playwright-cli/
 
 /src/generated/prisma
