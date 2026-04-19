@@ -244,8 +244,10 @@ jobs:
 
   # ────────────────────────────────────────────────────────────────────────────
   # Stage 6: E2E tests — Playwright against a running Next.js server
-  # --pass-with-no-tests allows the stage to succeed when e2e/ has no tests yet
-  # (tests will be added in Issue #26).
+  # Tests live under e2e/*.spec.ts and run against `next dev` with
+  # DEV_AUTH_BYPASS=1 so Clerk's middleware lets Playwright through. Every
+  # spec stubs /api/* at the Playwright router, so the real AI/DB are never
+  # reached.
   # ────────────────────────────────────────────────────────────────────────────
   e2e:
     name: E2E Tests (Playwright)
@@ -307,7 +309,7 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 120000
 
       - name: Run Playwright E2E tests
-        run: npx playwright test --pass-with-no-tests
+        run: npx playwright test
         env:
           DEV_AUTH_BYPASS: '1'
 
@@ -317,6 +319,14 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 7
+
+      - name: Upload Playwright traces and videos (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
           retention-days: 7
 
   # ────────────────────────────────────────────────────────────────────────────
