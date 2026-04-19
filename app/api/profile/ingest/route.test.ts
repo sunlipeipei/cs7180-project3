@@ -161,4 +161,63 @@ describe('POST /api/profile/ingest', () => {
     expect(body.profile.name).toBe(profileFixture.name);
     expect(mockSaveProfile).toHaveBeenCalledWith('user-1', profileFixture);
   });
+
+  it('returns 200 when the LLM response contains null on optional fields (real-world shape)', async () => {
+    // Shape the LLM actually returns today: `null` stands in for "unknown"
+    // rather than an omitted key. The schema must accept it, saveProfile
+    // must be called with it, and the handler must not fall into 502.
+    const llmShapedProfile = {
+      schemaVersion: 1,
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      phone: '+1-555-0100',
+      summary: null,
+      address: {
+        street: null,
+        city: 'San Francisco',
+        state: null,
+        zip: null,
+        country: 'US',
+      },
+      links: { github: null, linkedin: null, portfolio: null, other: null },
+      skills: [{ name: 'TypeScript', category: null, level: null }],
+      workExperience: [
+        {
+          company: 'Acme Corp',
+          title: 'Software Engineer',
+          startDate: '2021-06-01',
+          endDate: null,
+          location: null,
+          descriptions: ['Built scalable APIs'],
+        },
+      ],
+      education: [
+        {
+          school: 'State U',
+          degree: 'B.S. CS',
+          fieldOfStudy: null,
+          startDate: null,
+          endDate: null,
+          gpa: null,
+        },
+      ],
+      projects: null,
+      certifications: null,
+      resumeTemplatePath: null,
+      contextSources: null,
+      preferences: null,
+    };
+    mockAuth.mockResolvedValue({ userId: 'user-1' });
+    mockExtractText.mockResolvedValue('Jane Doe\nSoftware Engineer\n...');
+    mockIngest.mockResolvedValue(llmShapedProfile);
+    mockSaveProfile.mockResolvedValue(undefined);
+
+    const res = await POST(makeMultipartRequest(makePdfFile(10)));
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.profile.name).toBe('Jane Doe');
+    expect(body.profile.skills[0].category).toBeNull();
+    expect(mockSaveProfile).toHaveBeenCalledWith('user-1', llmShapedProfile);
+  });
 });
