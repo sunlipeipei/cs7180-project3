@@ -26,11 +26,15 @@ test-results/
 .DS_Store
 Thumbs.db
 
-# Claude Code local settings
-.claude/settings.local.json
+# Claude Code
+.claude/
 
-# Claude Code commit-signal hook state (recreated at runtime)
-.claude/state/
+# E2E tests
+e2e/
+tests/e2e/
+*.spec.ts
+*.e2e.ts
+.playwright-cli/
 
 /src/generated/prisma
 
