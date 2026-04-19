@@ -85,9 +85,7 @@ test.describe('Loading state — profile ingest spinner', () => {
 // ── /dashboard tailor spinner ───────────────────────────────────────────────
 
 test.describe('Loading state — dashboard tailor spinner', () => {
-  test('POST /api/tailor in-flight flips the JD card CTA to "Tailoring…"', async ({
-    page,
-  }) => {
+  test('POST /api/tailor in-flight flips the JD card CTA to "Tailoring…"', async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(String(err)));
 
@@ -198,9 +196,7 @@ test.describe('Loading state — dashboard tailor spinner', () => {
 // ── /tailor refine spinner ──────────────────────────────────────────────────
 
 test.describe('Loading state — tailor refine spinner', () => {
-  test('POST /api/resumes/[id]/refine in-flight flips Submit to "Refining…"', async ({
-    page,
-  }) => {
+  test('POST /api/resumes/[id]/refine in-flight flips Submit to "Refining…"', async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(String(err)));
 

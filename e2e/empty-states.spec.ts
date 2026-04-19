@@ -76,9 +76,7 @@ test.describe('Empty state — /profile with no saved profile', () => {
 // ── /dashboard empty state ──────────────────────────────────────────────────
 
 test.describe('Empty state — /dashboard with no profile, no JDs, no resumes', () => {
-  test('each section renders its empty-state copy and a clear next action', async ({
-    page,
-  }) => {
+  test('each section renders its empty-state copy and a clear next action', async ({ page }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(String(err)));
 

@@ -258,9 +258,7 @@ test.describe('Phase 1.E — Playwright golden path', () => {
 
     await page.goto('/dashboard/new');
     const textarea = page.getByPlaceholder('Paste the full job description here…');
-    await textarea.fill(
-      'Senior Software Engineer at ACME — build reliable distributed systems.'
-    );
+    await textarea.fill('Senior Software Engineer at ACME — build reliable distributed systems.');
     await page.getByRole('button', { name: /Start Tailoring/i }).click();
 
     await jdPostPromise;
@@ -296,8 +294,7 @@ test.describe('Phase 1.E — Playwright golden path', () => {
     await page.locator('#refine-instruction').fill('make it shorter');
 
     const refinePostPromise = page.waitForRequest(
-      (req) =>
-        req.url().endsWith(`/api/resumes/${RESUME_ID}/refine`) && req.method() === 'POST'
+      (req) => req.url().endsWith(`/api/resumes/${RESUME_ID}/refine`) && req.method() === 'POST'
     );
     await page.getByRole('button', { name: 'Submit' }).click();
     await refinePostPromise;
@@ -312,11 +309,12 @@ test.describe('Phase 1.E — Playwright golden path', () => {
     // popup-download event semantics (which vary across versions), we assert
     // that the PDF request was made with a 200 and attachment disposition.
 
-    const pdfRequestPromise = page.context().waitForEvent(
-      'response',
-      (res) =>
-        res.url().includes(`/api/resumes/${RESUME_ID}/pdf`) && res.status() === 200
-    );
+    const pdfRequestPromise = page
+      .context()
+      .waitForEvent(
+        'response',
+        (res) => res.url().includes(`/api/resumes/${RESUME_ID}/pdf`) && res.status() === 200
+      );
     await page.getByRole('button', { name: /render pdf/i }).click();
     const pdfResponse = await pdfRequestPromise;
 
