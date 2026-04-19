@@ -87,13 +87,18 @@ describe('ingestProfileFromText', () => {
       usage: { prompt_tokens: 1, completion_tokens: 1 },
     });
 
-    await expect(ingestProfileFromText('anything')).rejects.toThrow(
-      /no parsed profile/i
-    );
+    await expect(ingestProfileFromText('anything')).rejects.toThrow(/no parsed profile/i);
   });
 
   it('surfaces Zod validation errors for genuinely invalid profiles (e.g. missing name)', async () => {
-    const invalid = { schemaVersion: 1, email: 'a@b.co', phone: '+1', skills: [], workExperience: [], education: [] };
+    const invalid = {
+      schemaVersion: 1,
+      email: 'a@b.co',
+      phone: '+1',
+      skills: [],
+      workExperience: [],
+      education: [],
+    };
     parseMock.mockResolvedValueOnce(makeCompletion(invalid));
     await expect(ingestProfileFromText('anything')).rejects.toThrow();
   });

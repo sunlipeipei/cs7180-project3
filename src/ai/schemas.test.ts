@@ -216,9 +216,7 @@ describe('MasterProfileSchema — LLM null optionals', () => {
     const first = MasterProfileSchema.safeParse(llmShapedProfile);
     expect(first.success).toBe(true);
     if (!first.success) return;
-    const reparsed = MasterProfileSchema.safeParse(
-      JSON.parse(JSON.stringify(first.data))
-    );
+    const reparsed = MasterProfileSchema.safeParse(JSON.parse(JSON.stringify(first.data)));
     expect(reparsed.success).toBe(true);
   });
 });

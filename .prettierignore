@@ -16,3 +16,6 @@ docs/
 # Google Stitch design mockups — generated HTML; we don't own the output style.
 stitch_bypasshire_prd_v1.0/
 .stitch/
+
+# Playwright CLI skill artifacts — local debugging snapshots, never committed.
+.playwright-cli/

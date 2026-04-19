@@ -153,9 +153,7 @@ test.describe('profile ingest — null-optional LLM response renders without cra
 
     // Skills tab: null category/level still render the skill chip.
     await page.getByRole('tab', { name: /^skills$/i }).click();
-    await expect(
-      page.getByRole('button', { name: /remove typescript/i })
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: /remove typescript/i })).toBeVisible();
 
     // Raw JSON tab shows the nulls preserved — proves no client-side
     // sanitisation accidentally ate them.
