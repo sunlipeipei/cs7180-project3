@@ -101,6 +101,127 @@ describe('MasterProfileSchema', () => {
 });
 
 // ---------------------------------------------------------------------------
+// MasterProfileSchema — LLM null-tolerance (OpenRouter structured output
+// emits `null` for unknown optional fields; Zod's `.optional()` rejects `null`,
+// so every LLM-emitted optional must accept `null | undefined | missing`).
+// ---------------------------------------------------------------------------
+
+describe('MasterProfileSchema — LLM null optionals', () => {
+  // Payload mirroring the shape OpenRouter returns today: `null` used
+  // wherever the resume did not supply a value, instead of omitting the key.
+  const llmShapedProfile = {
+    schemaVersion: 1,
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+    phone: '+1-555-0100',
+    summary: null,
+    address: {
+      street: null,
+      city: 'San Francisco',
+      state: null,
+      zip: null,
+      country: 'US',
+    },
+    links: {
+      github: null,
+      linkedin: null,
+      portfolio: null,
+      other: null,
+    },
+    skills: [{ name: 'TypeScript', category: null, level: null }],
+    workExperience: [
+      {
+        company: 'Acme Corp',
+        title: 'Software Engineer',
+        startDate: '2021-06-01',
+        endDate: null,
+        location: null,
+        descriptions: ['Built scalable APIs'],
+      },
+    ],
+    education: [
+      {
+        school: 'State University',
+        degree: 'B.S. Computer Science',
+        fieldOfStudy: null,
+        startDate: null,
+        endDate: null,
+        gpa: null,
+      },
+    ],
+    projects: [
+      {
+        name: 'CLI tool',
+        description: null,
+        technologies: [],
+        url: null,
+        startDate: null,
+        endDate: null,
+        role: null,
+      },
+    ],
+    certifications: [
+      {
+        name: 'CKA',
+        issuer: null,
+        date: null,
+        expirationDate: null,
+        credentialId: null,
+      },
+    ],
+    resumeTemplatePath: null,
+    contextSources: null,
+    preferences: null,
+  };
+
+  it('accepts null on every LLM-emitted optional nested field', () => {
+    const result = MasterProfileSchema.safeParse(llmShapedProfile);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts null at MasterProfile top-level optionals', () => {
+    const payload = {
+      ...validMasterProfile,
+      summary: null,
+      address: null,
+      links: null,
+      projects: null,
+      certifications: null,
+      resumeTemplatePath: null,
+      contextSources: null,
+      preferences: null,
+    };
+    const result = MasterProfileSchema.safeParse(payload);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts null on PreferencesSchema optional fields', () => {
+    const payload = {
+      ...validMasterProfile,
+      preferences: {
+        salaryRange: null,
+        workAuthorization: null,
+        willingToRelocate: null,
+        yearsOfExperience: null,
+        careerSummary: null,
+        targetRoles: null,
+        preferredIndustries: null,
+      },
+    };
+    const result = MasterProfileSchema.safeParse(payload);
+    expect(result.success).toBe(true);
+  });
+
+  it('round-trips an LLM-shaped payload through safeParse', () => {
+    const first = MasterProfileSchema.safeParse(llmShapedProfile);
+    expect(first.success).toBe(true);
+    if (!first.success) return;
+    const reparsed = MasterProfileSchema.safeParse(JSON.parse(JSON.stringify(first.data)));
+    expect(reparsed.success).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // TailoredResumeSchema
 // ---------------------------------------------------------------------------
 

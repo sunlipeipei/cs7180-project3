@@ -1,29 +1,52 @@
 import { MasterProfileSchema } from '@/ai/schemas';
 import type { MasterProfile } from '@/ai/schemas';
-import { profileFixture } from '@/fixtures/index';
-import { delay, clone } from './_helpers';
-
-// Module-scoped mutable state — seeded from fixture at import time.
-let _profile: MasterProfile = clone(profileFixture);
 
 /**
- * Returns the current profile as a defensive deep copy.
- * Simulates ~80ms async latency to mirror a real HTTP fetch.
+ * Fetch the signed-in user's profile from the API.
+ * Returns null when the user has not yet ingested or saved one.
  */
-export async function getProfile(): Promise<MasterProfile> {
-  await delay();
-  return clone(_profile);
+export async function getProfile(): Promise<MasterProfile | null> {
+  const res = await fetch('/api/profile', { method: 'GET' });
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(`Failed to load profile (${res.status})`);
+  }
+  const body = await res.json();
+  return MasterProfileSchema.parse(body.profile);
 }
 
 /**
- * Validates the incoming profile with Zod (throws on invalid input),
- * persists it, and returns a defensive copy of what was stored.
- * Simulates ~80ms async latency.
+ * Upsert the signed-in user's profile. Validates locally before sending so
+ * UI errors surface immediately without a round-trip.
  */
 export async function saveProfile(profile: MasterProfile): Promise<MasterProfile> {
-  // .parse() throws a ZodError if validation fails — intentional service-boundary guard.
   const validated = MasterProfileSchema.parse(profile);
-  await delay();
-  _profile = clone(validated);
-  return clone(_profile);
+  const res = await fetch('/api/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(validated),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `Failed to save profile (${res.status})`);
+  }
+  const body = await res.json();
+  return MasterProfileSchema.parse(body.profile);
+}
+
+/**
+ * Upload a resume PDF and receive the parsed MasterProfile. The server
+ * persists the parse result, so the caller still owns a Save step if the
+ * user wants to tweak fields before committing.
+ */
+export async function ingestProfilePdf(file: File): Promise<MasterProfile> {
+  const form = new FormData();
+  form.set('file', file);
+  const res = await fetch('/api/profile/ingest', { method: 'POST', body: form });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+    throw new Error(body.error ?? `Failed to ingest PDF (${res.status})`);
+  }
+  const body = await res.json();
+  return MasterProfileSchema.parse(body.profile);
 }

@@ -61,15 +61,17 @@ const mockProfile: MasterProfile = {
 vi.mock('@/services/profile.service', () => ({
   getProfile: vi.fn(),
   saveProfile: vi.fn(),
+  ingestProfilePdf: vi.fn(),
 }));
 
 import ProfilePage from './page';
-import { getProfile, saveProfile } from '@/services/profile.service';
+import { getProfile, saveProfile, ingestProfilePdf } from '@/services/profile.service';
 
 describe('ProfilePage', () => {
   beforeEach(() => {
     vi.mocked(getProfile).mockResolvedValue({ ...mockProfile });
     vi.mocked(saveProfile).mockImplementation(async (p) => p);
+    vi.mocked(ingestProfilePdf).mockResolvedValue({ ...mockProfile, name: 'Parsed From PDF' });
   });
 
   async function renderAndWait() {
@@ -222,5 +224,40 @@ describe('ProfilePage', () => {
     const discard = screen.getByRole('button', { name: /discard/i });
     await user.click(discard);
     await waitFor(() => expect(screen.getByDisplayValue('Test User')).toBeInTheDocument());
+  });
+
+  it('renders the "Import from PDF" button', async () => {
+    await renderAndWait();
+    expect(screen.getByRole('button', { name: /import from pdf/i })).toBeInTheDocument();
+  });
+
+  it('uploading a PDF calls ingestProfilePdf and replaces the form contents', async () => {
+    const user = userEvent.setup();
+    await renderAndWait();
+    const fileInput = screen.getByLabelText(/import resume pdf/i) as HTMLInputElement;
+    const file = new File([new Uint8Array([1, 2, 3, 4])], 'resume.pdf', {
+      type: 'application/pdf',
+    });
+    await user.upload(fileInput, file);
+    await waitFor(() => expect(ingestProfilePdf).toHaveBeenCalledWith(file));
+    await waitFor(() => expect(screen.getByDisplayValue('Parsed From PDF')).toBeInTheDocument());
+  });
+
+  it('surfaces the server error when ingest fails', async () => {
+    vi.mocked(ingestProfilePdf).mockRejectedValueOnce(new Error('Invalid PDF'));
+    const user = userEvent.setup();
+    await renderAndWait();
+    const fileInput = screen.getByLabelText(/import resume pdf/i) as HTMLInputElement;
+    const file = new File([new Uint8Array(1)], 'junk.pdf', { type: 'application/pdf' });
+    await user.upload(fileInput, file);
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent(/Invalid PDF/));
+  });
+
+  it('when the user has no saved profile yet, the page is usable against a blank template', async () => {
+    vi.mocked(getProfile).mockResolvedValueOnce(null);
+    render(<ProfilePage />);
+    await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument());
+    // Blank template renders with an empty name field; Import button is visible.
+    expect(screen.getByRole('button', { name: /import from pdf/i })).toBeInTheDocument();
   });
 });

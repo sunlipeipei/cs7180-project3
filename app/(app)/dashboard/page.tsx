@@ -10,7 +10,7 @@ import { JDsList } from '@/components/dashboard/JDsList';
 import { ResumesList } from '@/components/dashboard/ResumesList';
 
 interface DashboardData {
-  profile: MasterProfile;
+  profile: MasterProfile | null;
   jds: IngestJDResponse[];
   resumes: TailoredResume[];
 }

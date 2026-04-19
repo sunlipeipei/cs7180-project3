@@ -1,97 +1,83 @@
-/**
- * Isolation strategy: each test uses vi.resetModules() + dynamic import so it
- * gets a freshly-seeded module-scoped state. This prevents cross-test pollution
- * from saveProfile mutations persisting between cases.
- */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { MasterProfileSchema } from '@/ai/schemas.js';
+import { profileFixture } from '@/fixtures/index';
+import { getProfile, saveProfile, ingestProfilePdf } from '../profile.service';
 
-// Fresh module import helper — resets module registry before each test.
-async function freshService() {
-  vi.resetModules();
-  return import('../profile.service.js');
+const mockFetch = vi.fn();
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.stubGlobal('fetch', mockFetch);
+});
+
+function jsonResponse(status: number, body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
-describe('profile.service', () => {
-  beforeEach(() => {
-    vi.resetModules();
-  });
-
-  it('getProfile() returns a valid MasterProfile that passes Zod safeParse', async () => {
-    const { getProfile } = await freshService();
+describe('getProfile', () => {
+  it('returns the parsed profile on 200', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { profile: profileFixture }));
     const profile = await getProfile();
-    const result = MasterProfileSchema.safeParse(profile);
-    expect(result.success).toBe(true);
+    expect(profile?.name).toBe(profileFixture.name);
+    expect(mockFetch).toHaveBeenCalledWith('/api/profile', { method: 'GET' });
   });
 
-  it('getProfile() returns the fixture name on cold start', async () => {
-    const { getProfile } = await freshService();
+  it('returns null on 404', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(404, { error: 'Profile not found' }));
     const profile = await getProfile();
-    expect(profile.name).toBe('Jordan Lee');
+    expect(profile).toBeNull();
   });
 
-  it('saveProfile(valid) persists — next getProfile() returns the new shape', async () => {
-    const { getProfile, saveProfile } = await freshService();
+  it('throws on 500', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(500, { error: 'boom' }));
+    await expect(getProfile()).rejects.toThrow(/500/);
+  });
+});
 
-    const original = await getProfile();
-    const updated = { ...original, name: 'Alex Kim' };
-    await saveProfile(updated);
+describe('saveProfile', () => {
+  it('validates locally and PUTs JSON body', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { profile: profileFixture }));
+    const saved = await saveProfile(profileFixture);
+    expect(saved.name).toBe(profileFixture.name);
 
-    const fetched = await getProfile();
-    expect(fetched.name).toBe('Alex Kim');
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/profile');
+    expect(init.method).toBe('PUT');
+    expect(init.headers['Content-Type']).toBe('application/json');
+    expect(JSON.parse(init.body as string).name).toBe(profileFixture.name);
   });
 
-  it('saveProfile returns the saved profile', async () => {
-    const { getProfile, saveProfile } = await freshService();
-    const original = await getProfile();
-    const updated = { ...original, name: 'Morgan Chen' };
-    const returned = await saveProfile(updated);
-    expect(returned.name).toBe('Morgan Chen');
+  it('throws on client-side Zod failure (no request sent)', async () => {
+    const invalid = { ...profileFixture, email: 'not-an-email' };
+    await expect(saveProfile(invalid)).rejects.toThrow();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
-  it('saveProfile(invalid) throws — missing required field "name"', async () => {
-    const { getProfile, saveProfile } = await freshService();
-    const original = await getProfile();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { name: _name, ...withoutName } = original;
-    await expect(saveProfile(withoutName as Parameters<typeof saveProfile>[0])).rejects.toThrow();
+  it('surfaces server error message on non-ok', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(400, { error: 'Invalid profile' }));
+    await expect(saveProfile(profileFixture)).rejects.toThrow(/Invalid profile/);
+  });
+});
+
+describe('ingestProfilePdf', () => {
+  it('POSTs multipart with the file under "file" and returns the parsed profile', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(200, { profile: profileFixture }));
+    const file = new File([new Uint8Array(100)], 'resume.pdf', { type: 'application/pdf' });
+    const profile = await ingestProfilePdf(file);
+    expect(profile.name).toBe(profileFixture.name);
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe('/api/profile/ingest');
+    expect(init.method).toBe('POST');
+    expect(init.body).toBeInstanceOf(FormData);
+    expect((init.body as FormData).get('file')).toBe(file);
   });
 
-  it('saveProfile(invalid) throws — invalid email format', async () => {
-    const { getProfile, saveProfile } = await freshService();
-    const original = await getProfile();
-    await expect(saveProfile({ ...original, email: 'not-an-email' })).rejects.toThrow();
-  });
-
-  it('mutating the returned profile does NOT affect the next getProfile() (defensive copy)', async () => {
-    const { getProfile } = await freshService();
-
-    const profile1 = await getProfile();
-    profile1.name = 'MUTATED';
-
-    const profile2 = await getProfile();
-    expect(profile2.name).toBe('Jordan Lee');
-  });
-
-  it('mutating a nested returned object does NOT affect next getProfile()', async () => {
-    const { getProfile } = await freshService();
-
-    const profile1 = await getProfile();
-    if (profile1.skills.length > 0) {
-      profile1.skills[0].name = 'MUTATED_SKILL';
-    }
-
-    const profile2 = await getProfile();
-    expect(profile2.skills[0]?.name).not.toBe('MUTATED_SKILL');
-  });
-
-  it('getProfile() simulates latency (resolves after ~80ms)', async () => {
-    const { getProfile } = await freshService();
-    const start = Date.now();
-    await getProfile();
-    const elapsed = Date.now() - start;
-    // Allow generous upper bound for CI variability
-    expect(elapsed).toBeGreaterThanOrEqual(70);
-    expect(elapsed).toBeLessThan(1000);
+  it('surfaces 400 error message from the server', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(400, { error: 'Invalid PDF' }));
+    const file = new File([new Uint8Array(10)], 'junk.pdf', { type: 'application/pdf' });
+    await expect(ingestProfilePdf(file)).rejects.toThrow(/Invalid PDF/);
   });
 });

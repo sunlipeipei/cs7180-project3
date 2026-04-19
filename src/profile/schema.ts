@@ -6,62 +6,69 @@ const isoDateString = z
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be an ISO 8601 date (YYYY-MM-DD)');
 
 // --- Sub-schemas ---
+//
+// Every LLM-emitted optional field uses `.nullish()` (accepts `null`,
+// `undefined`, or missing) because OpenRouter structured-output returns
+// `null` for unknown optionals instead of omitting them. `.optional()`
+// alone would reject `null` and fail MasterProfile validation on ingest.
 
 export const AddressSchema = z.object({
-  street: z.string().optional(),
+  street: z.string().nullish(),
   city: z.string(),
-  state: z.string().optional(),
-  zip: z.string().optional(),
+  state: z.string().nullish(),
+  zip: z.string().nullish(),
   country: z.string(),
 });
 
 export const LinksSchema = z.object({
-  github: z.string().optional(),
-  linkedin: z.string().optional(),
-  portfolio: z.string().optional(),
-  other: z.record(z.string()).optional(),
+  github: z.string().nullish(),
+  linkedin: z.string().nullish(),
+  portfolio: z.string().nullish(),
+  other: z.record(z.string()).nullish(),
 });
 
 export const SkillSchema = z.object({
   name: z.string(),
-  category: z.string().optional(),
-  level: z.string().optional(),
+  category: z.string().nullish(),
+  level: z.string().nullish(),
 });
 
 export const WorkExperienceSchema = z.object({
   company: z.string(),
   title: z.string(),
   startDate: isoDateString,
+  // endDate = null is semantically meaningful ("currently employed"); keep
+  // the existing nullable()+optional() contract rather than widening further.
   endDate: isoDateString.nullable().optional(),
-  location: z.string().optional(),
+  location: z.string().nullish(),
   descriptions: z.array(z.string()).default([]),
 });
 
 export const EducationSchema = z.object({
   school: z.string(),
   degree: z.string(),
-  fieldOfStudy: z.string().optional(),
-  startDate: isoDateString.optional(),
-  endDate: isoDateString.optional(),
-  gpa: z.string().optional(),
+  fieldOfStudy: z.string().nullish(),
+  startDate: isoDateString.nullish(),
+  endDate: isoDateString.nullish(),
+  gpa: z.string().nullish(),
 });
 
 export const ProjectSchema = z.object({
   name: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   technologies: z.array(z.string()).default([]),
-  url: z.string().optional(),
-  startDate: isoDateString.optional(),
-  endDate: isoDateString.optional(),
-  role: z.string().optional(),
+  url: z.string().nullish(),
+  startDate: isoDateString.nullish(),
+  endDate: isoDateString.nullish(),
+  role: z.string().nullish(),
 });
 
 export const CertificationSchema = z.object({
   name: z.string(),
-  issuer: z.string().optional(),
-  date: isoDateString.optional(),
-  expirationDate: isoDateString.optional(),
-  credentialId: z.string().optional(),
+  issuer: z.string().nullish(),
+  date: isoDateString.nullish(),
+  expirationDate: isoDateString.nullish(),
+  credentialId: z.string().nullish(),
 });
 
 export const ContextSourcesSchema = z.object({
@@ -76,13 +83,13 @@ export const SalaryRangeSchema = z.object({
 });
 
 export const PreferencesSchema = z.object({
-  salaryRange: SalaryRangeSchema.optional(),
-  workAuthorization: z.string().optional(),
-  willingToRelocate: z.boolean().optional(),
-  yearsOfExperience: z.number().optional(),
-  careerSummary: z.string().optional(),
-  targetRoles: z.array(z.string()).optional(),
-  preferredIndustries: z.array(z.string()).optional(),
+  salaryRange: SalaryRangeSchema.nullish(),
+  workAuthorization: z.string().nullish(),
+  willingToRelocate: z.boolean().nullish(),
+  yearsOfExperience: z.number().nullish(),
+  careerSummary: z.string().nullish(),
+  targetRoles: z.array(z.string()).nullish(),
+  preferredIndustries: z.array(z.string()).nullish(),
 });
 
 // --- Master Profile ---
@@ -92,15 +99,15 @@ export const MasterProfileSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   phone: z.string(),
-  address: AddressSchema.optional(),
-  links: LinksSchema.optional(),
-  summary: z.string().optional(),
+  address: AddressSchema.nullish(),
+  links: LinksSchema.nullish(),
+  summary: z.string().nullish(),
   skills: z.array(SkillSchema),
   workExperience: z.array(WorkExperienceSchema),
   education: z.array(EducationSchema),
-  projects: z.array(ProjectSchema).optional(),
-  certifications: z.array(CertificationSchema).optional(),
-  resumeTemplatePath: z.string().optional(),
-  contextSources: ContextSourcesSchema.optional(),
-  preferences: PreferencesSchema.optional(),
+  projects: z.array(ProjectSchema).nullish(),
+  certifications: z.array(CertificationSchema).nullish(),
+  resumeTemplatePath: z.string().nullish(),
+  contextSources: ContextSourcesSchema.nullish(),
+  preferences: PreferencesSchema.nullish(),
 });
