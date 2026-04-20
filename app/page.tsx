@@ -7,7 +7,8 @@ const FEATURES = [
   },
   {
     label: 'Interactive Editing',
-    description: 'Comment on any section, accept or reject AI suggestions, keep full version history.',
+    description:
+      'Comment on any section, accept or reject AI suggestions, keep full version history.',
   },
   {
     label: 'Auto-Fill Forms',
