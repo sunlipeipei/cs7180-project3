@@ -31,6 +31,7 @@ Thumbs.db
 
 # Playwright caches (reports + results are already ignored above)
 .playwright-cli/
+.playwright-mcp/
 
 /src/generated/prisma
 
