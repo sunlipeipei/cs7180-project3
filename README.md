@@ -76,19 +76,19 @@ graph TD
 
 ## Tech Stack
 
-| Layer      | Technology                      | Notes                                              |
-|------------|---------------------------------|----------------------------------------------------|
-| Framework  | Next.js 15 (App Router)         | Full-stack, Vercel-native, RSC support             |
-| Database   | PostgreSQL via Neon              | Serverless-friendly, Vercel integration            |
-| ORM        | Prisma 7 (driver adapters)      | Type-safe queries, migration history               |
-| Auth       | Clerk (`@clerk/nextjs` ^7)      | Managed auth, Next.js middleware integration       |
-| AI         | OpenRouter / Claude API         | `openai` SDK pointed at OpenRouter; Anthropic core |
-| Validation | Zod ^3                          | Runtime schema validation on all API boundaries   |
-| Styling    | Tailwind CSS 4                  | Utility-first; Radix UI primitives                 |
-| PDF        | @react-pdf/renderer ^4          | Server-side PDF generation from React components  |
-| Testing    | Vitest ^3 + Playwright ^1.59    | Unit/integration + E2E                             |
-| Deploy     | Vercel                          | Preview deploys, env var management                |
-| CI/CD      | GitHub Actions                  | Lint, typecheck, tests, security, deploy           |
+| Layer      | Technology                   | Notes                                              |
+| ---------- | ---------------------------- | -------------------------------------------------- |
+| Framework  | Next.js 15 (App Router)      | Full-stack, Vercel-native, RSC support             |
+| Database   | PostgreSQL via Neon          | Serverless-friendly, Vercel integration            |
+| ORM        | Prisma 7 (driver adapters)   | Type-safe queries, migration history               |
+| Auth       | Clerk (`@clerk/nextjs` ^7)   | Managed auth, Next.js middleware integration       |
+| AI         | OpenRouter / Claude API      | `openai` SDK pointed at OpenRouter; Anthropic core |
+| Validation | Zod ^3                       | Runtime schema validation on all API boundaries    |
+| Styling    | Tailwind CSS 4               | Utility-first; Radix UI primitives                 |
+| PDF        | @react-pdf/renderer ^4       | Server-side PDF generation from React components   |
+| Testing    | Vitest ^3 + Playwright ^1.59 | Unit/integration + E2E                             |
+| Deploy     | Vercel                       | Preview deploys, env var management                |
+| CI/CD      | GitHub Actions               | Lint, typecheck, tests, security, deploy           |
 
 ---
 
@@ -144,18 +144,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command                 | Description                                              |
-|-------------------------|----------------------------------------------------------|
-| `npm run dev`           | Start Next.js dev server                                 |
-| `npm run build`         | `prisma generate` + `next build`                         |
-| `npm run lint`          | ESLint via `next lint`                                   |
-| `npm test`              | Vitest unit tests (`vitest run`)                         |
-| `npm run test:watch`    | Vitest in watch mode                                     |
+| Command                    | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `npm run dev`              | Start Next.js dev server                                           |
+| `npm run build`            | `prisma generate` + `next build`                                   |
+| `npm run lint`             | ESLint via `next lint`                                             |
+| `npm test`                 | Vitest unit tests (`vitest run`)                                   |
+| `npm run test:watch`       | Vitest in watch mode                                               |
 | `npm run test:integration` | Integration tests against real DB (`vitest.integration.config.ts`) |
-| `npm run test:coverage` | Vitest with v8 coverage report                           |
-| `npm run db:migrate`    | `prisma migrate dev` — create and apply migrations       |
-| `npm run db:studio`     | Open Prisma Studio                                       |
-| `npm run format`        | Prettier format all files                                |
+| `npm run test:coverage`    | Vitest with v8 coverage report                                     |
+| `npm run db:migrate`       | `prisma migrate dev` — create and apply migrations                 |
+| `npm run db:studio`        | Open Prisma Studio                                                 |
+| `npm run format`           | Prettier format all files                                          |
 
 ---
 
@@ -174,12 +174,12 @@ Kill switch for commit hooks: `BYPASSHIRE_DISABLE_COMMIT_HOOKS=1`.
 
 ### MCP Servers (`.mcp.json`)
 
-| Server     | Package / Image                          | Purpose                                                   |
-|------------|------------------------------------------|-----------------------------------------------------------|
-| github     | `ghcr.io/github/github-mcp-server`       | Fetch repo metadata, file contents, and language stats    |
-| vercel     | `vercel-mcp-server` (npx)                | Check deployment status, inspect env vars, tail logs      |
-| stitch     | HTTP — `https://stitch.googleapis.com/mcp` | Google Stitch design services                           |
-| playwright | `@playwright/mcp` (npx)                  | Browser automation for E2E — navigate, click, fill, screenshot |
+| Server     | Package / Image                            | Purpose                                                        |
+| ---------- | ------------------------------------------ | -------------------------------------------------------------- |
+| github     | `ghcr.io/github/github-mcp-server`         | Fetch repo metadata, file contents, and language stats         |
+| vercel     | `vercel-mcp-server` (npx)                  | Check deployment status, inspect env vars, tail logs           |
+| stitch     | HTTP — `https://stitch.googleapis.com/mcp` | Google Stitch design services                                  |
+| playwright | `@playwright/mcp` (npx)                    | Browser automation for E2E — navigate, click, fill, screenshot |
 
 ### Agents (`.claude/agents/`)
 
@@ -308,10 +308,10 @@ open http://localhost:3000/tailor
 
 ## Team
 
-| Name          | GitHub                                                  | Role            |
-|---------------|---------------------------------------------------------|-----------------|
-| Lipeipei Sun  | [@sunlipeipei](https://github.com/sunlipeipei)          | Full-stack       |
-| Dako          | [@dako7777777](https://github.com/dako7777777)          | Full-stack       |
+| Name         | GitHub                                         | Role       |
+| ------------ | ---------------------------------------------- | ---------- |
+| Lipeipei Sun | [@sunlipeipei](https://github.com/sunlipeipei) | Full-stack |
+| Dako         | [@dako7777777](https://github.com/dako7777777) | Full-stack |
 
 ---
 
