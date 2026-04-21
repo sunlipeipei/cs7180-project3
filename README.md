@@ -202,6 +202,35 @@ Unit and integration tests run with Vitest. Unit tests mock external dependencie
 
 ---
 
+## CI/CD Pipeline
+
+Every PR and every push to `main` runs through an 8-stage GitHub Actions pipeline. The build graph and AI review are defined in `.github/workflows/`.
+
+| #   | Stage                          | Workflow                       |   Blocks merge?   | Notes                                                                               |
+| --- | ------------------------------ | ------------------------------ | :---------------: | ----------------------------------------------------------------------------------- |
+| 1   | **Lint**                       | `ci.yml` / `lint`              |        Yes        | ESLint + Prettier                                                                   |
+| 2   | **Typecheck**                  | `ci.yml` / `typecheck`         |        Yes        | `tsc --noEmit`                                                                      |
+| 3   | **Unit tests + coverage**      | `ci.yml` / `unit-test`         |        Yes        | Vitest; coverage comment on PR                                                      |
+| 3b  | **Integration tests (Neon)**   | `ci.yml` / `integration-tests` |        Yes        | Skips gracefully when `DATABASE_URL_TEST` is unset                                  |
+| 4   | **Security scan**              | `ci.yml` / `security`          |        Yes        | `npm audit` (fail on high/critical) + GitHub CodeQL (SAST)                          |
+| 5   | **Build**                      | `ci.yml` / `build`             |        Yes        | `npm run build` (Prisma generate + Next build)                                      |
+| 6   | **AI PR review**               | `claude-review.yml`            | **No (advisory)** | `anthropics/claude-code-action@v1` posts a C.L.E.A.R. + security DoD review comment |
+| 7   | **E2E (Playwright)**           | `ci.yml` / `e2e`               |        Yes        | Chromium against `next dev` with `DEV_AUTH_BYPASS=1`                                |
+| 8   | **Preview deploy (Vercel)**    | `ci.yml` / `deploy-preview`    |        No         | PRs only; posts preview URL as a PR comment                                         |
+| 8   | **Production deploy (Vercel)** | `ci.yml` / `deploy-production` |        n/a        | `main` pushes only, after E2E passes                                                |
+
+### AI PR Review setup
+
+Stage 6 uses a Claude Code subscription OAuth token so no per-PR API billing is required. To provision:
+
+1. Run `claude setup-token` locally and copy the long-lived token.
+2. Add it as a GitHub Actions secret named `CLAUDE_CODE_OAUTH_TOKEN` (Repo → Settings → Secrets and variables → Actions).
+3. Open any PR — the review comment appears within a minute or two of CI start.
+
+If the token is missing the stage fails red, but `continue-on-error: true` keeps the PR unblocked.
+
+---
+
 ## Security
 
 Security is treated as a first-class requirement throughout the codebase. See `docs/security.md` for the complete OWASP Top 10 mapping. Key controls:

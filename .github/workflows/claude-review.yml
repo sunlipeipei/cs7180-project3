@@ -1,0 +1,86 @@
+# BypassHire — AI PR Review (advisory)
+#
+# Stage 6 of the 8-stage CI/CD pipeline. Runs `anthropics/claude-code-action@v1`
+# on every PR to post a C.L.E.A.R.-framework review + security DoD check as a
+# PR comment. Advisory — never blocks merge (continue-on-error: true).
+#
+# Auth: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token` — draws on the
+# Claude Code subscription; no per-PR API billing).
+#
+# Kept as a standalone workflow file (rather than a job in ci.yml) so a
+# Claude API outage can't perturb the build-stage dependency graph.
+
+name: Claude AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  claude-review:
+    name: AI PR Review (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            You are reviewing a pull request for **BypassHire** — a Next.js +
+            Prisma + Clerk + Claude API application. Project conventions are
+            in `CLAUDE.md`, `docs/security.md`, `docs/architecture.md`, and
+            `docs/testing-strategy.md` at the repo root. The PR branch is
+            already checked out in the working directory.
+
+            ## C.L.E.A.R. review (always apply)
+
+            Evaluate against the five dimensions. Call out any that fall short:
+            - **C**oncise — PR focused on one concern; no unrelated drive-by edits
+            - **L**inked — references a GitHub issue or spec section
+            - **E**xplicit — all acceptance criteria in the PR body are checked off
+            - **A**ctionable — comments tell the author where to start reading
+            - **R**eviewable — diff under ~400 lines (flag larger diffs without an explanation)
+
+            ## Security review (reference docs/security.md — OWASP Top 10)
+
+            Flag concretely if any of these appear in the diff:
+            - Secrets or API keys in committed files (**never approve**)
+            - DB queries that do NOT scope to `userId` from the Clerk server session (A01)
+            - User input reaching the DB or Claude API without Zod validation (A03)
+            - Raw SQL with string interpolation (A03)
+            - `dangerouslySetInnerHTML` with user-controlled content (A03)
+            - `fetch` to user-controlled URLs without allowlist validation (A10 / SSRF)
+            - Prompt construction that doesn't wrap user JD/resume content in `<data>` delimiters (A03 prompt injection)
+            - API routes importing `getAuth` / `getCurrentUser` directly from `@clerk/nextjs/server` instead of `src/lib/auth` (A07)
+
+            ## Code quality & TDD
+
+            - Tests committed BEFORE implementation (RED → GREEN → REFACTOR per CLAUDE.md)
+            - Unit tests mock external deps; integration tests hit a real DB
+            - Coverage targets: 70% overall / 90% on `src/profile/` / 100% on auth-core
+
+            ## How to deliver feedback
+
+            - Use `gh pr comment` for a single top-level summary comment.
+            - Use `mcp__github_inline_comment__create_inline_comment` (with
+              `confirmed: true`) for line-specific issues — cap at ~5 inline
+              comments so the review stays skimmable.
+            - Only post GitHub comments — do NOT return review text as messages.
+            - Lead with what is good; be specific and actionable; avoid nitpicks.
+            - This is an **advisory** review; do not block the PR.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
