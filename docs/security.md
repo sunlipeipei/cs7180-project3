@@ -17,7 +17,7 @@
 
 - `DATABASE_URL`, `CLERK_SECRET_KEY`, `ANTHROPIC_API_KEY` must **never** be committed
 - `.env` is in `.gitignore`; use `.env.example` with placeholder values
-- Gitleaks pre-commit hook will be added in Issue #25 (S2-2) to block accidental commits
+- Gitleaks pre-commit hook (`.husky/pre-commit`) and CI `security` job (`gitleaks/gitleaks-action@v2`) block committed secrets — Issue #25 (S2-2). Config: `.gitleaks.toml`.
 - Never log full request bodies that may contain resume content (PII)
 - Neon connection requires `sslmode=require` — enforced in `DATABASE_URL`
 
@@ -104,8 +104,15 @@ Every PR must confirm:
 
 ---
 
-## Future Security Gates (Issue #25 — S2-2)
+## Security Gates (Issue #25 — S2-2)
 
-- Pre-commit: Gitleaks secrets detection
-- CI: Automated security sub-agent PR review
-- CI: SAST scan
+Shipped:
+
+- **Pre-commit:** Gitleaks secrets detection via `.husky/pre-commit` (local, best-effort — exits 0 if gitleaks is not installed so contributors without the binary aren't blocked). Config: `.gitleaks.toml` with `useDefault = true` plus an allowlist for `.env.example`, `package-lock.json`, and documentation samples.
+- **CI:** Gitleaks action (`gitleaks/gitleaks-action@v2`) runs on every PR in the `security` job — this is the enforced gate; the pre-commit hook is advisory.
+- **CI:** CodeQL SAST scan in the same `security` job (results in GitHub Security → Code scanning alerts).
+- **Sub-agent:** `.claude/agents/security-reviewer.md` — OWASP-scoped reviewer invoked on PRs that touch auth, API routes, DB queries, external fetches, Claude prompts, or user-facing rendering.
+
+Not shipped (stretch):
+
+- Automated security-sub-agent run in CI via a GitHub Action that calls Claude Code headlessly on PRs. Deferred; local invocation via `/agents security-reviewer` is the workflow for now.

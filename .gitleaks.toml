@@ -1,0 +1,20 @@
+title = "BypassHire Gitleaks Config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Paths and patterns that are safe to include"
+paths = [
+  '''\.env\.example$''',
+  '''(?i)\.gitleaks\.toml$''',
+  '''package-lock\.json$''',
+  '''docs/security\.md$''',
+]
+
+regexes = [
+  '''sk-[a-z]{3}\.\.\.''',
+  '''placeholder''',
+  '''postgresql://postgres:postgres@localhost''',
+  '''postgresql://placeholder:placeholder@localhost''',
+]

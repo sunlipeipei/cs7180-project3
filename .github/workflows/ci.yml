@@ -170,9 +170,10 @@ jobs:
         run: echo "DATABASE_URL_TEST secret is not set — integration tests skipped. Provision a Neon branch and add the secret to activate this tier."
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Stage 4: Security — npm audit + GitHub CodeQL
-  # Fails the build on high or critical npm vulnerabilities.
-  # CodeQL results appear in the Security tab → Code scanning alerts.
+  # Stage 4: Security — gitleaks + npm audit + GitHub CodeQL
+  # Fails the build on committed secrets, high/critical npm vulnerabilities,
+  # or CodeQL findings. CodeQL results appear in the Security tab → Code
+  # scanning alerts.
   # ────────────────────────────────────────────────────────────────────────────
   security:
     name: Security Scan
@@ -185,6 +186,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Gitleaks needs full history to scan commits on PR branches.
+          fetch-depth: 0
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
 
       - uses: actions/setup-node@v4
         with:
