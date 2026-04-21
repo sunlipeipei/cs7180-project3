@@ -76,19 +76,19 @@ graph TD
 
 ## Tech Stack
 
-| Layer      | Technology                      | Notes                                              |
-|------------|---------------------------------|----------------------------------------------------|
-| Framework  | Next.js 15 (App Router)         | Full-stack, Vercel-native, RSC support             |
-| Database   | PostgreSQL via Neon              | Serverless-friendly, Vercel integration            |
-| ORM        | Prisma 7 (driver adapters)      | Type-safe queries, migration history               |
-| Auth       | Clerk (`@clerk/nextjs` ^7)      | Managed auth, Next.js middleware integration       |
-| AI         | OpenRouter / Claude API         | `openai` SDK pointed at OpenRouter; Anthropic core |
-| Validation | Zod ^3                          | Runtime schema validation on all API boundaries   |
-| Styling    | Tailwind CSS 4                  | Utility-first; Radix UI primitives                 |
-| PDF        | @react-pdf/renderer ^4          | Server-side PDF generation from React components  |
-| Testing    | Vitest ^3 + Playwright ^1.59    | Unit/integration + E2E                             |
-| Deploy     | Vercel                          | Preview deploys, env var management                |
-| CI/CD      | GitHub Actions                  | Lint, typecheck, tests, security, deploy           |
+| Layer      | Technology                   | Notes                                              |
+| ---------- | ---------------------------- | -------------------------------------------------- |
+| Framework  | Next.js 15 (App Router)      | Full-stack, Vercel-native, RSC support             |
+| Database   | PostgreSQL via Neon          | Serverless-friendly, Vercel integration            |
+| ORM        | Prisma 7 (driver adapters)   | Type-safe queries, migration history               |
+| Auth       | Clerk (`@clerk/nextjs` ^7)   | Managed auth, Next.js middleware integration       |
+| AI         | OpenRouter / Claude API      | `openai` SDK pointed at OpenRouter; Anthropic core |
+| Validation | Zod ^3                       | Runtime schema validation on all API boundaries    |
+| Styling    | Tailwind CSS 4               | Utility-first; Radix UI primitives                 |
+| PDF        | @react-pdf/renderer ^4       | Server-side PDF generation from React components   |
+| Testing    | Vitest ^3 + Playwright ^1.59 | Unit/integration + E2E                             |
+| Deploy     | Vercel                       | Preview deploys, env var management                |
+| CI/CD      | GitHub Actions               | Lint, typecheck, tests, security, deploy           |
 
 ---
 
@@ -144,18 +144,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command                 | Description                                              |
-|-------------------------|----------------------------------------------------------|
-| `npm run dev`           | Start Next.js dev server                                 |
-| `npm run build`         | `prisma generate` + `next build`                         |
-| `npm run lint`          | ESLint via `next lint`                                   |
-| `npm test`              | Vitest unit tests (`vitest run`)                         |
-| `npm run test:watch`    | Vitest in watch mode                                     |
+| Command                    | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `npm run dev`              | Start Next.js dev server                                           |
+| `npm run build`            | `prisma generate` + `next build`                                   |
+| `npm run lint`             | ESLint via `next lint`                                             |
+| `npm test`                 | Vitest unit tests (`vitest run`)                                   |
+| `npm run test:watch`       | Vitest in watch mode                                               |
 | `npm run test:integration` | Integration tests against real DB (`vitest.integration.config.ts`) |
-| `npm run test:coverage` | Vitest with v8 coverage report                           |
-| `npm run db:migrate`    | `prisma migrate dev` — create and apply migrations       |
-| `npm run db:studio`     | Open Prisma Studio                                       |
-| `npm run format`        | Prettier format all files                                |
+| `npm run test:coverage`    | Vitest with v8 coverage report                                     |
+| `npm run db:migrate`       | `prisma migrate dev` — create and apply migrations                 |
+| `npm run db:studio`        | Open Prisma Studio                                                 |
+| `npm run format`           | Prettier format all files                                          |
 
 ---
 
@@ -174,12 +174,12 @@ Kill switch for commit hooks: `BYPASSHIRE_DISABLE_COMMIT_HOOKS=1`.
 
 ### MCP Servers (`.mcp.json`)
 
-| Server     | Package / Image                          | Purpose                                                   |
-|------------|------------------------------------------|-----------------------------------------------------------|
-| github     | `ghcr.io/github/github-mcp-server`       | Fetch repo metadata, file contents, and language stats    |
-| vercel     | `vercel-mcp-server` (npx)                | Check deployment status, inspect env vars, tail logs      |
-| stitch     | HTTP — `https://stitch.googleapis.com/mcp` | Google Stitch design services                           |
-| playwright | `@playwright/mcp` (npx)                  | Browser automation for E2E — navigate, click, fill, screenshot |
+| Server     | Package / Image                            | Purpose                                                        |
+| ---------- | ------------------------------------------ | -------------------------------------------------------------- |
+| github     | `ghcr.io/github/github-mcp-server`         | Fetch repo metadata, file contents, and language stats         |
+| vercel     | `vercel-mcp-server` (npx)                  | Check deployment status, inspect env vars, tail logs           |
+| stitch     | HTTP — `https://stitch.googleapis.com/mcp` | Google Stitch design services                                  |
+| playwright | `@playwright/mcp` (npx)                    | Browser automation for E2E — navigate, click, fill, screenshot |
 
 ### Agents (`.claude/agents/`)
 
@@ -199,6 +199,35 @@ Kill switch for commit hooks: `BYPASSHIRE_DISABLE_COMMIT_HOOKS=1`.
 ## Testing Strategy
 
 Unit and integration tests run with Vitest. Unit tests mock external dependencies; integration tests run against a real Neon database (using `DATABASE_URL_TEST` if set, falling back to `DATABASE_URL`). End-to-end tests use Playwright against a locally running Next.js dev server and cover the golden path: sign-in, profile upload, job description entry, resume tailoring, and PDF export. Coverage thresholds are enforced at **70% overall**, **90% on `src/profile/`**, and **100% on auth/core paths**. The `test-runner guard` hook prevents the Claude Code session from closing while any test is red. See `docs/testing-strategy.md` for full details.
+
+---
+
+## CI/CD Pipeline
+
+Every PR and every push to `main` runs through an 8-stage GitHub Actions pipeline. The build graph and AI review are defined in `.github/workflows/`.
+
+| #   | Stage                          | Workflow                       |   Blocks merge?   | Notes                                                                               |
+| --- | ------------------------------ | ------------------------------ | :---------------: | ----------------------------------------------------------------------------------- |
+| 1   | **Lint**                       | `ci.yml` / `lint`              |        Yes        | ESLint + Prettier                                                                   |
+| 2   | **Typecheck**                  | `ci.yml` / `typecheck`         |        Yes        | `tsc --noEmit`                                                                      |
+| 3   | **Unit tests + coverage**      | `ci.yml` / `unit-test`         |        Yes        | Vitest; coverage comment on PR                                                      |
+| 3b  | **Integration tests (Neon)**   | `ci.yml` / `integration-tests` |        Yes        | Skips gracefully when `DATABASE_URL_TEST` is unset                                  |
+| 4   | **Security scan**              | `ci.yml` / `security`          |        Yes        | `npm audit` (fail on high/critical) + GitHub CodeQL (SAST)                          |
+| 5   | **Build**                      | `ci.yml` / `build`             |        Yes        | `npm run build` (Prisma generate + Next build)                                      |
+| 6   | **AI PR review**               | `claude-review.yml`            | **No (advisory)** | `anthropics/claude-code-action@v1` posts a C.L.E.A.R. + security DoD review comment |
+| 7   | **E2E (Playwright)**           | `ci.yml` / `e2e`               |        Yes        | Chromium against `next dev` with `DEV_AUTH_BYPASS=1`                                |
+| 8   | **Preview deploy (Vercel)**    | `ci.yml` / `deploy-preview`    |        No         | PRs only; posts preview URL as a PR comment                                         |
+| 8   | **Production deploy (Vercel)** | `ci.yml` / `deploy-production` |        n/a        | `main` pushes only, after E2E passes                                                |
+
+### AI PR Review setup
+
+Stage 6 uses a Claude Code subscription OAuth token so no per-PR API billing is required. To provision:
+
+1. Run `claude setup-token` locally and copy the long-lived token.
+2. Add it as a GitHub Actions secret named `CLAUDE_CODE_OAUTH_TOKEN` (Repo → Settings → Secrets and variables → Actions).
+3. Open any PR — the review comment appears within a minute or two of CI start.
+
+If the token is missing the stage fails red, but `continue-on-error: true` keeps the PR unblocked.
 
 ---
 
@@ -308,10 +337,10 @@ open http://localhost:3000/tailor
 
 ## Team
 
-| Name          | GitHub                                                  | Role            |
-|---------------|---------------------------------------------------------|-----------------|
-| Lipeipei Sun  | [@sunlipeipei](https://github.com/sunlipeipei)          | Full-stack       |
-| Dako          | [@dako7777777](https://github.com/dako7777777)          | Full-stack       |
+| Name         | GitHub                                         | Role       |
+| ------------ | ---------------------------------------------- | ---------- |
+| Lipeipei Sun | [@sunlipeipei](https://github.com/sunlipeipei) | Full-stack |
+| Dako         | [@dako7777777](https://github.com/dako7777777) | Full-stack |
 
 ---
 
