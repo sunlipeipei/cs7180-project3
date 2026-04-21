@@ -27,6 +27,7 @@ This directory collects the final-submission deliverables. Some artifacts live a
 | Claude Code Mastery | Hooks configuration (4 Claude hooks + gitleaks pre-commit) | [`/.claude/settings.json`](../../.claude/settings.json), [`/.husky/pre-commit`](../../.husky/pre-commit) |
 | Claude Code Mastery | MCP servers config | [`/CLAUDE.md` (MCP section)](../../CLAUDE.md) |
 | Claude Code Mastery | Custom agents (7: architect, planner, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner) | [`/.claude/agents/`](../../.claude/agents/) |
+| Claude Code Mastery | Writer/Reviewer PRs with C.L.E.A.R. review comments | [PR #60](https://github.com/sunlipeipei/cs7180-project3/pull/60) · [PR #62](https://github.com/sunlipeipei/cs7180-project3/pull/62) |
 | CI/CD & Security | GitHub Actions CI | [`/.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
 | CI/CD & Security | PR template (C.L.E.A.R. + AI disclosure + security DoD) | [`/.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) |
 | CI/CD & Security | OWASP Top 10 doc | [`/docs/security.md`](../security.md) |
@@ -61,12 +62,13 @@ These are tracked in GitHub. They are not documentation artifacts, but they gate
 | Issue | Summary | Rubric impact |
 |---|---|---|
 | #24 | Complete CI/CD: E2E + security scan + AI review + Vercel prod deploy | CI/CD & Production (35 pts) |
-| #29 | 2+ Writer/Reviewer PRs w/ C.L.E.A.R. + AI disclosure | Claude Code Mastery |
+| ~~#29~~ ✓ | Writer/Reviewer PRs w/ C.L.E.A.R. + AI disclosure — [PR #60](https://github.com/sunlipeipei/cs7180-project3/pull/60), [PR #62](https://github.com/sunlipeipei/cs7180-project3/pull/62) | Claude Code Mastery |
 | #63 | Rubric evidence checklist (grader-facing) | Documentation |
 
 ### Resolved after sprint close
 
 - **#25** — Gitleaks pre-commit + security sub-agent. Shipped on `worktree-issue-25-security-gates`: `.husky/pre-commit` (advisory local hook), `.gitleaks.toml` (rules + allowlist), `gitleaks/gitleaks-action@v2` step in the CI `security` job (enforced), `.claude/agents/security-reviewer.md` (OWASP-scoped sub-agent), PR template security DoD already on main. Stretch not shipped: headless Claude Code agent run in CI — deferred; local `/agents security-reviewer` covers the review workflow.
+- **#29** — Writer/Reviewer PRs w/ C.L.E.A.R. + AI disclosure. C.L.E.A.R. reviewer-agent comments posted on [PR #60](https://github.com/sunlipeipei/cs7180-project3/pull/60) (tailor engine) and [PR #62](https://github.com/sunlipeipei/cs7180-project3/pull/62) (PDF export) by Claude Code reviewer sub-agent (Sonnet 4.6).
 
 ---
 
@@ -74,10 +76,10 @@ These are tracked in GitHub. They are not documentation artifacts, but they gate
 
 Per the professor's rubric these are submitted elsewhere:
 
-- **Video demonstration** (5–10 min) — separate upload, referenced in `blog-post.md`.
-- **Showcase submission** — Google Form (link in `docs/requirement_from_professor.md`).
-- **Published blog post** — final blog gets published on Medium / dev.to; the `.md` draft in this directory is the source.
-- **Peer evaluations (per partner)** — submitted via the form the professor provides; drafts in this directory prepare the content.
+1. **Video demonstration** (5–10 min) — separate upload, referenced in `blog-post.md`.
+2. **Showcase submission** — Google Form (link in `docs/requirement_from_professor.md`).
+3. **Published blog post** — final blog gets published on Medium / dev.to; the `.md` draft in this directory is the source.
+4. **Peer evaluations (per partner)** — submitted via the form the professor provides; drafts in this directory prepare the content.
 
 ---
 
