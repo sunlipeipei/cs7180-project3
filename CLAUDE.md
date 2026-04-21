@@ -101,9 +101,9 @@ Two MCP servers are configured in `.mcp.json` at the repo root:
 
 ## Claude Code Features in Use
 
-- **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20); PostToolUse commit-signal (tests) + commit-signal (tasks) in `.claude/hooks/`
+- **Hooks:** PostToolUse lint-on-edit + Stop test-runner (see Issue #20); PostToolUse commit-signal (tests) + commit-signal (tasks) in `.claude/hooks/`; pre-commit gitleaks via `.husky/pre-commit` (see Issue #25)
 - **MCP:** GitHub, Vercel, Stitch, and Playwright MCP servers via `.mcp.json` (see Issue #21)
-- **Agents:** `.claude/agents/` — architect, planner, tdd-guide, code-reviewer, build-error-resolver, e2e-runner
+- **Agents:** `.claude/agents/` — architect, planner, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner
 - **Skills:** `.claude/skills/` — architecture-decision-records, coding-standards, backend-patterns, e2e-testing, tdd-workflow, verification-loop, fix-issue
 
 ---

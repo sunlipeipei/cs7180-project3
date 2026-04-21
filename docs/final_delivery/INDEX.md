@@ -24,12 +24,15 @@ This directory collects the final-submission deliverables. Some artifacts live a
 | Claude Code Mastery | Parallel worktree evidence (+ screenshots) | [`worktree-evidence.md`](./worktree-evidence.md) |
 | Claude Code Mastery | CLAUDE.md with @imports | [`/CLAUDE.md`](../../CLAUDE.md) |
 | Claude Code Mastery | Custom skills | [`/.claude/skills/`](../../.claude/skills/) |
-| Claude Code Mastery | Hooks configuration (4 hooks) | [`/.claude/settings.json`](../../.claude/settings.json) |
+| Claude Code Mastery | Hooks configuration (4 Claude hooks + gitleaks pre-commit) | [`/.claude/settings.json`](../../.claude/settings.json), [`/.husky/pre-commit`](../../.husky/pre-commit) |
 | Claude Code Mastery | MCP servers config | [`/CLAUDE.md` (MCP section)](../../CLAUDE.md) |
-| Claude Code Mastery | Custom agents | [`/.claude/agents/`](../../.claude/agents/) |
+| Claude Code Mastery | Custom agents (7: architect, planner, tdd-guide, code-reviewer, security-reviewer, build-error-resolver, e2e-runner) | [`/.claude/agents/`](../../.claude/agents/) |
 | CI/CD & Security | GitHub Actions CI | [`/.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
 | CI/CD & Security | PR template (C.L.E.A.R. + AI disclosure + security DoD) | [`/.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) |
 | CI/CD & Security | OWASP Top 10 doc | [`/docs/security.md`](../security.md) |
+| CI/CD & Security | Gitleaks pre-commit hook + config | [`/.husky/pre-commit`](../../.husky/pre-commit), [`/.gitleaks.toml`](../../.gitleaks.toml) |
+| CI/CD & Security | Gitleaks CI enforcement (security job) | [`/.github/workflows/ci.yml`](../../.github/workflows/ci.yml) |
+| CI/CD & Security | Security sub-agent (OWASP-scoped reviewer) | [`/.claude/agents/security-reviewer.md`](../../.claude/agents/security-reviewer.md) |
 | Testing & TDD | Implementation plan with 3 RED→GREEN pairs cited | [`/docs/phase_1-2/implementation-plan.md`](../phase_1-2/implementation-plan.md) |
 | Application Quality | Architecture doc | [`/docs/architecture.md`](../architecture.md) |
 | Application Quality | Product requirements (PRD) | [`/docs/PRD_Resume_Refine_AutoFill_Tool.md`](../PRD_Resume_Refine_AutoFill_Tool.md) |
@@ -58,9 +61,12 @@ These are tracked in GitHub. They are not documentation artifacts, but they gate
 | Issue | Summary | Rubric impact |
 |---|---|---|
 | #24 | Complete CI/CD: E2E + security scan + AI review + Vercel prod deploy | CI/CD & Production (35 pts) |
-| #25 | Gitleaks pre-commit + security sub-agent (PR template portion done — this INDEX links it) | Security gates |
 | #29 | 2+ Writer/Reviewer PRs w/ C.L.E.A.R. + AI disclosure | Claude Code Mastery |
 | #63 | Rubric evidence checklist (grader-facing) | Documentation |
+
+### Resolved after sprint close
+
+- **#25** — Gitleaks pre-commit + security sub-agent. Shipped on `worktree-issue-25-security-gates`: `.husky/pre-commit` (advisory local hook), `.gitleaks.toml` (rules + allowlist), `gitleaks/gitleaks-action@v2` step in the CI `security` job (enforced), `.claude/agents/security-reviewer.md` (OWASP-scoped sub-agent), PR template security DoD already on main. Stretch not shipped: headless Claude Code agent run in CI — deferred; local `/agents security-reviewer` covers the review workflow.
 
 ---
 
