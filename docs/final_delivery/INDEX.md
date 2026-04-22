@@ -13,7 +13,7 @@ This directory collects the final-submission deliverables. Some artifacts live a
 | # | Deliverable | Link |
 |---|---|---|
 | 1 | GitHub Repository | https://github.com/sunlipeipei/cs7180-project3 |
-| 2 | Deployed Application | https://bypasshire-o34cmnxlf-sunlipeipeis-projects.vercel.app |
+| 2 | Deployed Application | [https://bypasshire-o34cmnxlf-sunlipeipeis-projects.vercel.app](https://bypasshire.vercel.app/) |
 | 3 | CI/CD Pipeline (GitHub Actions) | https://github.com/sunlipeipei/cs7180-project3/actions |
 | 4 | Technical Blog Post | https://dev.to/neo_efecd668f2fc8966c7e72/my-first-foray-into-harness-engineers-j3p |
 | 5 | Video Demonstration (5–10 min) | https://drive.google.com/file/d/19jyiEjYbVLlyiUFrqVuEu1EWNqPxNEdA/view?usp=sharing |
