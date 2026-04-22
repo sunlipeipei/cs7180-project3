@@ -18,7 +18,7 @@ This directory collects the final-submission deliverables. Some artifacts live a
 | 4 | Technical Blog Post | https://dev.to/neo_efecd668f2fc8966c7e72/my-first-foray-into-harness-engineers-j3p |
 | 5 | Video Demonstration (5–10 min) | https://drive.google.com/file/d/19jyiEjYbVLlyiUFrqVuEu1EWNqPxNEdA/view?usp=sharing |
 | 6 | Individual Reflection — Qi Wei | [`reflection-Qi_Wei.md`](./reflection-Qi_Wei.md) |
-| 7 | Individual Reflection — Lipeipei | [TBD — partner to add] |
+| 7 | Individual Reflection — Lipeipei | [`reflection-Lipeipei.md`](./reflection-Lipeipei.md) |
 | 8 | Showcase Google Form | https://docs.google.com/forms/d/e/1FAIpQLScT67tnwjhIETSRwADt57TS_THJSeSGf-xrjTV2nm-XvfFELg/viewform?usp=dialog |
 
 ---
@@ -36,6 +36,7 @@ This directory collects the final-submission deliverables. Some artifacts live a
 | Team Process | Sprint 2 retrospective | [`/docs/phase_1-2/sprint-2-retro.md`](../phase_1-2/sprint-2-retro.md) |
 | Team Process | Sprint 2 async standups (9 entries) | [`/docs/phase_1-2/sprint-2-standups.md`](../phase_1-2/sprint-2-standups.md) |
 | Team Process | Peer evaluation (Qi Wei → Lipeipei) | [`peer-evaluation-Qi_Wei.md`](./peer-evaluation-Qi_Wei.md) |
+| Team Process | Peer evaluation (Lipeipei → Qi Wei) | [`peer-evaluation-Lipeipei_to_Qi.md`](./peer-evaluation-Lipeipei_to_Qi.md) |
 | Claude Code Mastery | Parallel worktree evidence (+ screenshots) | [`worktree-evidence.md`](./worktree-evidence.md) |
 | Claude Code Mastery | CLAUDE.md with @imports | [`/CLAUDE.md`](../../CLAUDE.md) |
 | Claude Code Mastery | Custom skills (9: fix-issue v2, tdd-workflow, verify, architecture-decision-records, backend-patterns, coding-standards, e2e-testing, playwright-cli, react-components) | [`/.claude/skills/`](../../.claude/skills/) |
@@ -108,5 +109,5 @@ Per the professor's rubric these are submitted elsewhere:
 3. Browse the sprint docs under [`/docs/archive/sprints/`](../archive/sprints/) (Sprint 1) and [`/docs/phase_1-2/`](../phase_1-2/) (Sprint 2) for team process.
 4. Check [`worktree-evidence.md`](./worktree-evidence.md) for parallel development evidence.
 5. Review [`/.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) for C.L.E.A.R. + AI disclosure + security DoD enforcement on PRs.
-6. Read [`reflection-Qi_Wei.md`](./reflection-Qi_Wei.md) (Qi Wei) and the partner's counterpart for individual insights.
+6. Read [`reflection-Qi_Wei.md`](./reflection-Qi_Wei.md) (Qi Wei) and [`reflection-Lipeipei.md`](./reflection-Lipeipei.md) (Lipeipei) for individual insights.
 7. Implementation-level TDD evidence lives in [`/docs/phase_1-2/implementation-plan.md`](../phase_1-2/implementation-plan.md) (3 RED→GREEN pairs cited with SHAs).
