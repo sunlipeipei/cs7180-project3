@@ -1,6 +1,5 @@
-<!-- wordcount: 550 -->
 
-# Individual Reflection — Dako
+# Individual Reflection — Qi Wei
 **CS7180 Project 3 — BypassHire**
 **2026-04-20**
 
@@ -12,7 +11,7 @@ BypassHire's Phase 1 was mine to own solo: seven GitHub issues, five sub-phases 
 
 ## One Feature That Paid Off: The Stop Hook as a Regression Wall
 
-The most concrete payoff was the Stop hook in `.claude/settings.json`. Before any session can close, it runs `npm test` and blocks exit if tests fail. [DAKO VOICE: describe a specific moment — which session or commit — where you were about to wrap up and the hook caught a failing test you would have pushed. What was the failure?] What I can say is that this hook changed my mental model: instead of trusting myself to remember, the exit gate enforced it structurally. The commit history shows the rhythm — `fix(phase-1.a): GREEN — MasterProfileSchema accepts null from LLM` (commit `2908fca`) followed immediately by `test(phase-1.a): cover null-optional LLM payloads` (`232e5c0`) — a tight RED/GREEN pair that stayed tight because the Stop hook kept me honest. A second PostToolUse hook ran ESLint on every `.ts`/`.tsx` edit, surfacing formatting violations inline instead of letting them pile up before a commit.
+The most concrete payoff was the Stop hook in `.claude/settings.json`. Before any session can close, it runs `npm test` and blocks exit if tests fail. What I can say is that this hook changed my mental model: instead of trusting myself to remember, the exit gate enforced it structurally. The commit history shows the rhythm — `fix(phase-1.a): GREEN — MasterProfileSchema accepts null from LLM` (commit `2908fca`) followed immediately by `test(phase-1.a): cover null-optional LLM payloads` (`232e5c0`) — a tight RED/GREEN pair that stayed tight because the Stop hook kept me honest. A second PostToolUse hook ran ESLint on every `.ts`/`.tsx` edit, surfacing formatting violations inline instead of letting them pile up before a commit.
 
 ## One Feature That Surprised Me: Subagents Changing How I Write
 
@@ -20,7 +19,7 @@ I expected subagents to accelerate code generation. I did not expect them to cha
 
 ## One Limitation I Hit
 
-Subagent context does not persist across sessions. The planner agent starts fresh each time, which means the plan document (`implementation-plan.md`) had to carry all the durable context — the subagent could not. In practice this meant I spent the first few minutes of every session re-orienting the agent to decisions already made. [DAKO VOICE: was there a specific session where this re-orientation cost you real time, or where the agent contradicted a locked decision from a previous run?] The CLAUDE.md `@import` pattern partially mitigated this, but the gap between "agent remembers" and "agent re-reads a file" is real.
+Subagent context does not persist across sessions. The planner agent starts fresh each time, which means the plan document (`implementation-plan.md`) had to carry all the durable context — the subagent could not. In practice this meant I spent the first few minutes of every session re-orienting the agent to decisions already made.  The CLAUDE.md `@import` pattern partially mitigated this, but the gap between "agent remembers" and "agent re-reads a file" is real.
 
 ## What I Am Taking Forward
 
